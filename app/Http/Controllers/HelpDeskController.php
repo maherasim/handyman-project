@@ -9,6 +9,7 @@ use App\Http\Requests\HelpDeskRequest;
 use App\Models\Setting;
 use App\Traits\NotificationTrait;
 use App\Models\HelpDeskActivityMapping;
+use App\Models\HandymanCommissionRequest;
 
 class HelpDeskController extends Controller
 {
@@ -42,8 +43,17 @@ class HelpDeskController extends Controller
         }
         if (auth()->user()->hasAnyRole(['admin'])) {
             $query->newquery()->withTrashed();
-        }else{
-            $query->where('employee_id',auth()->user()->id);
+        } else {
+            $userId = auth()->id();
+            // Handymen see their own tickets AND tickets linked to a commission request about them
+            $commissionHelpdeskIds = HandymanCommissionRequest::where('handyman_id', $userId)
+                ->whereNotNull('helpdesk_id')
+                ->pluck('helpdesk_id');
+
+            $query->where(function($q) use ($userId, $commissionHelpdeskIds) {
+                $q->where('employee_id', $userId)
+                  ->orWhereIn('id', $commissionHelpdeskIds);
+            });
         }
         
         return $datatable->eloquent($query)
@@ -225,7 +235,14 @@ class HelpDeskController extends Controller
             $msg = __('messages.not_found_entry',['name' => __('messages.helpdesk')] );
             return redirect(route('helpdesk.index'))->withError($msg);
         }
-        if ($helpdeskdata->employee_id != auth()->user()->id && !auth()->user()->hasRole(['admin', 'demo_admin'])) {
+        $isOwner  = $helpdeskdata->employee_id == auth()->user()->id;
+        $isAdmin  = auth()->user()->hasRole(['admin', 'demo_admin']);
+        // Handyman involved in a commission request linked to this ticket
+        $isLinkedHandyman = HandymanCommissionRequest::where('handyman_id', auth()->id())
+            ->where('helpdesk_id', $id)
+            ->exists();
+
+        if (!$isOwner && !$isAdmin && !$isLinkedHandyman) {
             return redirect(route('home'))->withErrors(trans('messages.demo_permission_denied'));
         }
        
@@ -346,32 +363,67 @@ class HelpDeskController extends Controller
         $helpdesk = HelpDesk::where('id', $id)->first();
 
         if ($helpdesk && $helpdesk->status == 0) {
-            $helpdeskactivity['helpdesk_id'] = $helpdesk->id;
-            $helpdeskactivity['sender_id'] = auth()->user()->id;
-            if(auth()->user()->hasRole(['admin', 'demo_Admin'])) {
-                $helpdeskactivity['receiver_id'] = $helpdesk->employee_id;
+            $senderId  = auth()->user()->id;
+            $isAdmin   = auth()->user()->hasRole(['admin', 'demo_Admin']);
+            $message   = $request->description ?? null;
+
+            // Determine all recipients for this helpdesk thread
+            // Check if this is a commission request ticket with a linked handyman
+            $commissionRequest = HandymanCommissionRequest::where('helpdesk_id', $helpdesk->id)->first();
+            $linkedHandymanId  = $commissionRequest ? $commissionRequest->handyman_id : null;
+
+            if ($isAdmin) {
+                // Admin → notify provider (employee_id) and handyman (if linked)
+                $recipients = array_filter(array_unique([
+                    $helpdesk->employee_id,
+                    $linkedHandymanId,
+                ]), fn($r) => $r && $r !== $senderId);
+            } elseif ($linkedHandymanId && $senderId == $linkedHandymanId) {
+                // Handyman → notify admin
+                $recipients = [admin_id()];
             } else {
-                $helpdeskactivity['receiver_id'] = admin_id();
+                // Provider or anyone else → notify admin
+                $recipients = [admin_id()];
             }
-            $helpdeskactivity['messages'] = $request->description ?? null;
-            $activity = \App\Models\HelpDeskActivityMapping::updateOrCreate(
-                [
-                    'helpdesk_id' => $helpdeskactivity['helpdesk_id'],
-                    'sender_id' => $helpdeskactivity['sender_id'],
-                    'receiver_id' => $helpdeskactivity['receiver_id'],
-                    'messages' => $helpdeskactivity['messages'],
-                ],
-                $helpdeskactivity 
-            );
-            $activity_data = [
+
+            // Save one activity row per recipient and send notifications
+            $firstActivity = null;
+            foreach ($recipients as $receiverId) {
+                $activity = HelpDeskActivityMapping::updateOrCreate(
+                    [
+                        'helpdesk_id' => $helpdesk->id,
+                        'sender_id'   => $senderId,
+                        'receiver_id' => $receiverId,
+                        'messages'    => $message,
+                    ],
+                    [
+                        'helpdesk_id'   => $helpdesk->id,
+                        'sender_id'     => $senderId,
+                        'receiver_id'   => $receiverId,
+                        'messages'      => $message,
+                        'activity_type' => 'reply_helpdesk',
+                    ]
+                );
+                if (!$firstActivity) $firstActivity = $activity;
+
+                $this->sendNotification([
+                    'activity_type' => 'reply_helpdesk',
+                    'helpdesk_id'   => $helpdesk->id,
+                    'sender_id'     => $senderId,
+                    'receiver_id'   => $receiverId,
+                    'messages'      => $message,
+                    'helpdesk'      => $helpdesk,
+                ]);
+            }
+
+            $activity = $firstActivity ?? HelpDeskActivityMapping::create([
+                'helpdesk_id'   => $helpdesk->id,
+                'sender_id'     => $senderId,
+                'receiver_id'   => admin_id(),
+                'messages'      => $message,
                 'activity_type' => 'reply_helpdesk',
-                'helpdesk_id' => $helpdeskactivity['helpdesk_id'],
-                'sender_id' => $helpdeskactivity['sender_id'],
-                'receiver_id' => $helpdeskactivity['receiver_id'],
-                'messages' => $helpdeskactivity['messages'],
-                'helpdesk' => $helpdesk
-            ];
-            $this->sendNotification($activity_data);
+            ]);
+
             $this->storeAttachments($request, 'helpdesk_activity_attachment', $activity);
             
             $message = __('messages.message_successfully_send' );

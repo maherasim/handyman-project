@@ -67,14 +67,16 @@ class HandymanCommissionRequestController extends Controller
             'status'      => '0',
         ]);
 
-        // Opening message in the helpdesk activity
-        HelpDeskActivityMapping::create([
-            'helpdesk_id'   => $helpdesk->id,
-            'sender_id'     => $provider->id,
-            'receiver_id'   => admin_id(),
-            'messages'      => $description,
-            'activity_type' => 'add_helpdesk',
-        ]);
+        // Opening message — notify admin AND handyman from the start
+        foreach ([admin_id(), $handyman->id] as $recipientId) {
+            HelpDeskActivityMapping::create([
+                'helpdesk_id'   => $helpdesk->id,
+                'sender_id'     => $provider->id,
+                'receiver_id'   => $recipientId,
+                'messages'      => $description,
+                'activity_type' => 'add_helpdesk',
+            ]);
+        }
 
         // Create the commission request record
         $commissionRequest = HandymanCommissionRequest::create([
