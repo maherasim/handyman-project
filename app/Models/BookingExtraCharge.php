@@ -15,7 +15,7 @@ class BookingExtraCharge extends Model
     ];
     protected $casts = [
         'price'    => 'double',
-        'qty'   => 'integer',
+        'qty'   => 'double',
         'booking_id'   => 'integer',
     ];
 }

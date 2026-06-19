@@ -1294,7 +1294,7 @@
                         </div>
                         <div class="col-2">
                             <label class="form-label fw-bold">${pjrJsLang.ec_qty}</label>
-                            <input type="number" class="form-control ec_qty" step="1" min="1" value="1" />
+                            <input type="number" class="form-control ec_qty" step="0.5" min="0.5" value="1" />
                         </div>
                         <div class="col-1 text-end">
                             <button type="button" class="btn btn-outline-danger btn-sm ec_remove" title="${pjrJsLang.ec_remove_title}"><i class="la la-times"></i></button>
@@ -1319,7 +1319,7 @@
                                     <input type="number" class="form-control ec_amount" step="0.01" min="0.01" placeholder="10" />
                                 </div>
                                 <div class="col-2">
-                                    <input type="number" class="form-control ec_qty" step="1" min="1" value="1" />
+                                    <input type="number" class="form-control ec_qty" step="0.5" min="0.5" value="1" />
                                 </div>
                                 <div class="col-1 text-end">
                                     <button type="button" class="btn btn-outline-danger btn-sm ec_remove" title="${pjrJsLang.ec_remove_title}"><i class="la la-times"></i></button>
@@ -1342,7 +1342,7 @@
                         for (const r of rows) {
                             const title = r.querySelector('.ec_title').value.trim();
                             const amount = parseFloat(r.querySelector('.ec_amount').value);
-                            const qty = parseInt(r.querySelector('.ec_qty').value || '1', 10);
+                            const qty = parseFloat(r.querySelector('.ec_qty').value || '1');
                             if (!title) {
                                 Swal.showValidationMessage(pjrJsLang.ec_val_row_title);
                                 return false;
@@ -1351,7 +1351,7 @@
                                 Swal.showValidationMessage(pjrJsLang.ec_val_row_amount);
                                 return false;
                             }
-                            if (!qty || qty < 1) {
+                            if (!qty || qty <= 0) {
                                 Swal.showValidationMessage(pjrJsLang.ec_val_qty_min);
                                 return false;
                             }

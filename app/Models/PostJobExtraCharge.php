@@ -19,7 +19,7 @@ class PostJobExtraCharge extends Model
     protected $casts = [
         'post_job_bid_id' => 'integer',
         'amount' => 'double',
-        'quantity' => 'integer',
+        'quantity' => 'double',
     ];
 
     public function bid()

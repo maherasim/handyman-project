@@ -1871,14 +1871,14 @@ when
         // Increase quantity
         $(document).on('click', '.increase-qty', function () {
             const input = $(this).closest('.input-group').find('.charge-quantity');
-            input.val(parseInt(input.val()) + 1);
+            input.val(Math.round((parseFloat(input.val() || 0) + 0.5) * 100) / 100);
         });
 
         // Decrease quantity
         $(document).on('click', '.decrease-qty', function () {
             const input = $(this).closest('.input-group').find('.charge-quantity');
-            let qty = parseInt(input.val());
-            if (qty > 1) input.val(qty - 1);
+            let qty = parseFloat(input.val() || 0.5);
+            if (qty > 0.5) input.val(Math.round((qty - 0.5) * 100) / 100);
         });
 
         // Submit charges
@@ -1889,7 +1889,7 @@ when
             $('.charge-row').each(function () {
                 const title = $(this).find('.charge-detail').val();
                 const price = parseFloat($(this).find('.charge-amount').val()) || 0;
-                const qty = parseInt($(this).find('.charge-quantity').val()) || 0;
+                const qty = parseFloat($(this).find('.charge-quantity').val()) || 0;
                 const total_amount = price * qty;
 
                 if (title && price > 0 && qty > 0) {
@@ -1925,13 +1925,13 @@ when
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">{{ __('messages.amount') }}</label>
-                            <input type="number" class="form-control charge-amount" placeholder="{{ __('messages.extra_charge_placeholder_amount') }}">
+                            <input type="number" class="form-control charge-amount" step="0.01" min="0.01" placeholder="{{ __('messages.extra_charge_placeholder_amount') }}">
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">{{ __('messages.quantity') }}</label>
                             <div class="input-group">
                                 <button class="btn btn-outline-secondary btn-sm decrease-qty" type="button">-</button>
-                                <input type="number" class="form-control text-center charge-quantity" value="1" min="1">
+                                <input type="number" class="form-control text-center charge-quantity" value="1" step="0.5" min="0.5">
                                 <button class="btn btn-outline-secondary btn-sm increase-qty" type="button">+</button>
                             </div>
                         </div>

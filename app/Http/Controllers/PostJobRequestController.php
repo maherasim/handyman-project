@@ -717,19 +717,19 @@ class PostJobRequestController extends Controller
                 'items'            => 'required|array|min:1',
                 'items.*.title'    => 'required|string|max:255',
                 'items.*.amount'   => 'required|numeric|min:0.01',
-                'items.*.quantity' => 'required|integer|min:1',
+                'items.*.quantity' => 'required|numeric|min:0.01',
             ]);
-    
+
             $items = $request->input('items');
             $totalExtra = 0.0;
-            $totalQty   = 0;
+            $totalQty   = 0.0;
             $bid = PostJobBid::findOrFail($id);
             // reset existing lines to avoid duplication
             $bid->extraCharges()->delete();
 
             foreach ($items as $line) {
                 $lineAmount = (float) ($line['amount'] ?? 0);
-                $lineQty    = (int) ($line['quantity'] ?? 0);
+                $lineQty    = (float) ($line['quantity'] ?? 0);
                 $totalExtra += $lineAmount * $lineQty;
                 $totalQty   += $lineQty;
 
@@ -740,7 +740,7 @@ class PostJobRequestController extends Controller
                     'quantity'        => $lineQty,
                 ]);
             }
-    
+
             $bid->extra_charges = $totalExtra; // store summed charges
             $bid->quantity      = $totalQty;   // store summed qty for reference
             $bid->status        = 'completed';
