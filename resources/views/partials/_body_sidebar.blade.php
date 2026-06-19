@@ -1449,8 +1449,8 @@ $menu->add('<span>'.__('messages.sidebar_favourit_provider').'</span><span class
 
         $menu
             ->add(
-                '<span>Bank Transfer Settings</span><span class="custom-tooltip"><span class="tooltip-text">Bank Transfer Settings</span></span>',
-                ['route' => ['setting.index', ['page' => 'bank-transfer-setting']]],
+                '<span>' . __('messages.bank_transfer_settings') . '</span><span class="custom-tooltip"><span class="tooltip-text">' . __('messages.bank_transfer_settings') . '</span></span>',
+                ['url' => url('setting/bank-transfer-setting')],
             )
             ->prepend(
                 '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

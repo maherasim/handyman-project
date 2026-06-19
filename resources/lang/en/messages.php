@@ -2169,4 +2169,13 @@
     'profile_reports' => 'Profile Reports',
     'review_user_profile_reports' => 'Reported User Profiles',
     'bank_details' => 'Bank Details',
+
+    // Bank Transfer Settings (admin panel)
+    'bank_transfer_settings'      => 'Bank Transfer Settings',
+    'bank_transfer_recipient'     => 'Recipient / Company Name',
+    'bank_transfer_iban'          => 'IBAN',
+    'bank_transfer_bic'           => 'BIC / SWIFT',
+    'bank_transfer_bank_name'     => 'Bank Name',
+    'bank_transfer_bank_address'  => 'Bank Address',
+    'bank_transfer_email'         => 'Billing Email',
 );

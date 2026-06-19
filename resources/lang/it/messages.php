@@ -1096,4 +1096,12 @@
     'content_report_open_public' => 'Apri sul sito',
     'content_report_reviewed_at' => 'Esaminato:',
 
+    // Bank Transfer Settings (admin panel)
+    'bank_transfer_settings'      => 'Impostazioni bonifico bancario',
+    'bank_transfer_recipient'     => 'Destinatario / Nome azienda',
+    'bank_transfer_iban'          => 'IBAN',
+    'bank_transfer_bic'           => 'BIC / SWIFT',
+    'bank_transfer_bank_name'     => 'Nome della banca',
+    'bank_transfer_bank_address'  => 'Indirizzo della banca',
+    'bank_transfer_email'         => 'E-mail di fatturazione',
 );

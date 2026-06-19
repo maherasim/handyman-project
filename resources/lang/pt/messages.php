@@ -1095,4 +1095,12 @@
     'content_report_open_public' => 'Abrir no site',
     'content_report_reviewed_at' => 'Revisto:',
 
+    // Bank Transfer Settings (admin panel)
+    'bank_transfer_settings'      => 'Configurações de transferência bancária',
+    'bank_transfer_recipient'     => 'Destinatário / Nome da empresa',
+    'bank_transfer_iban'          => 'IBAN',
+    'bank_transfer_bic'           => 'BIC / SWIFT',
+    'bank_transfer_bank_name'     => 'Nome do banco',
+    'bank_transfer_bank_address'  => 'Endereço do banco',
+    'bank_transfer_email'         => 'E-mail de cobrança',
 ];

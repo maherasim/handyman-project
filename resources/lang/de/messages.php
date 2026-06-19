@@ -2187,4 +2187,12 @@
     'review_user_profile_reports' => 'Gemeldete Benutzerprofile',
     'bank_details' => 'Bankverbindung',
 
+    // Bank Transfer Settings (admin panel)
+    'bank_transfer_settings'      => 'Banküberweisung Einstellungen',
+    'bank_transfer_recipient'     => 'Empfänger / Firmenname',
+    'bank_transfer_iban'          => 'IBAN',
+    'bank_transfer_bic'           => 'BIC / SWIFT',
+    'bank_transfer_bank_name'     => 'Bankname',
+    'bank_transfer_bank_address'  => 'Bankadresse',
+    'bank_transfer_email'         => 'Rechnungs-E-Mail',
 );

@@ -88,7 +88,7 @@
                                                 <a href="javascript:void(0)" data-href="{{ route('layout_page') }}?page=earning-setting" data-target=".paste_here" class="nav-link {{$page=='earning-setting'?'active':''}}"  data-toggle="tabajax" rel="tooltip"> {{ __('messages.earning_setting') }}</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a href="javascript:void(0)" data-href="{{ route('layout_page') }}?page=bank-transfer-setting" data-target=".paste_here" class="nav-link {{$page=='bank-transfer-setting'?'active':''}}" data-toggle="tabajax" rel="tooltip"> {{ __('messages.bank_transfer_settings', [], app()->getLocale()) ?: 'Bank Transfer Settings' }}</a>
+                                                <a href="javascript:void(0)" data-href="{{ route('layout_page') }}?page=bank-transfer-setting" data-target=".paste_here" class="nav-link {{$page=='bank-transfer-setting'?'active':''}}" data-toggle="tabajax" rel="tooltip"> {{ __('messages.bank_transfer_settings') }}</a>
                                             </li>
                                         @endhasanyrole
                                     @endif

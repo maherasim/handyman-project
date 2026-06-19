@@ -2360,4 +2360,13 @@
     'data_not_available' => 'Données non disponibles',
     'request_post_job_services' => 'Demander des services de travail',
     'post_request_save' => 'Enregistrer la demande',
+
+    // Bank Transfer Settings (admin panel)
+    'bank_transfer_settings'      => 'Paramètres de virement bancaire',
+    'bank_transfer_recipient'     => 'Bénéficiaire / Nom de la société',
+    'bank_transfer_iban'          => 'IBAN',
+    'bank_transfer_bic'           => 'BIC / SWIFT',
+    'bank_transfer_bank_name'     => 'Nom de la banque',
+    'bank_transfer_bank_address'  => 'Adresse de la banque',
+    'bank_transfer_email'         => 'E-mail de facturation',
 ];
