@@ -127,17 +127,21 @@ import Swal from 'sweetalert2'
 import { confirmcancleSwal, confirmcancleWallet } from '../data/utilities'
 import Wallet from '../components/Wallet.vue'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const props = defineProps(['booking_id', 'customer_id', 'discount', 'total_amount', 'advance_payment_amount', 'wallet_amount', 'payment_type', 'total_advance_paid_amount', 'total_booking_amount', 'advance_percentage'])
 
 const bankConfig = ref(window.bankTransferConfig || {})
 
 const fetchBankTransferSettings = async () => {
   try {
-    const res = await fetch(BANK_TRANSFER_SETTINGS_API)
+    const lang = (locale.value || 'en').split('-')[0]
+    const res = await fetch(`${BANK_TRANSFER_SETTINGS_API}?language=${lang}`)
     if (res.ok) {
       const json = await res.json()
-      if (json.data) bankConfig.value = json.data
+      if (json.data) {
+        // API returns single object when ?language= is passed, array without it
+        bankConfig.value = Array.isArray(json.data) ? (json.data[0] || {}) : json.data
+      }
     }
   } catch (e) {
     console.error('Bank transfer settings fetch failed:', e)
