@@ -2230,5 +2230,5 @@
     'commission_request_approved_message' => 'Admin has approved the commission change request. New commission: :new%.',
     'commission_request_rejected_message' => 'Admin has rejected the commission change request. Reason: :reason',
     'reject'=>'Reject',
-
+   
 );
