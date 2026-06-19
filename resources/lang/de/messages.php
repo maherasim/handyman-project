@@ -2248,5 +2248,6 @@
     'commission_request_rejected_message'=> 'Der Administrator hat die Provisionsänderungsanfrage abgelehnt. Grund: :reason',
     'reject'   => 'Ablehnen',
     'approved' => 'Genehmigt',
+    'are_you_sure_perform_action' => 'Are you sure to perform action',
 );
 

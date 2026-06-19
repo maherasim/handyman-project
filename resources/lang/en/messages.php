@@ -2247,5 +2247,7 @@
     'commission_request_rejected_message' => 'Admin has rejected the commission change request. Reason: :reason',
     'reject'=>'Reject',
     'approved'=>'Approved',
+        'are_you_sure_perform_action' => 'Are you sure to perform action',
+
    
 );
