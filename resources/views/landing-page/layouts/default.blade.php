@@ -107,6 +107,38 @@
 
     <script>
         $(document).ready(function() {
+
+            // Modal fix – Bootstrap's data-api may not fire when two BS5 instances
+            // are loaded (landing-app.min.js + bootstrap.bundle.js). Handle manually.
+            $(document).on('click', '[data-bs-toggle="modal"]', function(e) {
+                e.preventDefault();
+                var target = $(this).data('bs-target') || $(this).attr('href');
+                var $modal = $(target);
+                if (!$modal.length) return;
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    bootstrap.Modal.getOrCreateInstance($modal[0]).show();
+                } else {
+                    // Fallback: toggle CSS classes directly
+                    $modal.addClass('show').css('display', 'block').removeAttr('aria-hidden');
+                    $('body').addClass('modal-open');
+                    if (!$('.modal-backdrop').length) {
+                        $('<div class="modal-backdrop fade show"></div>').appendTo('body');
+                    }
+                }
+            });
+            $(document).on('click', '[data-bs-dismiss="modal"]', function() {
+                var $modal = $(this).closest('.modal');
+                if (!$modal.length) return;
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    var inst = bootstrap.Modal.getInstance($modal[0]);
+                    if (inst) inst.hide();
+                } else {
+                    $modal.removeClass('show').css('display', 'none').attr('aria-hidden', 'true');
+                    $('body').removeClass('modal-open');
+                    $('.modal-backdrop').remove();
+                }
+            });
+
             $('.textbuttoni').click(function() {
                 $(this).prev('.custome-seatei').toggleClass('active');
                 if ($(this).text() === '{{ __('landingpage.read_more') }}') {

@@ -2187,6 +2187,5 @@
     'no_addresses_found'=>'Address not found',
     'add_address'=>'Add Address',
     'waiting_admin_approval'=>'Add Address',
-
-
+    'pending_by_admin' => "Vom Administrator ausstehend"
 );
