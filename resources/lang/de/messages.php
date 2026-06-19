@@ -2195,4 +2195,11 @@
     'bank_transfer_bank_name'     => 'Bankname',
     'bank_transfer_bank_address'  => 'Bankadresse',
     'bank_transfer_email'         => 'Rechnungs-E-Mail',
+
+
+ 
+    // Missing
+    'about_me_label'      => 'Über mich',
+    'no_addresses_found'  => 'Keine Adresse gefunden',
+    'add_address'         => 'Adresse hinzufügen',
 );
