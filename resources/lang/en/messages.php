@@ -2178,4 +2178,13 @@
     'bank_transfer_bank_name'     => 'Bank Name',
     'bank_transfer_bank_address'  => 'Bank Address',
     'bank_transfer_email'         => 'Billing Email',
+
+
+
+    //Missing
+    'about_me_label'         => 'About me',
+    'no_addresses_found'=>'Address not found',
+    'add_addresees'=>'Add Address',
+
+
 );
