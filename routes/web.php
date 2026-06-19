@@ -11,6 +11,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ProviderTypeController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\HandymanController;
+use App\Http\Controllers\HandymanCommissionRequestController;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\BookingController;
@@ -254,6 +255,14 @@ Route::group(['middleware' => ['auth', 'verified', 'active']], function () {
 
     });
     Route::get('handymandetail/{id}', [HandymanController::class, 'handyman_detail'])->name('handyman.detail');
+
+    // Handyman Commission Change Requests
+    Route::post('commission-request', [HandymanCommissionRequestController::class, 'store'])->name('commission-request.store');
+    Route::get('commission-requests', [HandymanCommissionRequestController::class, 'index'])->name('commission-request.index');
+    Route::post('commission-request/{id}/approve', [HandymanCommissionRequestController::class, 'approve'])->name('commission-request.approve');
+    Route::post('commission-request/{id}/reject', [HandymanCommissionRequestController::class, 'reject'])->name('commission-request.reject');
+    Route::get('commission-request/{id}/edit', [HandymanCommissionRequestController::class, 'edit'])->name('commission-request.edit');
+    Route::put('commission-request/{id}', [HandymanCommissionRequestController::class, 'update'])->name('commission-request.update');
     Route::group(['middleware' => ['permission:coupon list']], function () {
         Route::resource('coupon', CouponController::class);
         Route::get('coupon-index_data', [CouponController::class, 'index_data'])->name('coupon.index_data');

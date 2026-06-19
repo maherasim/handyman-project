@@ -12,6 +12,7 @@ use App\Models\Booking;
 use App\Models\BookingHandymanMapping;
 use App\Models\HandymanPayout;
 use App\Models\Wallet;
+use App\Mail\HandymanCredentialsMail;
 
 class HandymanController extends Controller
 {
@@ -182,9 +183,14 @@ class HandymanController extends Controller
         if ($handymandata == null) {
             $pageTitle = __('messages.add_button_form', ['form' => __('messages.worker')]);
             $handymandata = new User;
-        }else{
+        } else {
             if ($handymandata->provider_id !== auth()->user()->id && !auth()->user()->hasRole(['admin', 'demo_admin'])) {
                 return redirect(route('handyman.index'))->withErrors(trans('messages.demo_permission_denied'));
+            }
+            // Provider cannot edit an existing handyman's profile — redirect to detail
+            if (auth()->user()->hasRole('provider') && $handymandata->id) {
+                return redirect(route('handyman.detail', $handymandata->id))
+                    ->with('info', __('messages.handyman_profile_locked'));
             }
         }
 
@@ -317,6 +323,11 @@ class HandymanController extends Controller
         }
         $id = $data['id'];
 
+        // Providers may only create new handymen — never update existing ones
+        if ($id !== null && auth()->user()->hasRole('provider')) {
+            return redirect()->back()->withErrors(__('messages.handyman_profile_locked'));
+        }
+
         $data['user_type'] = $data['user_type'] ?? 'handyman';
         $data['is_featured'] = 0;
 
@@ -337,7 +348,9 @@ class HandymanController extends Controller
 
         $data['display_name'] = $data['first_name'] . " " . $data['last_name'];
         // Save User data...
+        $plainPassword = null;
         if ($id == null) {
+            $plainPassword = $data['password'];
             $data['password'] = bcrypt($data['password']);
             $user = User::create($data);
             $wallet = array(
@@ -345,27 +358,36 @@ class HandymanController extends Controller
                 'user_id' => $user->id,
                 'amount' => 0
             );
-            $result = Wallet::create($wallet);
+            Wallet::create($wallet);
         } else {
             $user = User::findOrFail($id);
-            // User data...
-            // $user->removeRole($user->user_type);
             $user->fill($data)->update();
         }
-        if ($data['status'] == 1 && auth()->user()->hasAnyRole(['admin'])) {
-            try {
-            \Mail::send(
-                'verification.verification_email',
-                array(),
-                function ($message) use ($user) {
-                    $message->from(env('MAIL_FROM_ADDRESS'));
-                    $message->to($user->email);
-                }
-            );
-        } catch (\Throwable $th) {
 
+        // Send credentials email when a provider creates a new handyman
+        if ($plainPassword !== null && auth()->user()->hasRole('provider')) {
+            try {
+                \Mail::to($user->email)->send(
+                    new HandymanCredentialsMail($user, auth()->user(), $plainPassword)
+                );
+            } catch (\Throwable $th) {
+                \Log::warning('Handyman credentials email failed: ' . $th->getMessage());
+            }
         }
 
+        if ($data['status'] == 1 && auth()->user()->hasAnyRole(['admin'])) {
+            try {
+                \Mail::send(
+                    'verification.verification_email',
+                    array(),
+                    function ($message) use ($user) {
+                        $message->from(env('MAIL_FROM_ADDRESS'));
+                        $message->to($user->email);
+                    }
+                );
+            } catch (\Throwable $th) {
+                //
+            }
         }
         $user->assignRole($data['user_type']);
         if ($request->hasFile('profile_image')) {
