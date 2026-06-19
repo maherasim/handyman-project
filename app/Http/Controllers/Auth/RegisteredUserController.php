@@ -108,44 +108,33 @@ class RegisteredUserController extends Controller
     }
     
 if ($userType === 'provider') {
-    $startDate = now();
-    $planType = 'weekly'; // You can set this dynamically if needed
+    try {
+        $startDate = now();
+        $endDate   = $startDate->copy()->addWeek();
 
-    // Calculate end date based on plan type
-    switch ($planType) {
-        case 'weekly':
-            $endDate = $startDate->copy()->addWeek();
-            break;
-        case 'monthly':
-            $endDate = $startDate->copy()->addMonth();
-            break;
-        case 'yearly':
-            $endDate = $startDate->copy()->addYear();
-            break;
-        default:
-            $endDate = $startDate->copy()->addWeek(); // fallback
+        \App\Models\ProviderSubscription::create([
+            'plan_id'         => 1,
+            'user_id'         => $user->id,
+            'title'           => 'Free plan',
+            'identifier'      => 'free',
+            'type'            => 'weekly',
+            'start_at'        => $startDate,
+            'end_at'          => $endDate,
+            'amount'          => 0,
+            'status'          => 'active',
+            'payment_id'      => '1',
+            'plan_limitation' => json_encode([
+                'featured_service' => ['is_checked' => null, 'limit' => null],
+                'handyman'         => ['is_checked' => null, 'limit' => null],
+                'service'          => ['is_checked' => null, 'limit' => null],
+            ]),
+            'duration'        => null,
+            'description'     => 'Free plan',
+            'plan_type'       => 'Free plan',
+        ]);
+    } catch (\Throwable $e) {
+        \Log::warning('Could not create free subscription on provider register: ' . $e->getMessage());
     }
-
-    \App\Models\ProviderSubscription::create([
-        'plan_id'         => 1,
-        'user_id'         => $user->id,
-        'title'           => 'Free plan',
-        'identifier'      => 'free',
-        'type'            => $planType,
-        'start_at'        => $startDate,
-        'end_at'          => $endDate,
-        'amount'          => 0,
-        'status'          => 'active',
-        'payment_id'      => '1',
-        'plan_limitation' => json_encode([
-            'featured_service' => ['is_checked' => null, 'limit' => null],
-            'handyman'         => ['is_checked' => null, 'limit' => null],
-            'service'          => ['is_checked' => null, 'limit' => null],
-        ]),
-        'duration'        => null,
-        'description'     => 'Free plan',
-        'plan_type'       => 'Free plan',
-    ]);
 }
 
  

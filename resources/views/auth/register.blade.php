@@ -119,7 +119,7 @@
                                  </select>
                               </div>
                               --}}
-                              <div class="form-group d-none" id="handymantype_group">
+                              <div class="form-group" id="handymantype_group" style="display:none">
                                  <label for="handymantype" class="text-secondary">{{ __('messages.user_commission') }} <span class="text-danger">*</span></label>
                                  <select name="handymantype_id" class="form-control mb-3" id="handymantype">
                                     <option value="">{{ __('messages.select_handyman_type') }}</option>
@@ -332,7 +332,7 @@
                 $('#handymantype').prop('required', false);
             } else if (selectedUserType === 'handyman') {
                 $('#providertype').prop('required', false);
-                $('#handymantype').prop('required', true);
+                $('#handymantype').prop('required', false);
                 fetchProviders();
             }
             if (selectedUserType !== 'provider') fetchTypes(selectedUserType);
