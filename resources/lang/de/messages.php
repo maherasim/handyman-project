@@ -2246,6 +2246,6 @@
     'commission_request_approved_message'=> 'Der Administrator hat die Provisionsänderungsanfrage genehmigt. Neue Provision: :new%.',
     'commission_request_rejected_message'=> 'Der Administrator hat die Provisionsänderungsanfrage abgelehnt. Grund: :reason',
      'reject'=>'Reject',
-    'Approved'=>'Approved',
+    'approved'=>'Approved',
 );
 
