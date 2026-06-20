@@ -439,6 +439,26 @@ trait NotificationTrait
                 $data['job_name'] = isset($post_job->postrequest->title) ? $post_job->postrequest->title : '';
                 $data['notify_recipient'] = $notifyWho;
                 $job_id = isset($post_job->post_request_id) ? $post_job->post_request_id : '';
+
+                // Populate post-request detail fields so email placeholders are not empty
+                $postReq = $post_job->postrequest ?? null;
+                $data['start_date']  = $postReq && $postReq->start_date
+                    ? \Carbon\Carbon::parse($postReq->start_date)->format('d M Y') : '';
+                $data['end_date']    = $postReq && $postReq->end_date
+                    ? \Carbon\Carbon::parse($postReq->end_date)->format('d M Y') : '';
+                $data['budget']      = $postReq && $postReq->total_budget
+                    ? getPriceFormat($postReq->total_budget) : '';
+                $data['created_on']  = $postReq && $postReq->created_at
+                    ? \Carbon\Carbon::parse($postReq->created_at)->format('d M Y') : '';
+                $data['job_id']      = $postReq ? $postReq->id : ($post_job->post_request_id ?? '');
+
+                // Location: resolve city name from city_id
+                $cityName = '';
+                if ($postReq && $postReq->city_id) {
+                    $city = \App\Models\City::find($postReq->city_id);
+                    $cityName = $city ? $city->name : '';
+                }
+                $data['location'] = $cityName ?: '-';
                 $activity_data = [
                     'post_request_id' => $post_job->post_request_id,
                     'bid_id' => $post_job->id,
