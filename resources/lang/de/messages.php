@@ -2249,7 +2249,7 @@
     'reject'   => 'Ablehnen',
     'approved' => 'Genehmigt',
     'are_you_sure_perform_action' => 'Are you sure to perform action',
-     'handyman_commission '=> 'Freelancer Commission %',
-    'booking_commission_hint' =>  'Booking Commission  %',
+    'handyman_commission' => 'Provision für diese Buchung',
+    'booking_commission_hint' => 'Überschreibt den Standard des Freelancers nur für diese Buchung',
 );
 

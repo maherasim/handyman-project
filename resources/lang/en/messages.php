@@ -2248,8 +2248,8 @@
     'reject'=>'Reject',
     'approved'=>'Approved',
     'are_you_sure_perform_action' => 'Are you sure to perform action',
-    'handyman_commission '=> 'Freelancer Commission %',
-    'booking_commission_hint' =>  'Booking Commission  %',
+    'handyman_commission' => 'Commission for this Booking',
+    'booking_commission_hint' => 'Overrides freelancer default for this booking only',
      
    
 );
