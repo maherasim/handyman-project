@@ -74,40 +74,52 @@
 
 <script>
 (function () {
-    var commissionUrl = '{{ url("handyman") }}';
-    var $select      = $('#handyman_id');
-    var $field       = $('#booking_handyman_commission');
-    var $hint        = $('#commission_hint');
+    var commissionUrl = '{{ route("handyman.commission", ["id" => "__ID__"]) }}';
+    var $field = $('#booking_handyman_commission');
+    var $hint  = $('#commission_hint');
+    var userEdited = false; // track if provider manually changed the value
 
-    // Init select2 for the handyman dropdown
-    $select.select2({ width: '100%', placeholder: "{{ __('messages.select_name', ['select' => __('messages.handyman')]) }}" });
-
-    // Auto-fill commission when a handyman is chosen
-    $select.on('select2:select', function () {
-        var handymanId = $(this).val();
-        if (!handymanId || !handymanId[0]) return;
-
-        fetch(commissionUrl + '/' + handymanId[0] + '/commission')
+    function fetchCommission(handymanId) {
+        if (!handymanId) return;
+        var url = commissionUrl.replace('__ID__', handymanId);
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(function (r) { return r.json(); })
             .then(function (data) {
-                if ($field.val() === '') {
-                    $field.val(data.commission);
+                var pct = parseFloat(data.commission) || 0;
+                // Always update field unless provider already typed a custom value
+                if (!userEdited) {
+                    $field.val(pct > 0 ? pct : '');
                 }
-                $hint.text('Default commission for this freelancer: ' + data.commission + '%');
+                $hint.text('{{ __("messages.handyman") }} {{ __("messages.handyman_commission") }}: ' + pct + '%');
             })
             .catch(function () { $hint.text(''); });
+    }
+
+    // Mark as user-edited only when they actually type
+    $field.on('input', function () { userEdited = true; });
+
+    // Re-init select2 on the modal element (modal is loaded via AJAX so parent init missed it)
+    var $select = $('#handyman_id');
+    if ($select.hasClass('select2-hidden-accessible')) {
+        $select.select2('destroy');
+    }
+    $select.select2({
+        width: '100%',
+        placeholder: "{{ __('messages.select_name', ['select' => __('messages.handyman')]) }}"
+        // data-ajax--url attribute on the element is picked up automatically by select2
     });
 
-    // If editing (handyman already assigned), auto-fill on load if field is empty
+    // Fire when a handyman is selected from the dropdown
+    $select.on('select2:select', function (e) {
+        var id = e.params && e.params.data ? e.params.data.id : $(this).val();
+        if (Array.isArray(id)) id = id[0];
+        userEdited = false; // reset so new handyman always fills the field
+        fetchCommission(id);
+    });
+
+    // On load: if editing (handyman already assigned and no booking commission yet)
     @if($defaultHandymanId && $existingCommission === '')
-    fetch(commissionUrl + '/{{ $defaultHandymanId }}/commission')
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-            if ($field.val() === '') {
-                $field.val(data.commission);
-                $hint.text('Default commission for this freelancer: ' + data.commission + '%');
-            }
-        });
+    fetchCommission({{ $defaultHandymanId }});
     @endif
 })();
 </script>
