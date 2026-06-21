@@ -255,6 +255,7 @@ Route::group(['middleware' => ['auth', 'verified', 'active']], function () {
 
     });
     Route::get('handymandetail/{id}', [HandymanController::class, 'handyman_detail'])->name('handyman.detail');
+    Route::get('handyman/{id}/commission', [HandymanController::class, 'getCommission'])->name('handyman.commission');
 
     // Handyman Commission Change Requests
     Route::post('commission-request', [HandymanCommissionRequestController::class, 'store'])->name('commission-request.store');

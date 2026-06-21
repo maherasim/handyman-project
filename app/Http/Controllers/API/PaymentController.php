@@ -150,10 +150,15 @@ class PaymentController extends Controller
             $total_handyman_share = 0;
             foreach ($handymen as $handyman_id) {
                 $handyman = User::find($handyman_id);
-                if (!$handyman || $handyman->handyman_commission === null) {
+                if (!$handyman) continue;
+                $bookingCommission = $booking->handyman_commission;
+                if ($bookingCommission !== null && $bookingCommission > 0) {
+                    $commission_percent = max(1, min(99, $bookingCommission));
+                } elseif ($handyman->handyman_commission !== null) {
+                    $commission_percent = max(1, min(99, $handyman->handyman_commission));
+                } else {
                     continue;
                 }
-                $commission_percent = max(1, min(99, $handyman->handyman_commission));
                 $handyman_total_share = ($pool * $commission_percent) / 100;
                 $total_handyman_share += $handyman_total_share;
                 $handyman_payouts[] = [
@@ -562,9 +567,15 @@ class PaymentController extends Controller
 
             foreach ($handymen as $handyman_id) {
                 $handyman = User::find($handyman_id);
-                if (!$handyman || $handyman->handyman_commission === null) continue;
-
-                $commission_percent = max(1, min(99, $handyman->handyman_commission));
+                if (!$handyman) continue;
+                $bookingCommission = $booking->handyman_commission;
+                if ($bookingCommission !== null && $bookingCommission > 0) {
+                    $commission_percent = max(1, min(99, $bookingCommission));
+                } elseif ($handyman->handyman_commission !== null) {
+                    $commission_percent = max(1, min(99, $handyman->handyman_commission));
+                } else {
+                    continue;
+                }
                 $handyman_share = ($pool * $commission_percent) / 100;
                 $total_handyman_share += $handyman_share;
 

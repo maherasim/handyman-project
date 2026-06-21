@@ -40,7 +40,7 @@ class Booking extends Model
         'final_coupon_discount_amount',
         'cancellation_charge',
         'cancellation_charge_amount',
-
+        'handyman_commission',
     ];
 
     protected $casts = [
@@ -57,7 +57,8 @@ class Booking extends Model
         'coupon_id'     => 'integer',
         'payment_id'    => 'integer',
         'booking_address_id' => 'integer',
-        'advance_paid_amount' => 'double',
+        'advance_paid_amount'   => 'double',
+        'handyman_commission'   => 'double',
         'post_request_id' => 'integer',
         'final_total_service_price'=> 'double',
         'final_total_tax'=> 'double',

@@ -1078,13 +1078,19 @@ public function bookingAssigned(Request $request)
     }
 
     $bookingdata->status = 'accept';
+
+    // Save per-booking commission if provided
+    if ($request->filled('handyman_commission')) {
+        $bookingdata->handyman_commission = max(1, min(99, (float) $request->handyman_commission));
+    }
+
     $bookingdata->save();
 
     $activity_data = [
         'activity_type'    => $activity_type,
         'booking_id'       => $bookingdata->id,
         'booking'          => $bookingdata,
-        'activity_message' => $message, // ✅ FIX: Add this to avoid "Undefined array key"
+        'activity_message' => $message,
     ];
 
     $this->sendNotification($activity_data);
@@ -1624,10 +1630,18 @@ public function saveStripePayment(Request $request, $id)
         $total_handyman_share = 0;
         foreach ($handymen as $handyman_id) {
             $handyman = User::find($handyman_id);
-            if (!$handyman || $handyman->handyman_commission === null) {
+            if (!$handyman) {
                 continue;
             }
-            $commission_percent = max(1, min(99, $handyman->handyman_commission));
+            // Use per-booking commission if set; fall back to handyman's default
+            $bookingCommission = $booking->handyman_commission;
+            if ($bookingCommission !== null && $bookingCommission > 0) {
+                $commission_percent = max(1, min(99, $bookingCommission));
+            } elseif ($handyman->handyman_commission !== null) {
+                $commission_percent = max(1, min(99, $handyman->handyman_commission));
+            } else {
+                continue;
+            }
             $handyman_share = ($pool * $commission_percent) / 100;
             $total_handyman_share += $handyman_share;
             $handyman_payouts[] = [
@@ -1857,8 +1871,15 @@ public function saveStripePayment(Request $request, $id)
                 $total_handyman_share = 0;
                 foreach ($handymen as $handyman_id) {
                     $handyman = User::find($handyman_id);
-                    if (!$handyman || $handyman->handyman_commission === null) continue;
-                    $commission_percent = max(1, min(99, $handyman->handyman_commission));
+                    if (!$handyman) continue;
+                    $bookingCommission = $booking->handyman_commission;
+                    if ($bookingCommission !== null && $bookingCommission > 0) {
+                        $commission_percent = max(1, min(99, $bookingCommission));
+                    } elseif ($handyman->handyman_commission !== null) {
+                        $commission_percent = max(1, min(99, $handyman->handyman_commission));
+                    } else {
+                        continue;
+                    }
                     $handyman_share = ($pool * $commission_percent) / 100;
                     $total_handyman_share += $handyman_share;
                     $handyman_payouts[] = ['handyman_id' => $handyman_id, 'amount' => $handyman_share];

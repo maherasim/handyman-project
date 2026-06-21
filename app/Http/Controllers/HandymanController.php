@@ -591,6 +591,14 @@ class HandymanController extends Controller
             return redirect()->route('handyman.changepassword', ['id' => $user->id])->with('error', $message);
         }
     }
+    public function getCommission($id)
+    {
+        $handyman = \App\Models\User::where('user_type', 'handyman')->findOrFail($id);
+        return response()->json([
+            'commission' => (float) ($handyman->handyman_commission ?? 0),
+        ]);
+    }
+
     public function handyman_detail($id)
     {
         $auth_user = authSession();
