@@ -74,14 +74,14 @@
 
 <script>
 (function () {
-    var commissionUrl = '{{ route("handyman.commission", ["id" => "__ID__"]) }}';
+    var commissionUrl = '{{ url("get-handyman-commission") }}' + '/';
     var $field = $('#booking_handyman_commission');
     var $hint  = $('#commission_hint');
     var userEdited = false; // track if provider manually changed the value
 
     function fetchCommission(handymanId) {
         if (!handymanId) return;
-        var url = commissionUrl.replace('__ID__', handymanId);
+        var url = commissionUrl + handymanId;
         fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(function (r) { return r.json(); })
             .then(function (data) {
@@ -118,8 +118,8 @@
     });
 
     // On load: if editing (handyman already assigned and no booking commission yet)
-    @if($defaultHandymanId && $existingCommission === '')
-    fetchCommission({{ $defaultHandymanId }});
+    @if($defaultHandymanId && ($existingCommission === '' || $existingCommission === null))
+    fetchCommission({{ (int) $defaultHandymanId }});
     @endif
 })();
 </script>

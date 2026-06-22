@@ -1126,6 +1126,30 @@
                                                 {{ strip_tags(optional($booking->handyman)->country->name ?? '') ?? '-' }}
                                                 </span>
                                         </li>
+
+                                        {{-- Commission: visible to admin, provider, and the assigned handyman only --}}
+                                        @php
+                                            $isAssignedHandyman = $auth_user->hasRole('handyman') && (int)$auth_user->id === (int)$booking->handyman_id;
+                                            $canSeeCommission   = $auth_user->hasAnyRole(['admin', 'demo_admin', 'provider']) || $isAssignedHandyman;
+
+                                            $commissionPct = $bookingdata->handyman_commission
+                                                ?? optional($booking->handyman)->handyman_commission
+                                                ?? null;
+                                        @endphp
+                                        @if ($canSeeCommission && $commissionPct !== null)
+                                        <li class="d-flex align-items-center mb-2 mt-2">
+                                            <i class="ri-percent-line me-2 text-primary"></i>
+                                            <span class="text-body">
+                                                <strong>{{ __('messages.handyman_commission') }}:</strong>
+                                                <span class="badge" style="background:#3333ff; color:#fff; font-size:13px; padding:3px 10px; border-radius:8px;">
+                                                    {{ number_format((float) $commissionPct, 2) }}%
+                                                </span>
+                                                @if($bookingdata->handyman_commission)
+                                                    <small class="text-muted ms-1">({{ __('messages.booking_commission_hint') ?? 'booking specific' }})</small>
+                                                @endif
+                                            </span>
+                                        </li>
+                                        @endif
                                     </ul>
                                 </div>
                             @endforeach
