@@ -1142,7 +1142,7 @@
                                             <span class="text-body">
                                                 <strong>{{ __('messages.handyman_commission') }}:</strong>
                                                 <span class="badge" style="background:#3333ff; color:#fff; font-size:13px; padding:3px 10px; border-radius:8px;">
-                                                    {{ number_format((float) $commissionPct, 2) }}%
+                                                    {{ number_format((float) $commissionPct, 2) }}
                                                 </span>
                                             </span>
                                         </li>
