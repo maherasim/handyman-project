@@ -2254,6 +2254,8 @@
     'handyman_commission' => 'Commission for this Booking',
     'booking_commission_hint' => ' ',
      
+   'search_service' => 'Search Services',
+
    
 
 );
