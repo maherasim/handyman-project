@@ -28,8 +28,6 @@
                             })->toArray();
                         }
                         $existingCommission = $bookingdata->handyman_commission ?? '';
-                        $defaultHandymanId  = $bookingdata->handymanAdded && $bookingdata->handymanAdded->count() > 0
-                            ? $bookingdata->handymanAdded->first()->handyman_id : null;
                     @endphp
 
                     {{ html()->select('handyman_id[]', $assigned_handyman ? array_keys($assigned_handyman) : [], $assigned_handyman)
@@ -46,7 +44,6 @@
                 <div class="col-md-12 form-group">
                     <label class="form-control-label" for="booking_handyman_commission">
                         {{ __('messages.handyman_commission') }} (%) <span class="text-danger">*</span>
-                        <small class="text-muted ms-1">— {{ __('messages.booking_commission_hint') ?? 'overrides handyman default for this booking only' }}</small>
                     </label>
                     <div class="input-group">
                         <input type="number"
@@ -55,11 +52,10 @@
                                class="form-control"
                                min="1" max="99" step="0.01"
                                value="{{ $existingCommission }}"
-                               placeholder="{{ __('messages.handyman_commission') }}"
+                               placeholder="1 - 99"
                                required>
                         <span class="input-group-text">%</span>
                     </div>
-                    <small class="text-muted" id="commission_hint"></small>
                 </div>
             </div>
         </div>
@@ -74,31 +70,6 @@
 
 <script>
 (function () {
-    var commissionUrl = '{{ url("get-handyman-commission") }}' + '/';
-    var $field = $('#booking_handyman_commission');
-    var $hint  = $('#commission_hint');
-    var userEdited = false; // track if provider manually changed the value
-
-    function fetchCommission(handymanId) {
-        if (!handymanId) return;
-        var url = commissionUrl + handymanId;
-        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                var pct = parseFloat(data.commission) || 0;
-                // Always update field unless provider already typed a custom value
-                if (!userEdited) {
-                    $field.val(pct > 0 ? pct : '');
-                }
-                $hint.text('{{ __("messages.handyman") }} {{ __("messages.handyman_commission") }}: ' + pct + '%');
-            })
-            .catch(function () { $hint.text(''); });
-    }
-
-    // Mark as user-edited only when they actually type
-    $field.on('input', function () { userEdited = true; });
-
-    // Re-init select2 on the modal element (modal is loaded via AJAX so parent init missed it)
     var $select = $('#handyman_id');
     if ($select.hasClass('select2-hidden-accessible')) {
         $select.select2('destroy');
@@ -106,20 +77,6 @@
     $select.select2({
         width: '100%',
         placeholder: "{{ __('messages.select_name', ['select' => __('messages.handyman')]) }}"
-        // data-ajax--url attribute on the element is picked up automatically by select2
     });
-
-    // Fire when a handyman is selected from the dropdown
-    $select.on('select2:select', function (e) {
-        var id = e.params && e.params.data ? e.params.data.id : $(this).val();
-        if (Array.isArray(id)) id = id[0];
-        userEdited = false; // reset so new handyman always fills the field
-        fetchCommission(id);
-    });
-
-    // On load: if editing (handyman already assigned and no booking commission yet)
-    @if($defaultHandymanId && ($existingCommission === '' || $existingCommission === null))
-    fetchCommission({{ (int) $defaultHandymanId }});
-    @endif
 })();
 </script>

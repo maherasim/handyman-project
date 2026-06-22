@@ -1144,9 +1144,6 @@
                                                 <span class="badge" style="background:#3333ff; color:#fff; font-size:13px; padding:3px 10px; border-radius:8px;">
                                                     {{ number_format((float) $commissionPct, 2) }}%
                                                 </span>
-                                                @if($bookingdata->handyman_commission)
-                                                    <small class="text-muted ms-1">({{ __('messages.booking_commission_hint') ?? 'booking specific' }})</small>
-                                                @endif
                                             </span>
                                         </li>
                                         @endif

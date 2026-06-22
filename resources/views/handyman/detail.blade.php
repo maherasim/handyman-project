@@ -29,38 +29,6 @@
                                 <h3>{{__('messages.wallet_balance')}}</h3>
                             </div>
 
-                            <div class="statistics-card statistics-card__style2 statistics-card__commission" style="background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); color: #fff; border-radius: 12px; padding: 1.25rem; min-height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 4px 14px rgba(0,0,0,0.1);">
-                                <h2 class="mb-0" style="color: #fff; font-size: 1.75rem; font-weight: 700;">{{ isset($handymandata->handyman_commission) && $handymandata->handyman_commission !== '' && $handymandata->handyman_commission !== null ? round((float) $handymandata->handyman_commission, 1) . '%' : '—' }}</h2>
-                                <h3 class="mb-0 mt-1" style="color: rgba(255,255,255,0.9); font-size: 0.875rem; font-weight: 600;">{{ __('messages.worker_commission_rate') }}</h3>
-                                @if(auth()->user()->hasRole('provider') && $handymandata->provider_id == auth()->id())
-                                    @php
-                                        $pendingRequest = \App\Models\HandymanCommissionRequest::where('handyman_id', $handymandata->id)
-                                            ->where('provider_id', auth()->id())
-                                            ->where('status', 'pending')
-                                            ->first();
-                                        $approvedRequest = \App\Models\HandymanCommissionRequest::where('handyman_id', $handymandata->id)
-                                            ->where('provider_id', auth()->id())
-                                            ->where('status', 'approved')
-                                            ->first();
-                                    @endphp
-                                    @if($pendingRequest)
-                                        <span class="badge bg-warning mt-2" style="font-size:.75rem;">
-                                            ⏳ {{ __('messages.commission_request_pending') }}
-                                        </span>
-                                    @elseif($approvedRequest)
-                                        <a href="{{ route('commission-request.edit', $approvedRequest->id) }}"
-                                           class="btn btn-sm btn-success mt-2">
-                                            ✏️ {{ __('messages.edit_commission') }}
-                                        </a>
-                                    @else
-                                        <button type="button" class="btn btn-sm btn-warning mt-2"
-                                            data-bs-toggle="modal" data-bs-target="#commissionRequestModal"
-                                            data-toggle="modal" data-target="#commissionRequestModal">
-                                            📝 {{ __('messages.request_commission_change') }}
-                                        </button>
-                                    @endif
-                                @endif
-                            </div>
                         </div>
                         <div class="provider-details-overview__order-overview">
                             <div class="statistics-card statistics-card__order-overview h-100 pb-2">
@@ -132,54 +100,6 @@
     </div>
 </div>
 
-{{-- Commission Request Modal --}}
-<div class="modal fade" id="commissionRequestModal" tabindex="-1" aria-labelledby="commissionRequestModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form method="POST" action="{{ route('commission-request.store') }}">
-                @csrf
-                <input type="hidden" name="handyman_id" value="{{ $handymandata->id }}">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="commissionRequestModalLabel">
-                        📝 {{ __('messages.request_commission_change') }}
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-warning">
-                        <strong>{{ __('messages.current_commission') }}:</strong>
-                        {{ round((float) $handymandata->handyman_commission, 2) }}%
-                    </div>
-                    <div class="form-group mb-3">
-                        <label class="form-label fw-semibold">
-                            {{ __('messages.requested_commission') }} <span class="text-danger">*</span>
-                        </label>
-                        <input type="number" name="requested_commission" class="form-control"
-                            min="1" max="99" step="0.01" required
-                            placeholder="e.g. 25.5">
-                        <small class="text-muted">{{ __('messages.commission_range_hint') }}</small>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label class="form-label fw-semibold">{{ __('messages.reason') }}</label>
-                        <textarea name="reason" class="form-control" rows="3"
-                            placeholder="{{ __('messages.commission_request_reason_placeholder') }}"></textarea>
-                    </div>
-                    <div class="alert alert-info" style="font-size:.875rem;">
-                        ℹ️ {{ __('messages.commission_request_info') }}
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">
-                        {{ __('messages.cancel') }}
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        {{ __('messages.send_request') }}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 @endif
 
 @section('bottom_script')
