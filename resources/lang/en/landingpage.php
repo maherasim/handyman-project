@@ -1,5 +1,7 @@
 <?php return  array (
   'home' => 'Home',
+  'browser_title_tagline' => 'Frobster also is good plateform',
+
   'play_video' => 'Play video',
   'open_on_youtube' => 'Open video on YouTube',
   'categories' => 'Categories',

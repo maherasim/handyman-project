@@ -1,6 +1,6 @@
 <?php return array (
   'home' => 'Home',
-    'browser_title_tagline' => 'Frobster is good plateform',
+    'browser_title_tagline' => 'Persotel is good plateform',
 
   'play_video' => 'Video abspielen',
   'open_on_youtube' => 'Video auf YouTube öffnen',
