@@ -29,7 +29,7 @@
                                                 <h4 class="mb-2 booking-text fw-bold fs-2">{{ !empty($data['dashboard']['count_total_service']) ? $data['dashboard']['count_total_service']: 0 }} </h4>
                                                 <!-- <h4 class="mb-2 booking-text  font-weight-bold text-break"> 000000000000 </h4> -->
                                             </div>
-                                            <p class="mb-0 booking-text">{{ __('messages.total_name', ['name' => __('messages.service')]) }}</p>
+                                            <p class="mb-0 booking-text">{{ __('messages.dashboard_total_service') }}</p>
                                         </div>
                                         <div class="col-auto d-flex align-items-center flex-column">
                                             <div class="iq-card-icon iq-card-icon-booking icon-shape  rounded-circle shadow" style="background-color: rgba(255, 255, 255, 0.2) !important;">
@@ -52,7 +52,7 @@
                                             <div class="d-flex flex-wrap justify-content-start align-items-center">
                                                 <h4 class="mb-2 booking-text fw-bold fs-2">{{ !empty($data['total_tax']) ? getPriceFormat($data['total_tax']) : getPriceFormat(0) }}</h4>
                                             </div>
-                                            <p class="mb-0 booking-text">{{ __('messages.total_name', ['name' => __('messages.Tax')]) }}</p>
+                                            <p class="mb-0 booking-text">{{ __('messages.dashboard_total_tax') }}</p>
                                         </div>
                                         <div class="col-auto d-flex flex-column">
                                             <div class="iq-card-icon iq-card-icon-revenue icon-shape text-white rounded-circle shadow" style="background-color: rgba(255, 255, 255, 0.2) !important;">
@@ -199,7 +199,7 @@
                                             <h4 class="mb-2 booking-text fw-bold fs-2">{{ getPriceFormat($data['total_revenue']) }}</h4>
                                             <p class="mb-0 ml-3 text-danger fw-bold"></p>
                                         </div>
-                                        <p class="mb-0 booking-text">{{ __('messages.total_name', ['name' => __('messages.revenue')]) }}</p>
+                                        <p class="mb-0 booking-text">{{ __('messages.dashboard_total_revenue') }}</p>
                                     </div>
                                     <div class="col-auto d-flex flex-column">
                                         <div class="iq-card-icon iq-card-icon-revenue icon-shape text-white rounded-circle shadow" style="background-color: rgba(255, 255, 255, 0.2) !important;">

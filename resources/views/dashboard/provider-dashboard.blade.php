@@ -15,7 +15,7 @@
                                                 </h4>
                                             </div>
                                             <p class="mb-0 booking-text">
-                                                {{ __('messages.total_name', ['name' => __('messages.booking')]) }}</p>
+                                                {{ __('messages.dashboard_total_bookings') }}</p>
                                         </div>
                                         <div class="col-auto d-flex align-items-center flex-column">
                                             <div
@@ -45,7 +45,7 @@
                                                 </h4>
                                             </div>
                                             <p class="mb-0 booking-text">
-                                                {{ __('messages.total_name', ['name' => __('messages.service')]) }}</p>
+                                                {{ __('messages.dashboard_total_service') }}</p>
                                         </div>
                                         <div class="col-auto d-flex flex-column">
                                             <div
@@ -128,7 +128,7 @@
                                                 <p class="mb-0 ml-3 text-danger fw-bold"></p>
                                             </div>
                                             <p class="mb-0 booking-text">
-                                                {{ __('messages.total_name', ['name' => __('messages.revenue')]) }}</p>
+                                                {{ __('messages.dashboard_total_revenue') }}</p>
                                         </div>
                                         <div class="col-auto d-flex flex-column">
                                             <div
@@ -274,10 +274,7 @@
                 }
             },
             xaxis: {
-                categories: [
-                    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-                ]
+                categories: @json(explode(',', __('messages.chart_months')))
             },
             yaxis: {
                 show: true, // Ensure this is set to true

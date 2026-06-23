@@ -1627,8 +1627,13 @@
     'sidebar_logo_customer' => 'Kunde',
 
     // Dashboard – statische Beschriftungen (en/de)
+    'dashboard_total_service'   => 'Gesamte Services',
+    'dashboard_total_tax'       => 'Gesamte MwSt.',
+    'dashboard_total_revenue'   => 'Gesamter Umsatz',
+    'dashboard_total_bookings'  => 'Gesamte Buchungen',
     'dashboard_other_earnings' => 'Sonstige Einnahmen',
     'dashboard_last_12_months' => 'Letzte 12 Monate',
+    'chart_months' => 'Jan,Feb,Mär,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez',
 
     // Post Job Request – Liste, Gebot-Modal, Ansicht, Erstellen (en/de)
     'pjr_add_post_request' => 'Auftrag hinzufügen',
@@ -2263,5 +2268,19 @@
     'handyman_commission' => 'Provision für diese Buchung',
     'booking_commission_hint' => 'Überschreibt den Standard des Freelancers nur für diese Buchung',
     'search_service' => 'Dienst suchen',
+
+    // -------------------------------------------------------
+    // Dashboard-Diagramm – Monatsabkürzungen (kommagetrennt)
+    // Wird auf der x-Achse des Diagramms „Monatliche Einnahmen" verwendet
+    // -------------------------------------------------------
+ 
+// Dashboard – statische Beschriftungen (en/de)
+    'dashboard_total_service'   => 'Gesamte Services',
+    'dashboard_total_tax'       => 'Gesamte MwSt.',
+    'dashboard_total_revenue'   => 'Gesamter Umsatz',
+    'dashboard_total_bookings'  => 'Gesamte Buchungen',
+    'dashboard_other_earnings' => 'Sonstige Einnahmen',
+    'dashboard_last_12_months' => 'Letzte 12 Monate',
+    'chart_months' => 'Jan,Feb,Mär,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez',
 
 );

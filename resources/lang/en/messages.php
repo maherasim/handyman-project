@@ -1617,8 +1617,13 @@
     'sidebar_logo_customer' => 'Customer',
 
     // Dashboard – static labels (en/de)
+    'dashboard_total_service'   => 'Total Service',
+    'dashboard_total_tax'       => 'Total Tax',
+    'dashboard_total_revenue'   => 'Total Revenue',
+    'dashboard_total_bookings'  => 'Total Bookings',
     'dashboard_other_earnings' => 'Other Earnings',
     'dashboard_last_12_months' => 'Last 12 months',
+    'chart_months' => 'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec',
 
     // Post Job Request – list, bid modal, view, create (en/de)
     'pjr_add_post_request' => 'Add Post Request',
@@ -2254,6 +2259,20 @@
     'handyman_commission' => 'Commission for this Booking',
     'booking_commission_hint' => ' ',
      
-   'search_service' => 'Search Services',
+    'search_service' => 'Search Services',
+
+    // -------------------------------------------------------
+    // Dashboard Chart – Month abbreviations (comma-separated)
+    // Used in the Monthly Revenue chart x-axis on provider/admin dashboard
+    // -------------------------------------------------------
+ // Dashboard – static labels (en/de)
+    'dashboard_total_service'   => 'Total Service',
+    'dashboard_total_tax'       => 'Total Tax',
+    'dashboard_total_revenue'   => 'Total Revenue',
+    'dashboard_total_bookings'  => 'Total Bookings',
+    'dashboard_other_earnings' => 'Other Earnings',
+    'dashboard_last_12_months' => 'Last 12 months',
+    'chart_months' => 'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec',
+
 
    );

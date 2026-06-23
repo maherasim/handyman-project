@@ -291,7 +291,7 @@
                     {
                         data: 'end_date',
                         name: 'end_date',
-                        title: "{{ __('End Date') }}"
+                        title: "{{ __('messages.pjr_end_date') }}"
                     },
 
                     @if (auth()->user()->user_type == 'provider')
