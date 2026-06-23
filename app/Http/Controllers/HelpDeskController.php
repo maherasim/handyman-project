@@ -94,7 +94,9 @@ class HelpDeskController extends Controller
             return ucfirst($query->mode) ?? '-';
         })
         ->editColumn('role' , function ($query){
-            return ucfirst(optional($query->users)->user_type) ?? '-';
+            $type = optional($query->users)->user_type;
+            if (!$type) return '-';
+            return __('messages.' . $type);
         })
         ->editColumn('status' , function ($query){
             $status = $query->status;

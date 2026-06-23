@@ -2146,7 +2146,7 @@
     ],
     
     'start_time' => 'Startzeit',
-    'end_time' => 'Endzeit',
+    'end_time' => 'Enddatum',
     'days' => 'Tage',
     'hours' => 'Stunden',
     'select_date_and_time' => 'Datum und Uhrzeit auswählen',

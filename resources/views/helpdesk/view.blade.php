@@ -25,7 +25,7 @@
                                         </tr>
                                         <tr>
                                             <td width="25%"><span>{{ __('messages.name') }} : </span></td>
-                                            <td class=""><strong>{{ !empty($helpdeskdata->employee_id) ? optional($helpdeskdata->users)->first_name . ' ' . optional($helpdeskdata->users)->last_name . ' (' . ucfirst(optional($helpdeskdata->users)->user_type) . ')' : '-' }}</strong></td>
+                                            <td class=""><strong>{{ !empty($helpdeskdata->employee_id) ? optional($helpdeskdata->users)->first_name . ' ' . optional($helpdeskdata->users)->last_name . ' (' . __('messages.' . (optional($helpdeskdata->users)->user_type ?? 'user')) . ')' : '-' }}</strong></td>
                                         </tr>
                                         <tr>
                                             <td width="25%"><span>{{ __('messages.mode') }} : </span></td>
