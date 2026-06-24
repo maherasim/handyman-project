@@ -61,6 +61,9 @@ class PostJobRequest extends Model
     
     public function getTotalBidsAttribute()
     {
+        if ($this->relationLoaded('postBidList')) {
+            return $this->getRelation('postBidList')->count();
+        }
         return $this->postBidList()->count();
     }
         public function postBidList(){

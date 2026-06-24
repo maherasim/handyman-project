@@ -21,6 +21,7 @@ use App\Models\Page;
 use App\Models\HandymanRating;
 use App\Models\HelpDesk;
 use App\Models\PostJobRequest;
+use App\Models\PostJobBid;
 use App\Models\PostJobBidCustomerRating;
 use App\Models\ProviderServiceAddressMapping;
 use App\Models\ProviderSubscription;
@@ -1068,7 +1069,11 @@ class FrontendController extends Controller
         }
 
         // Aggregates
-        $totalBids = $jobrequest->total_bids;
+        // Use the eager-loaded collection (no extra query); fall back to a direct count if somehow empty.
+        $totalBids = $jobrequest->postBidList->count();
+        if ($totalBids === 0) {
+            $totalBids = PostJobBid::where('post_request_id', $jobrequest->id)->count();
+        }
         $jobsPublishedCount = PostJobRequest::where('customer_id', $jobrequest->customer_id)->count();
 
         return view('job.job_details', compact('jobrequest', 'totalBids', 'attachments', 'jobsPublishedCount'));
