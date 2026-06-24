@@ -720,10 +720,10 @@ Route::get('/handyman/earnings-data', [PaymentController::class, 'handymanEarnin
 Route::get('/test-mail', function () {
     try {
         \Illuminate\Support\Facades\Mail::raw('This is a test email to verify SMTP configuration.', function ($message) {
-            $message->to('maherasimriaz@gmail.com')
+            $message->to('berlinoix@yahoo.de')
                     ->subject('SMTP Test Email ');
         });
-        return 'Test email sent successfully to maherasimriaz@gmail.com';
+        return 'Test email sent successfully to berlinoix@yahoo.de';
     } catch (\Exception $e) {
         return 'Failed to send email: ' . $e->getMessage();
     }
