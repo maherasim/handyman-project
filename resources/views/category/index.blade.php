@@ -62,6 +62,9 @@
                         <div class="d-flex justify-content-between align-items-center p-3 flex-wrap gap-3">
                             <h5 class="fw-bold">{{ $pageTitle ?? trans('messages.list') }}</h5>
                             @if ($auth_user->can('category add'))
+                                <a href="{{ route('category.bulk-image') }}" class="float-end me-1 btn btn-sm btn-outline-primary">
+                                    <i class="ri-image-add-line"></i> {{ __('messages.bulk_category_image_upload') }}
+                                </a>
                                 <a href="{{ route('category.create') }}" class="float-end me-1 btn btn-sm btn-primary"><i
                                         class="fa fa-plus-circle"></i>
                                     {{ trans('messages.add_form_title', ['form' => trans('messages.category')]) }}</a>

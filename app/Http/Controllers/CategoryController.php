@@ -318,6 +318,44 @@ class CategoryController extends Controller
     }
 
 
+    public function bulkImageUpload()
+    {
+        $pageTitle = __('messages.bulk_category_image_upload');
+        $auth_user = authSession();
+        return view('category.bulk-image', compact('pageTitle', 'auth_user'));
+    }
+
+    public function bulkImageUploadStore(Request $request)
+    {
+        $request->validate([
+            'images'   => 'required|array|min:1',
+            'images.*' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
+        ]);
+
+        $matched   = [];
+        $skipped   = [];
+
+        foreach ($request->file('images') as $file) {
+            // Strip extension → use as category name to match
+            $nameFromFile = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $nameFromFile = trim($nameFromFile);
+
+            $category = Category::whereRaw('LOWER(name) = ?', [strtolower($nameFromFile)])->first();
+
+            if (!$category) {
+                $skipped[] = $file->getClientOriginalName() . ' (no category named "' . $nameFromFile . '")';
+                continue;
+            }
+
+            storeMediaFile($category, $file, 'category_image');
+            $matched[] = $category->name;
+        }
+
+        return back()
+            ->with('bulk_matched', $matched)
+            ->with('bulk_skipped', $skipped);
+    }
+
     public function check_in_trash(Request $request)
     {
         $ids = $request->ids;

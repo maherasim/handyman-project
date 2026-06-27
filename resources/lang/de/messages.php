@@ -2261,6 +2261,14 @@
     'booking_commission_hint' => 'Überschreibt den Standard des Freelancers nur für diese Buchung',
     'search_service' => 'Dienst suchen',
 
+    // Massen-Kategoriebild-Upload
+    'bulk_category_image_upload'   => 'Massen-Kategoriebild-Upload',
+    'bulk_upload_instruction'      => 'Benennen Sie jede Bilddatei nach ihrer Kategorie (z. B. <strong>Reinigung.jpg</strong>, <strong>Sanitär.png</strong>). Das System ordnet die Bilder anhand des Dateinamens automatisch zu.',
+    'bulk_upload_select_images'    => 'Bilder auswählen',
+    'bulk_upload_matched'          => 'Erfolgreich aktualisiert',
+    'bulk_upload_skipped'          => 'Keine passende Kategorie gefunden',
+    'bulk_upload_submit'           => 'Hochladen & zuordnen',
+
     // -------------------------------------------------------
     // Dashboard-Diagramm – Monatsabkürzungen (kommagetrennt)
     // Wird auf der x-Achse des Diagramms „Monatliche Einnahmen" verwendet

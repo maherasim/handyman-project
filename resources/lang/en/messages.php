@@ -2261,6 +2261,14 @@
      
     'search_service' => 'Search Services',
 
+    // Bulk Category Image Upload
+    'bulk_category_image_upload'   => 'Bulk Category Image Upload',
+    'bulk_upload_instruction'      => 'Name each image file after its category (e.g. <strong>Cleaning.jpg</strong>, <strong>Plumbing.png</strong>). The system will match by filename and assign the image automatically.',
+    'bulk_upload_select_images'    => 'Select Images',
+    'bulk_upload_matched'          => 'Successfully updated',
+    'bulk_upload_skipped'          => 'No matching category found',
+    'bulk_upload_submit'           => 'Upload & Match',
+
     // -------------------------------------------------------
     // Dashboard Chart – Month abbreviations (comma-separated)
     // Used in the Monthly Revenue chart x-axis on provider/admin dashboard

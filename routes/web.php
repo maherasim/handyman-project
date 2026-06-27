@@ -175,6 +175,8 @@ Route::group(['middleware' => ['auth', 'verified', 'active']], function () {
         Route::post('category-bulk-action', [CategoryController::class, 'bulk_action'])->name('category.bulk-action');
         Route::post('category-action', [CategoryController::class, 'action'])->name('category.action');
         Route::post('category/{id}', [CategoryController::class, 'destroy'])->name('category.destroy');
+        Route::get('category-bulk-image', [CategoryController::class, 'bulkImageUpload'])->name('category.bulk-image');
+        Route::post('category-bulk-image', [CategoryController::class, 'bulkImageUploadStore'])->name('category.bulk-image.store');
     });
     Route::post('check-in-trash', [CategoryController::class, 'check_in_trash'])->name('check-in-trash');
 
