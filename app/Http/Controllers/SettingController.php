@@ -202,7 +202,16 @@ class SettingController extends Controller
                 $data  = view('setting.' . $page, compact('user_data', 'page'))->render();
                 break;
             case 'mail-setting':
-                $data  = view('setting.' . $page, compact('page'))->render();
+                // Read directly from .env file — config('constant.MAIL_SETTING') uses env()
+                // which is cached at PHP-FPM process start and won't reflect updates until restart.
+                $mailKeys    = array_keys(config('constant.MAIL_SETTING'));
+                $envContents = file_exists(base_path('.env')) ? file_get_contents(base_path('.env')) : '';
+                $mailSetting = [];
+                foreach ($mailKeys as $k) {
+                    preg_match('/^' . preg_quote($k, '/') . '=["\']?(.*?)["\']?\s*$/m', $envContents, $m);
+                    $mailSetting[$k] = isset($m[1]) ? $m[1] : '';
+                }
+                $data = view('setting.' . $page, compact('page', 'mailSetting'))->render();
                 break;
 
             case 'payment-setting':

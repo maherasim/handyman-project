@@ -7,7 +7,7 @@
     
     <div class="col-md-12 mt-20">
         <div class="row">
-            @foreach(config('constant.MAIL_SETTING') as $key => $value)
+            @foreach($mailSetting as $key => $value)
                 <div class="col-md-6">
                     <div class="form-group">
                             <label class="form-control-label text-capitalize">
