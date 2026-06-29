@@ -13,22 +13,20 @@
                             <label class="form-control-label text-capitalize">
                                 {{ strtolower(str_replace('_', ' ', $key)) }}
                             </label>
-                            @php
-                                $encryptedMailPassword = auth()->user()->hasRole('admin') ? base64_encode(openssl_encrypt($value, 'aes-256-cbc', 'your_encryption_key', 0, openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc')))) : '';
-                            @endphp
-                            @if(auth()->user()->hasRole('admin'))
+                            <div class="input-group">
                                 <input type="{{ $key == 'MAIL_PASSWORD' ? 'password' : 'text' }}"
-                                    value="{{ $key == 'MAIL_PASSWORD' ? $encryptedMailPassword : $value }}"
+                                    value="{{ $value }}"
                                     name="ENV[{{ $key }}]"
+                                    id="mail_field_{{ $loop->index }}"
                                     class="form-control"
                                     placeholder="{{ config('constant.MAIL_PLACEHOLDER.'.$key) }}">
-                            @else
-                                <input type="{{ $key == 'MAIL_PASSWORD' ? 'password' : 'text' }}"
-                                    value="{{ $key == 'MAIL_PASSWORD' ? $encryptedMailPassword : '' }}"
-                                    name="ENV[{{ $key }}]"
-                                    class="form-control"
-                                    placeholder="{{ config('constant.MAIL_PLACEHOLDER.'.$key) }}">
-                            @endif
+                                @if($key == 'MAIL_PASSWORD')
+                                <button type="button" class="btn btn-outline-secondary"
+                                    onclick="var f=document.getElementById('mail_field_{{ $loop->index }}'); f.type = f.type==='password' ? 'text' : 'password';">
+                                    <i class="ri-eye-line"></i>
+                                </button>
+                                @endif
+                            </div>
                     </div>
                 </div>
             @endforeach
