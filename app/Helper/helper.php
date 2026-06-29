@@ -489,19 +489,17 @@ function envChanges($type,$value){
             $typeValue = '"'.env($type).'"';
         }
 
-        file_put_contents($path, str_replace(
-            $type.'='.$typeValue, $type.'='.$value, file_get_contents($path)
-        ));
+        $currentContent = file_get_contents($path);
 
-        $onesignal = collect(config('constant.ONESIGNAL'))->keys();
-
-        $checkArray = \Arr::collapse([$onesignal,['DEFAULT_LANGUAGE']]);
-
-
-        if( in_array( $type ,$checkArray) ){
-            if(env($type) === null){
-                file_put_contents($path,"\n".$type.'='.$value ,FILE_APPEND);
-            }
+        // Check if the key exists in the .env file at all (as a line start)
+        if (preg_match('/^' . preg_quote($type, '/') . '=/m', $currentContent)) {
+            // Key exists — replace its current value
+            file_put_contents($path, str_replace(
+                $type.'='.$typeValue, $type.'='.$value, $currentContent
+            ));
+        } else {
+            // Key is missing from .env entirely — append it
+            file_put_contents($path, "\n" . $type . '=' . $value, FILE_APPEND);
         }
     }
 }
