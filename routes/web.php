@@ -722,10 +722,10 @@ Route::get('/handyman/earnings-data', [PaymentController::class, 'handymanEarnin
 Route::get('/test-mail', function () {
     try {
         \Illuminate\Support\Facades\Mail::raw('This is a test email to verify SMTP configuration.', function ($message) {
-            $message->to('qeagnvjblhonepmucv@gonrr.net')
-                    ->subject('SMTP Test Email ');
+            $message->to(' ben.ghezaiel@web.de')
+                    ->subject('SMTP Test Email  Allah help us');
         });
-        return 'Test email sent successfully to  we are confuesed allah help us qeagnvjblhonepmucv@gonrr.net';
+        return 'Test email sent successfully to  we are confuesed allah help us  ben.ghezaiel@web.de';
     } catch (\Exception $e) {
         return 'Failed to send email: ' . $e->getMessage();
     }
