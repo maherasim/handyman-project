@@ -319,7 +319,7 @@
                                         @endhasanyrole
 
                                         @hasanyrole('user')
-                                            @if (!isset($bookingdata->payment) && $is_enable_advance_payment == 1)
+                                            @if ($is_enable_advance_payment == 1 && (!isset($bookingdata->payment) || strtolower($bookingdata->payment->payment_status ?? '') === 'failed'))
                                                 @php
                                                     // Calculate advance amount using same logic as billing table
                                                     $baseTotal = $bookingdata->amount * $bookingdata->quantity;
