@@ -1520,6 +1520,7 @@
     'discount_value_between_0_99' => 'Der Rabattwert muss zwischen 0 und 99 liegen',
     'name_alphabetic_title' => 'Bitte nur Buchstaben und Leerzeichen eingeben',
     'advance_payment_amount_between_20_99' => 'muss zwischen 20 und 99 liegen.',
+    'advance_payment_toggle_required' => 'Anzahlung muss vor dem Speichern aktiviert werden.',
 
     // Service addon create page
     'image_preview_alt' => 'Bildvorschau',

@@ -365,6 +365,9 @@
                                         for="is_enable_advance_payment">{{ __('messages.enable_advanced_payment') }}
                                     </label>
                                 </div>
+                                <small id="advance_toggle_error" class="text-danger d-none mt-1 d-block" style="font-size:12px;">
+                                    {{ __('messages.advance_payment_toggle_required') }}
+                                </small>
                             </div>
                             {{-- @endif --}}
                             <div class="form-group col-md-3" id="amount">
@@ -448,6 +451,10 @@
                 isEnableAdvancePayment = $(this).prop('checked');
                 checkEnablePayment(isEnableAdvancePayment);
                 updateAmountVisibility(priceType, isEnableAdvancePayment);
+                if (isEnableAdvancePayment) {
+                    $('#advance_toggle_error').addClass('d-none');
+                    $(this).closest('.custom-control').find('label').css('color', '');
+                }
             });
 
             $("#price_type").change(function() {
@@ -912,6 +919,15 @@ Snackbar.show({ text: '{{ __("messages.cancellation_policy_fees") }} {{ __("mess
                             return false;
                         }
                     }
+                    if (!$('#is_enable_advance_payment').prop('checked')) {
+                        $('#advance_toggle_error').removeClass('d-none');
+                        $('#is_enable_advance_payment').closest('.custom-control').find('label').css('color', '#dc3545');
+                        $('#is_enable_advance_payment')[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        e.preventDefault();
+                        return false;
+                    }
+                    $('#advance_toggle_error').addClass('d-none');
+                    $('#is_enable_advance_payment').closest('.custom-control').find('label').css('color', '');
                     if ($('#is_enable_advance_payment').prop('checked')) {
                         var adv = $.trim($('#advance_payment_amount').val());
                         if (adv === '' || isNaN(parseFloat(adv))) {

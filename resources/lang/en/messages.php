@@ -1522,6 +1522,7 @@
     'discount_value_between_0_99' => 'Discount value should be between 0 to 99',
     'name_alphabetic_title' => 'Please enter alphabetic characters and spaces only',
     'advance_payment_amount_between_20_99' => 'must be between 20 and 99.',
+    'advance_payment_toggle_required' => 'Advance Payment must be enabled before saving.',
 
     // Service addon create page
     'image_preview_alt' => 'Image preview',
