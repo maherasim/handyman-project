@@ -1002,6 +1002,8 @@
     'total_views' => 'Aufrufe',
     'no_action' => 'Keine Aktion',
     'delete' => 'Löschen',
+    'error_404_heading' => 'Ups! Seite nicht gefunden.',
+    'error_404_text' => 'Die gesuchte Seite existiert nicht.',
     'apply' => 'Anwenden',
     'restore' => 'Wiederherstellen',
     'permanent_dlt' => 'Dauerhaft löschen',

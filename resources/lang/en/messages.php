@@ -1005,6 +1005,8 @@
     'total_views' => 'Total Views',
     'no_action' => 'No Action',
     'delete' => 'Delete',
+    'error_404_heading' => 'Oops! Page not found.',
+    'error_404_text' => 'The page you are looking for does not exist.',
     'apply' => 'Apply',
     'restore' => 'Restore',
     'permanent_dlt' => 'Permanently Delete',

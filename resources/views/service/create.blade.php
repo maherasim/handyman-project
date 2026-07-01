@@ -912,8 +912,8 @@ Snackbar.show({ text: '{{ __("messages.cancellation_policy_fees") }} {{ __("mess
                             return false;
                         }
                     }
-                    if ($('#amount').length && $('#amount').is(':visible') && $('#advance_payment_amount').prop('required')) {
-                        var adv = $('#advance_payment_amount').val();
+                    if ($('#is_enable_advance_payment').prop('checked')) {
+                        var adv = $.trim($('#advance_payment_amount').val());
                         if (adv === '' || isNaN(parseFloat(adv))) {
                             if (typeof Snackbar !== 'undefined') {
                                 Snackbar.show({ text: '{{ __("messages.advance_payment_amount") }} {{ __("messages.is_required") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
@@ -924,11 +924,11 @@ Snackbar.show({ text: '{{ __("messages.cancellation_policy_fees") }} {{ __("mess
                             e.preventDefault();
                             return false;
                         }
-                        var advNum = parseInt(adv, 10);
+                        var advNum = parseFloat(adv);
                         if (advNum < 20 || advNum > 99) {
                             if (typeof Snackbar !== 'undefined') {
-Snackbar.show({ text: '{{ __("messages.advance_payment_amount") }} {{ __("messages.advance_payment_amount_between_20_99") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
-                                } else {
+                                Snackbar.show({ text: '{{ __("messages.advance_payment_amount") }} {{ __("messages.advance_payment_amount_between_20_99") }}', pos: 'bottom-center', backgroundColor: '#d32f2f', actionTextColor: '#fff' });
+                            } else {
                                 alert('{{ __("messages.advance_payment_amount") }} {{ __("messages.advance_payment_amount_between_20_99") }}');
                             }
                             $('#advance_payment_amount').focus();
