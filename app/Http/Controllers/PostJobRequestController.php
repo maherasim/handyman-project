@@ -36,6 +36,8 @@ use App\Mail\PostJobBankTransferPaymentNotificationMail;
 use App\Mail\JobRequestedProviderMail;
 use App\Mail\BidAcceptedMail;
 use App\Mail\PaymentSplitSetMail;
+use App\Mail\PostJobPaymentReceivedMail;
+use App\Mail\PostJobBidStatusUpdateMail;
 use App\Models\PostJobExtraCharge;
 use App\Traits\NotificationTrait;
 use Illuminate\Support\Facades\Log;
@@ -629,6 +631,16 @@ class PostJobRequestController extends Controller
                 'bid_status'        => $paymentType === 'remaining' ? 'Remaining paid' : 'Advance paid',
             ]);
 
+            // Send detailed payment-received email directly, regardless of payment method / DB mail-template state
+            try {
+                if ($post->provider && $post->provider->email && $post->customer) {
+                    Mail::to($post->provider->email)->locale(getRecipientLocale($post->provider))->send(new PostJobPaymentReceivedMail($post->provider, $post, $post->customer, $paymentType, getRecipientLocale($post->provider)));
+                    \Log::info("Post job {$paymentType} payment email sent to provider: " . $post->provider->email . ' for bid ID: ' . $post->id);
+                }
+            } catch (\Throwable $e) {
+                \Log::error('Failed to send post job payment email for bid ID ' . $post->id . ': ' . $e->getMessage());
+            }
+
             return response()->json([
                 'status'  => true,
                 'message' => $successMsg,
@@ -656,12 +668,13 @@ class PostJobRequestController extends Controller
             'status' => 'required|string',
             'hold_reason' => 'nullable|string|max:500'
         ]);
-    
+
         $bid = PostJobBid::findOrFail($id);
-    
+        $oldBidStatus = $bid->status;
+
         // Assuming post_request_id exists in PostJobBid
         $postjob = PostJobRequest::findOrFail($bid->post_request_id);
-    
+
         // Update bid status
         $bid->status = $request->input('status');
     
@@ -697,6 +710,24 @@ class PostJobRequestController extends Controller
             ]);
         } catch (\Throwable $e) {
             \Log::warning('post_job_bid_status_update notification failed: ' . $e->getMessage());
+        }
+
+        // Send detailed status-update email directly to the other party, regardless of DB mail-template state
+        if ($oldBidStatus != $bid->status) {
+            try {
+                $actor = auth()->user();
+                $actorName = $actor ? ($actor->display_name ?? $actor->first_name ?? 'System') : 'System';
+                $actorType = $isProviderUpdating ? 'provider' : 'user';
+                $recipient = $isProviderUpdating ? $bid->customer : $bid->provider;
+                $recipientType = $isProviderUpdating ? 'user' : 'provider';
+
+                if ($recipient && $recipient->email) {
+                    Mail::to($recipient->email)->locale(getRecipientLocale($recipient))->send(new PostJobBidStatusUpdateMail($recipient, $bid, $oldBidStatus, $bid->status, $actorName, $actorType, $recipientType, getRecipientLocale($recipient)));
+                    \Log::info("Post job bid status email sent to {$recipientType}: " . $recipient->email . ' for bid ID: ' . $bid->id . ", status: {$oldBidStatus} -> {$bid->status}");
+                }
+            } catch (\Throwable $e) {
+                \Log::error('Failed to send post job bid status email for bid ID ' . $bid->id . ': ' . $e->getMessage());
+            }
         }
 
         return response()->json([
@@ -1086,6 +1117,16 @@ class PostJobRequestController extends Controller
                 'bid_status'        => $type === 'advance' ? 'Advance paid' : 'Remaining paid',
             ]);
 
+            // Send detailed payment-received email directly, regardless of payment method / DB mail-template state
+            try {
+                if ($bid->provider && $bid->provider->email && $bid->customer) {
+                    Mail::to($bid->provider->email)->locale(getRecipientLocale($bid->provider))->send(new PostJobPaymentReceivedMail($bid->provider, $bid, $bid->customer, $type, getRecipientLocale($bid->provider)));
+                    \Log::info("Post job {$type} payment email sent to provider: " . $bid->provider->email . ' for bid ID: ' . $bid->id);
+                }
+            } catch (\Throwable $e) {
+                \Log::error('Failed to send post job payment email for bid ID ' . $bid->id . ': ' . $e->getMessage());
+            }
+
             return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
                 ->with('success', __('messages.stripe_payment_success'));
         }
@@ -1259,6 +1300,16 @@ class PostJobRequestController extends Controller
                 'bid_status'        => $type === 'advance' ? 'Advance paid' : 'Remaining paid',
             ]);
 
+            // Send detailed payment-received email directly, regardless of payment method / DB mail-template state
+            try {
+                if ($bid->provider && $bid->provider->email && $bid->customer) {
+                    Mail::to($bid->provider->email)->locale(getRecipientLocale($bid->provider))->send(new PostJobPaymentReceivedMail($bid->provider, $bid, $bid->customer, $type, getRecipientLocale($bid->provider)));
+                    \Log::info("Post job {$type} payment email sent to provider: " . $bid->provider->email . ' for bid ID: ' . $bid->id);
+                }
+            } catch (\Throwable $e) {
+                \Log::error('Failed to send post job payment email for bid ID ' . $bid->id . ': ' . $e->getMessage());
+            }
+
             return response()->json([
                 'status' => true,
                 'message' => __('messages.stripe_payment_success'),
@@ -1412,6 +1463,16 @@ class PostJobRequestController extends Controller
                 'notify_recipient'  => 'provider',
                 'bid_status'        => $type === 'advance' ? 'Advance paid' : 'Remaining paid',
             ]);
+
+            // Send detailed payment-received email directly, regardless of payment method / DB mail-template state
+            try {
+                if ($bid->provider && $bid->provider->email && $bid->customer) {
+                    Mail::to($bid->provider->email)->locale(getRecipientLocale($bid->provider))->send(new PostJobPaymentReceivedMail($bid->provider, $bid, $bid->customer, $type, getRecipientLocale($bid->provider)));
+                    \Log::info("Post job {$type} payment email sent to provider: " . $bid->provider->email . ' for bid ID: ' . $bid->id);
+                }
+            } catch (\Throwable $e) {
+                \Log::error('Failed to send post job payment email for bid ID ' . $bid->id . ': ' . $e->getMessage());
+            }
 
             return response()->json([
                 'status' => true,
@@ -1746,6 +1807,16 @@ class PostJobRequestController extends Controller
             'bid_status'        => $type === 'remaining' ? 'Remaining paid' : 'Advance paid',
         ]);
 
+        // Send detailed payment-received email directly, regardless of payment method / DB mail-template state
+        try {
+            if ($bid->provider && $bid->provider->email && $bid->customer) {
+                Mail::to($bid->provider->email)->locale(getRecipientLocale($bid->provider))->send(new PostJobPaymentReceivedMail($bid->provider, $bid, $bid->customer, $type, getRecipientLocale($bid->provider)));
+                \Log::info("Post job {$type} payment email sent to provider: " . $bid->provider->email . ' for bid ID: ' . $bid->id);
+            }
+        } catch (\Throwable $e) {
+            \Log::error('Failed to send post job payment email for bid ID ' . $bid->id . ': ' . $e->getMessage());
+        }
+
         return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
             ->with('success', __('messages.paypal_payment_success'));
 
@@ -1920,6 +1991,16 @@ class PostJobRequestController extends Controller
                 'notify_recipient'  => 'provider',
                 'bid_status'        => $type === 'remaining' ? 'Remaining paid' : 'Advance paid',
             ]);
+
+            // Send detailed payment-received email directly, regardless of payment method / DB mail-template state
+            try {
+                if ($bid->provider && $bid->provider->email && $bid->customer) {
+                    Mail::to($bid->provider->email)->locale(getRecipientLocale($bid->provider))->send(new PostJobPaymentReceivedMail($bid->provider, $bid, $bid->customer, $type, getRecipientLocale($bid->provider)));
+                    \Log::info("Post job {$type} payment email sent to provider: " . $bid->provider->email . ' for bid ID: ' . $bid->id);
+                }
+            } catch (\Throwable $e) {
+                \Log::error('Failed to send post job payment email for bid ID ' . $bid->id . ': ' . $e->getMessage());
+            }
 
             return response()->json([
                 'status'  => true,

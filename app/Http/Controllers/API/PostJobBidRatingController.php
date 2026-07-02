@@ -9,6 +9,8 @@ use App\Models\PostJobBidCustomerRating;
 use App\Notifications\CommonNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PostJobBidRatingMail;
 
 class PostJobBidRatingController extends Controller
 {
@@ -65,6 +67,19 @@ class PostJobBidRatingController extends Controller
             }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning('post_job_bid_rated_provider notification failed: ' . $e->getMessage());
+        }
+
+        // Send detailed rating email directly to the provider, regardless of DB mail-template state
+        try {
+            $bid = PostJobBid::with(['postrequest', 'customer', 'provider'])->findOrFail((int) $request->post_job_bid_id);
+            $provider = $bid->provider;
+            $customer = $bid->customer;
+            if ($provider && $provider->email && $customer) {
+                Mail::to($provider->email)->locale(getRecipientLocale($provider))->send(new PostJobBidRatingMail($provider, $bid, $customer, (int) $request->rating, (string) ($request->review ?? ''), 'provider', getRecipientLocale($provider)));
+                \Illuminate\Support\Facades\Log::info('Post job bid rating email sent to provider: ' . $provider->email . ' for bid ID: ' . $bid->id);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to send post job bid rating email to provider: ' . $e->getMessage());
         }
 
         return response()->json(['status' => true, 'id' => $rating->id]);
@@ -136,6 +151,19 @@ class PostJobBidRatingController extends Controller
             }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning('post_job_bid_rated_customer notification failed: ' . $e->getMessage());
+        }
+
+        // Send detailed rating email directly to the customer, regardless of DB mail-template state
+        try {
+            $bid = PostJobBid::with(['postrequest', 'customer', 'provider'])->findOrFail((int) $request->post_job_bid_id);
+            $customer = $bid->customer;
+            $provider = $bid->provider;
+            if ($customer && $customer->email && $provider) {
+                Mail::to($customer->email)->locale(getRecipientLocale($customer))->send(new PostJobBidRatingMail($customer, $bid, $provider, (int) $request->rating, (string) ($request->review ?? ''), 'user', getRecipientLocale($customer)));
+                \Illuminate\Support\Facades\Log::info('Post job bid rating email sent to customer: ' . $customer->email . ' for bid ID: ' . $bid->id);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to send post job bid rating email to customer: ' . $e->getMessage());
         }
 
         return response()->json(['status' => true, 'id' => $rating->id]);

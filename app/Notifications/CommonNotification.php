@@ -89,11 +89,40 @@ class CommonNotification extends Notification implements ShouldQueue
      * @param  mixed  $notifiable
      * @return array
      */
+    /**
+     * (type => [recipient user_types]) already covered by a dedicated, directly-sent
+     * Mailable elsewhere in the app. Suppressed here so recipients don't get a duplicate
+     * plain email on top of the rich one. Other user_types for the same $type (e.g. an
+     * 'admin' or 'user' recipient not covered by the dedicated mail) still go through
+     * this generic mail path as before.
+     */
+    private const DEDICATED_MAIL_COVERAGE = [
+        'update_booking_status' => ['user', 'provider', 'handyman'], // ProcessBookingStatusUpdateJob
+        'assigned_booking' => ['handyman'], // HandymanAssignedMail
+        'job_requested' => ['provider'], // JobRequestedProviderMail
+        'provider_send_bid' => ['user'], // ProviderBidPlacedMail
+        'user_accept_bid' => ['provider'], // BidAcceptedMail
+        'post_job_bid_status_update' => ['user', 'provider'], // PaymentSplitSetMail / PostJobPaymentReceivedMail / PostJobBidStatusUpdateMail
+        'post_job_bid_rated_provider' => ['provider'], // PostJobBidRatingMail
+        'post_job_bid_rated_customer' => ['user'], // PostJobBidRatingMail
+        'payment_message_status' => ['provider'], // AdvancePaymentNotificationMail / FullPaymentReceivedMail
+    ];
+
     public function via($notifiable)
     {
         $notificationSettings = $this->appData ?? [];
         $notification_settings = [];
+        // Chat messages are deliberately never emailed (privacy: content shouldn't leak into inbox)
         $skipMail = in_array($this->type, ['chat_message'], true);
+
+        // Skip mail only for the specific recipient role already covered by a dedicated email
+        $recipientUserType = $this->data['user_type'] ?? null;
+        if (!$skipMail
+            && isset(self::DEDICATED_MAIL_COVERAGE[$this->type])
+            && in_array($recipientUserType, self::DEDICATED_MAIL_COVERAGE[$this->type], true)
+        ) {
+            $skipMail = true;
+        }
 
         if (is_array($notificationSettings) && !empty($notificationSettings)) {
             foreach ($notificationSettings as $key => $notification) {
@@ -106,15 +135,15 @@ class CommonNotification extends Notification implements ShouldQueue
                         case 'IS_CUSTOM_WEBHOOK':
                             array_push($notification_settings, CustomWebhook::class);
                             break;
-
-                        case 'IS_MAIL':
-                            if (!$skipMail) {
-                                array_push($notification_settings, 'mail');
-                            }
-                            break;
                     }
                 }
             }
+        }
+
+        // Mail is always attempted regardless of the DB IS_MAIL flag/config state,
+        // except where a dedicated Mailable already covers this (type, recipient) pair.
+        if (!$skipMail) {
+            array_push($notification_settings, 'mail');
         }
 
         // Always include database channel to ensure notifications are saved
