@@ -31,6 +31,8 @@ use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ServiceBookingNotificationMail;
+use App\Mail\AdvancePaymentNotificationMail;
+use App\Mail\FullPaymentReceivedMail;
 use App\Models\Wallet;
 use App\Traits\EarningTrait;
 use App\Traits\NotificationTrait;
@@ -1591,6 +1593,18 @@ public function saveStripePayment(Request $request, $id)
                 'commission_status' => 'paid',
             ]);
         }
+
+        // Send email notification to provider about advance payment
+        try {
+            $booking->load(['customer', 'service']);
+            $provider = User::find($booking->provider_id);
+            if ($provider && $provider->email) {
+                Mail::to($provider->email)->locale(getRecipientLocale($provider))->send(new AdvancePaymentNotificationMail($provider, $result, $booking, getRecipientLocale($provider)));
+                \Log::info('Advance payment notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $booking->id);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to send advance payment notification email: ' . $e->getMessage());
+        }
     }
 
     if (!empty($result) && $result->payment_status == 'paid') {
@@ -1716,6 +1730,18 @@ public function saveStripePayment(Request $request, $id)
 
         CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
         } // end !$remainingAlreadyCredited
+
+        // Send email notification to provider about full payment received
+        try {
+            $booking->load(['customer', 'service']);
+            $provider = User::find($booking->provider_id);
+            if ($provider && $provider->email) {
+                Mail::to($provider->email)->locale(getRecipientLocale($provider))->send(new FullPaymentReceivedMail($provider, $result, $booking, getRecipientLocale($provider)));
+                \Log::info('Full payment received notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $booking->id);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to send full payment received notification email: ' . $e->getMessage());
+        }
     }
 
     // ✅ Always create a new PaymentHistory entry

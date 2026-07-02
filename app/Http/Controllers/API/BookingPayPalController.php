@@ -16,6 +16,9 @@ use App\Models\Wallet;
 use App\Traits\NotificationTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AdvancePaymentNotificationMail;
+use App\Mail\FullPaymentReceivedMail;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
@@ -291,6 +294,18 @@ class BookingPayPalController extends Controller
                     'commission_status' => 'paid',
                 ]);
             }
+
+            // Send email notification to provider about advance payment
+            try {
+                $booking->load(['customer', 'service']);
+                $provider = User::find($booking->provider_id);
+                if ($provider && $provider->email) {
+                    Mail::to($provider->email)->locale(getRecipientLocale($provider))->send(new AdvancePaymentNotificationMail($provider, $result, $booking, getRecipientLocale($provider)));
+                    \Log::info('Advance payment notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $booking->id);
+                }
+            } catch (\Exception $e) {
+                \Log::error('Failed to send advance payment notification email: ' . $e->getMessage());
+            }
         }
 
         if ($result->payment_status == 'paid') {
@@ -403,6 +418,18 @@ class BookingPayPalController extends Controller
 
                 CommissionEarning::where('booking_id', $booking->id)->update(['commission_status' => 'paid']);
             } // end !$providerAlreadyPaid
+
+            // Send email notification to provider about full payment received
+            try {
+                $booking->load(['customer', 'service']);
+                $provider = User::find($booking->provider_id);
+                if ($provider && $provider->email) {
+                    Mail::to($provider->email)->locale(getRecipientLocale($provider))->send(new FullPaymentReceivedMail($provider, $result, $booking, getRecipientLocale($provider)));
+                    \Log::info('Full payment received notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $booking->id);
+                }
+            } catch (\Exception $e) {
+                \Log::error('Failed to send full payment received notification email: ' . $e->getMessage());
+            }
         }
 
         $booking->payment_id = $result->id;
