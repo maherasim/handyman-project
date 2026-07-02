@@ -33,6 +33,7 @@ use App\Models\PostJobBidCustomerRating;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\App;
 use App\Mail\PostJobBankTransferPaymentNotificationMail;
+use App\Mail\JobRequestedProviderMail;
 use App\Models\PostJobExtraCharge;
 use App\Traits\NotificationTrait;
 use Illuminate\Support\Facades\Log;
@@ -2705,6 +2706,49 @@ class PostJobRequestController extends Controller
             ]);
         } catch (\Throwable $e) {
             // Silent fail; do not block the flow on notification issues
+        }
+
+        // Send detailed job-request email directly to matching providers (new requests only)
+        if ($result->wasRecentlyCreated) {
+            try {
+                $result->loadMissing(['customer', 'category', 'country', 'state', 'city']);
+                $customer = $result->customer;
+
+                $providerIds = [];
+                if (!empty($result->latitude) && !empty($result->longitude)) {
+                    $customerLatitude = (float) $result->latitude;
+                    $customerLongitude = (float) $result->longitude;
+                    $radius = 50; // km
+                    $providers = \App\Models\ProviderAddressMapping::selectRaw("id, provider_id, address, latitude, longitude,
+                                    ( 6371 * acos( cos( radians(?) ) *
+                                    cos( radians( latitude ) )
+                                    * cos( radians( longitude ) - radians(?) )
+                                    + sin( radians(?) ) *
+                                    sin( radians( latitude ) ) )
+                                    ) AS distance", [$customerLatitude, $customerLongitude, $customerLatitude])
+                        ->having("distance", "<=", $radius)
+                        ->orderBy("distance", 'asc')
+                        ->get();
+                    $providerIds = $providers->pluck('provider_id')->toArray();
+                }
+
+                if (empty($providerIds)) {
+                    $providerIds = User::where('user_type', 'provider')->where('status', 1)->pluck('id')->toArray();
+                }
+
+                if ($customer && !empty($providerIds)) {
+                    $matchingProviders = User::whereIn('id', $providerIds)->whereNotNull('email')->get();
+                    foreach ($matchingProviders as $providerUser) {
+                        try {
+                            Mail::to($providerUser->email)->locale(getRecipientLocale($providerUser))->send(new JobRequestedProviderMail($providerUser, $result, $customer, getRecipientLocale($providerUser)));
+                        } catch (\Throwable $e) {
+                            Log::error('Failed to send job requested email to provider ' . $providerUser->email . ': ' . $e->getMessage());
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {
+                Log::error('Failed to send job requested provider emails: ' . $e->getMessage());
+            }
         }
 
         $message = $result->wasRecentlyCreated ? __('messages.save_form', ['form' => __('messages.postrequest')])
