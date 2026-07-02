@@ -17,6 +17,8 @@ use App\Models\BookingHandymanMapping;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Traits\NotificationTrait;
+use App\Mail\BookingStatusUpdateMail;
+use App\Mail\BookingAcceptedMail;
 
 class ProcessBookingStatusUpdateJob implements ShouldQueue
 {
@@ -160,7 +162,28 @@ class ProcessBookingStatusUpdateJob implements ShouldQueue
             }
         }
 
-        // Emails sent via CommonNotification (DB template)
+        foreach ($emailsToSend as $entry) {
+            $recipient = $entry['user'];
+            $recipientType = $entry['type'];
+
+            try {
+                if ($recipientType === 'user' && $newStatus === 'accept') {
+                    // Customer-facing "booking accepted" email, matching the same
+                    // rich format/detail as the "new booking" email sent to the provider.
+                    Mail::to($recipient->email)
+                        ->locale($this->mailLocale)
+                        ->send(new BookingAcceptedMail($recipient, $bookingdata, $bookingdata->provider, $this->mailLocale));
+                } else {
+                    Mail::to($recipient->email)
+                        ->locale($this->mailLocale)
+                        ->send(new BookingStatusUpdateMail($recipient, $bookingdata, $oldStatus, $newStatus, $actorName, $actorType, $recipientType, $this->mailLocale));
+                }
+
+                Log::info("ProcessBookingStatusUpdateJob: Booking status email sent to {$recipientType} ({$recipient->email}) for booking #{$bookingdata->id}, status: {$oldStatus} -> {$newStatus}");
+            } catch (\Exception $e) {
+                Log::error("ProcessBookingStatusUpdateJob: Failed to send booking status email to {$recipientType} ({$recipient->email}): " . $e->getMessage());
+            }
+        }
     }
 
     // Helper duplicated from Controller
