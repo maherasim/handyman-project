@@ -838,6 +838,7 @@
     'email_automated_no_reply_long' => 'Dies ist eine automatische Nachricht. Bitte antworten Sie nicht auf diese E-Mail.',
     'email_auto_support_note' => 'Dies ist eine automatische E-Mail-Benachrichtigung. Wenn Sie Fragen oder Anliegen haben, kontaktieren Sie bitte unser Support-Team.',
     'email_advance_title' => 'Anzahlung erhalten',
+    'email_booking_details' => 'Buchungsdetails',
     'email_advance_intro' => 'Wir freuen uns, Ihnen mitzuteilen, dass für eine Ihrer Buchungen eine Anzahlung erfolgreich eingegangen ist.',
     'email_advance_amount' => 'Anzahlungsbetrag',
     'email_payment_method' => 'Zahlungsmethode',

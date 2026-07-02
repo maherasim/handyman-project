@@ -840,6 +840,7 @@
     'email_automated_no_reply_long' => 'This is an automated message. Please do not reply to this email.',
     'email_auto_support_note' => 'This is an automated email notification. If you have any questions or concerns, please contact our support team.',
     'email_advance_title' => 'Advance Payment Received',
+    'email_booking_details' => 'Booking Details',
     'email_advance_intro' => 'We are pleased to inform you that an advance payment has been successfully received for one of your bookings.',
     'email_advance_amount' => 'Advance Payment Amount',
     'email_payment_method' => 'Payment Method',

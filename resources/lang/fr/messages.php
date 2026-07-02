@@ -1644,6 +1644,7 @@
     'email_automated_no_reply_long' => 'Ceci est un message automatique. Merci de ne pas répondre à cet e-mail.',
     'email_auto_support_note' => "Ceci est une notification automatique par e-mail. Si vous avez des questions ou des préoccupations, veuillez contacter notre équipe d'assistance.",
     'email_advance_title' => 'Acompte reçu',
+    'email_booking_details' => 'Détails de la réservation',
     'email_advance_intro' => "Nous avons le plaisir de vous informer qu'un acompte a été reçu avec succès pour l'une de vos réservations.",
     'email_advance_amount' => "Montant de l'acompte",
     'email_payment_method' => 'Méthode de paiement',
