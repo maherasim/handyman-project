@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ServiceBookingNotificationMail;
 use App\Mail\AdvancePaymentNotificationMail;
 use App\Mail\FullPaymentReceivedMail;
+use App\Mail\HandymanAssignedMail;
 use App\Models\Wallet;
 use App\Traits\EarningTrait;
 use App\Traits\NotificationTrait;
@@ -1056,6 +1057,7 @@ public function bookingAssigned(Request $request)
     }
 
     $remove_notification_id = [];
+    $newlyAssignedHandymen = [];
 
     if ($request->handyman_id != null) {
         foreach ($request->handyman_id as $handyman) {
@@ -1068,6 +1070,10 @@ public function bookingAssigned(Request $request)
 
             $remove_notification_id = removeArrayValue($assigned_handyman_ids, $handyman);
             $bookingdata->handymanAdded()->insert($assign_to_handyman);
+
+            if ($user && $user->email) {
+                $newlyAssignedHandymen[] = $user;
+            }
         }
     }
 
@@ -1087,6 +1093,19 @@ public function bookingAssigned(Request $request)
     }
 
     $bookingdata->save();
+
+    // Send detailed assignment email directly to each newly assigned handyman
+    if (!empty($newlyAssignedHandymen) && $bookingdata->provider) {
+        $bookingdata->load(['service', 'customer', 'provider', 'slots']);
+        foreach ($newlyAssignedHandymen as $handymanUser) {
+            try {
+                Mail::to($handymanUser->email)->locale(getRecipientLocale($handymanUser))->send(new HandymanAssignedMail($handymanUser, $bookingdata, $bookingdata->provider, getRecipientLocale($handymanUser)));
+                \Log::info('Handyman assigned notification email sent to: ' . $handymanUser->email . ' for booking ID: ' . $bookingdata->id);
+            } catch (\Exception $e) {
+                \Log::error('Failed to send handyman assigned notification email: ' . $e->getMessage());
+            }
+        }
+    }
 
     $activity_data = [
         'activity_type'    => $activity_type,
