@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\App;
 use App\Mail\PostJobBankTransferPaymentNotificationMail;
 use App\Mail\JobRequestedProviderMail;
+use App\Mail\BidAcceptedMail;
 use App\Models\PostJobExtraCharge;
 use App\Traits\NotificationTrait;
 use Illuminate\Support\Facades\Log;
@@ -2252,6 +2253,15 @@ class PostJobRequestController extends Controller
             ]);
         } catch (\Throwable $e) {
             \Log::warning('user_accept_bid notification failed: ' . $e->getMessage());
+        }
+
+        // Send detailed bid-accepted email directly, regardless of DB mail-template enable state
+        try {
+            if ($bid->provider && $bid->provider->email && $bid->customer) {
+                Mail::to($bid->provider->email)->locale(getRecipientLocale($bid->provider))->send(new BidAcceptedMail($bid->provider, $bid, $bid->customer, getRecipientLocale($bid->provider)));
+            }
+        } catch (\Throwable $e) {
+            \Log::error('Failed to send bid accepted email: ' . $e->getMessage());
         }
 
         return response()->json([
