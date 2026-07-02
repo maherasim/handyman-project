@@ -2207,7 +2207,7 @@ class PostJobRequestController extends Controller
         // Notify admin: cash/bank transfer submitted – verify at cash-payment-list
         try {
             $bid->load(['customer', 'provider', 'request']);
-            Mail::to(config('mail.from.address'))->locale(app()->getLocale())->send(new PostJobBankTransferPaymentNotificationMail($payment, $bid, $type, app()->getLocale())); // *** new: configurable admin email + locale ***
+            Mail::to(getAdminMailFromAddress())->locale(app()->getLocale())->send(new PostJobBankTransferPaymentNotificationMail($payment, $bid, $type, app()->getLocale())); // *** admin email read live from Setting > Mail Settings ***
         } catch (\Exception $e) {
             Log::error('Failed to send post job bank transfer notification to admin: ' . $e->getMessage());
         }

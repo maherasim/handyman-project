@@ -680,7 +680,7 @@ class PaymentController extends Controller
     
         // ✅ Send email notification to admin (cash/bank transfer verification)
         try {
-            Mail::to(config('mail.from.address'))->locale(app()->getLocale())->send(new BankTransferPaymentNotificationMail($payment, $booking, $request->type, app()->getLocale())); // *** new: configurable admin email + locale ***
+            Mail::to(getAdminMailFromAddress())->locale(app()->getLocale())->send(new BankTransferPaymentNotificationMail($payment, $booking, $request->type, app()->getLocale())); // *** admin email read live from Setting > Mail Settings ***
         } catch (\Exception $e) {
             // Log error but don't fail the payment creation
             \Log::error('Failed to send bank transfer payment notification email: ' . $e->getMessage());

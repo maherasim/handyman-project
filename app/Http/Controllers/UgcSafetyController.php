@@ -408,14 +408,14 @@ class UgcSafetyController extends Controller
     }
 
     /**
-     * Admin notification address — sourced from the "Mail From Address" field
-     * on the Mail Settings tab (Setting > mail-setting), same convention used
-     * for other admin-facing notifications (bank transfer, bid payments, etc.).
-     * Falls back to the general-setting inquiry email if the mail setting is empty.
+     * Admin notification address — read live from Setting > Mail Settings
+     * (/setting/mail-setting), same convention used for other admin-facing
+     * notifications (bank transfer, bid payments, etc.). Falls back to the
+     * general-setting inquiry email if the mail setting is empty.
      */
     protected function resolveAdminNotificationEmail(): ?string
     {
-        $email = config('mail.from.address');
+        $email = getAdminMailFromAddress();
         if (empty($email)) {
             $general = \App\Models\Setting::where('type', 'general-setting')->where('key', 'general-setting')->first();
             if ($general && $general->value) {

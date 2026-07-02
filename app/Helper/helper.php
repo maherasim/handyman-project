@@ -2392,6 +2392,25 @@ function getRecipientLocale($user): string {
     return app()->getLocale();
 }
 
+/**
+ * Admin "Mail From Address" as currently shown on Setting > Mail Settings
+ * (/setting/mail-setting). Reads the .env file directly — same technique
+ * SettingController uses to render that tab — because config('mail.from.address')
+ * is cached at PHP-FPM process start and can stay stale after the value is
+ * saved in the mail settings form until the worker restarts.
+ */
+function getAdminMailFromAddress(): ?string {
+    $path = base_path('.env');
+    if (file_exists($path)) {
+        $envContents = file_get_contents($path);
+        if (preg_match('/^MAIL_FROM_ADDRESS=["\']?(.*?)["\']?\s*$/m', $envContents, $m) && $m[1] !== '') {
+            return $m[1];
+        }
+    }
+
+    return config('mail.from.address') ?: null;
+}
+
 function sendBankTransferConfirmationEmail($user, $subscription, $transaction) {
     try {
         $locale = getRecipientLocale($user);
