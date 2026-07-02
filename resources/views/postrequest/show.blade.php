@@ -928,6 +928,7 @@
                 'ec_val_row_amount' => __('messages.pjr_ec_val_row_amount'),
                 'ec_val_qty_min' => __('messages.pjr_ec_val_qty_min'),
                 'ec_val_one_row' => __('messages.pjr_ec_val_one_row'),
+                'ec_total_label' => __('messages.pjr_ec_total_label'),
                 'select_star_rating' => __('messages.pjr_js_select_star_rating'),
                 'thank_you_rating' => __('messages.pjr_js_thank_you_rating'),
                 'rating_submitted' => __('messages.pjr_js_rating_submitted'),
@@ -1302,12 +1303,28 @@
                     </div>
                 </div>
                 <button type="button" id="ec_add_row" class="btn btn-outline-primary btn-sm"><i class="la la-plus"></i> ${pjrJsLang.ec_add_more}</button>
-                <div class="mt-3 small text-muted">${pjrJsLang.ec_footer_note}</div>
+                <div class="d-flex justify-content-end align-items-center mt-3 pt-2 border-top">
+                    <span class="fw-bold me-2">${pjrJsLang.ec_total_label}:</span>
+                    <span id="ec_total_display" class="fw-bold">0.00</span>
+                </div>
+                <div class="mt-2 small text-muted">${pjrJsLang.ec_footer_note}</div>
             </div>
         `,
                     didOpen: () => {
                         const container = document.getElementById('ec_rows');
                         const addBtn = document.getElementById('ec_add_row');
+                        const totalDisplay = document.getElementById('ec_total_display');
+
+                        const recalcTotal = () => {
+                            let total = 0;
+                            container.querySelectorAll('.ec_row').forEach((row) => {
+                                const amount = parseFloat(row.querySelector('.ec_amount').value) || 0;
+                                const qty = parseFloat(row.querySelector('.ec_qty').value) || 0;
+                                total += amount * qty;
+                            });
+                            totalDisplay.textContent = total.toFixed(2);
+                        };
+
                         addBtn.addEventListener('click', () => {
                             const row = document.createElement('div');
                             row.className = 'row g-2 ec_row align-items-end mb-2';
@@ -1325,13 +1342,21 @@
                                     <button type="button" class="btn btn-outline-danger btn-sm ec_remove" title="${pjrJsLang.ec_remove_title}"><i class="la la-times"></i></button>
                                 </div>`;
                             container.appendChild(row);
+                            recalcTotal();
                         });
                         container.addEventListener('click', (e) => {
                             if (e.target.closest('.ec_remove')) {
                                 const rows = container.querySelectorAll('.ec_row');
                                 if (rows.length > 1) e.target.closest('.ec_row').remove();
+                                recalcTotal();
                             }
                         });
+                        container.addEventListener('input', (e) => {
+                            if (e.target.classList.contains('ec_amount') || e.target.classList.contains('ec_qty')) {
+                                recalcTotal();
+                            }
+                        });
+                        recalcTotal();
                     },
                     focusConfirm: false,
                     showCancelButton: true,

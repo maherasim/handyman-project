@@ -1976,6 +1976,7 @@
     'pjr_ec_val_row_amount' => 'Jede Zeile braucht einen Betrag > 0',
     'pjr_ec_val_qty_min' => 'Menge mindestens 1',
     'pjr_ec_val_one_row' => 'Mindestens eine Zeile hinzufügen',
+    'pjr_ec_total_label' => 'Gesamte Zusatzkosten',
     'pjr_js_select_star_rating' => 'Bitte eine Sternbewertung wählen.',
     'pjr_js_thank_you_rating' => 'Vielen Dank!',
     'pjr_js_rating_submitted' => 'Ihre Bewertung wurde übermittelt.',

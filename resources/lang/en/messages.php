@@ -1969,6 +1969,7 @@
     'pjr_ec_val_row_amount' => 'Each row must have amount > 0',
     'pjr_ec_val_qty_min' => 'Quantity must be at least 1',
     'pjr_ec_val_one_row' => 'Add at least one row',
+    'pjr_ec_total_label' => 'Total Extra Charges',
     'pjr_js_select_star_rating' => 'Please select a star rating.',
     'pjr_js_thank_you_rating' => 'Thank you!',
     'pjr_js_rating_submitted' => 'Your rating has been submitted.',
@@ -2373,8 +2374,8 @@
     'dashboard_other_earnings' => 'Other Earnings',
     'dashboard_last_12_months' => 'Last 12 months',
     'chart_months' => 'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec',
-
-        'education_level'  => 'Education Level',
+    'education_level'  => 'Education Level',
+    'stripe_payment_success' => 'Stripe payment completed successfully.',
 
 
 

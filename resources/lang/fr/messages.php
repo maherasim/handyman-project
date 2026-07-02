@@ -1273,6 +1273,7 @@
     'pjr_ec_val_row_amount' => 'Chaque ligne doit avoir un montant > 0',
     'pjr_ec_val_qty_min' => 'La quantité doit être au moins 1',
     'pjr_ec_val_one_row' => 'Ajoutez au moins une ligne',
+    'pjr_ec_total_label' => 'Total des frais supplémentaires',
     'pjr_js_select_star_rating' => 'Veuillez sélectionner une note en étoiles.',
     'pjr_js_thank_you_rating' => 'Merci !',
     'pjr_js_rating_submitted' => 'Votre avis a été envoyé.',

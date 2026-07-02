@@ -21,6 +21,8 @@ use App\Http\Resources\API\PostJobRequestResource;
 use App\Http\Resources\API\PostJobBiderResource;
 use App\Http\Resources\API\PostJobRequestDetailResource;
 use App\Support\UgcListing;
+use App\Mail\PostJobBidStatusUpdateMail;
+use App\Mail\PaymentSplitSetMail;
 
 class PostJobRequestController extends Controller
 {
@@ -50,6 +52,7 @@ class PostJobRequestController extends Controller
         ]);
 
         $bid = PostJobBid::findOrFail($id);
+        $oldBidStatus = $bid->status;
 
         // Assuming post_request_id exists in PostJobBid
         $postjob = PostJobRequest::findOrFail($bid->post_request_id);
@@ -90,6 +93,24 @@ class PostJobRequestController extends Controller
             ]);
         } catch (\Throwable $e) {
             \Log::warning('post_job_bid_status_update notification failed: ' . $e->getMessage());
+        }
+
+        // Send detailed status-update email directly to the other party, regardless of DB mail-template state
+        if ($oldBidStatus != $bid->status) {
+            try {
+                $actor = auth()->user();
+                $actorName = $actor ? ($actor->display_name ?? $actor->first_name ?? 'System') : 'System';
+                $actorType = $isProviderUpdating ? 'provider' : 'user';
+                $recipient = $isProviderUpdating ? $bid->customer : $bid->provider;
+                $recipientType = $isProviderUpdating ? 'user' : 'provider';
+
+                if ($recipient && $recipient->email) {
+                    Mail::to($recipient->email)->locale(getRecipientLocale($recipient))->send(new PostJobBidStatusUpdateMail($recipient, $bid, $oldBidStatus, $bid->status, $actorName, $actorType, $recipientType, getRecipientLocale($recipient)));
+                    \Log::info("Post job bid status email sent to {$recipientType}: " . $recipient->email . ' for bid ID: ' . $bid->id . ", status: {$oldBidStatus} -> {$bid->status}");
+                }
+            } catch (\Throwable $e) {
+                \Log::error('Failed to send post job bid status email for bid ID ' . $bid->id . ': ' . $e->getMessage());
+            }
         }
 
         return response()->json([
@@ -235,6 +256,16 @@ class PostJobRequestController extends Controller
             ]);
         } catch (\Throwable $e) {
             \Log::warning('startWork (split payment) notification failed: ' . $e->getMessage());
+        }
+
+        // Send detailed payment-split email directly, regardless of DB mail-template enable state
+        try {
+            if ($bid->customer && $bid->customer->email && $bid->provider) {
+                Mail::to($bid->customer->email)->locale(getRecipientLocale($bid->customer))->send(new PaymentSplitSetMail($bid->customer, $bid, $bid->provider, getRecipientLocale($bid->customer)));
+                \Log::info('Payment split set email sent to customer: ' . $bid->customer->email . ' for bid ID: ' . $bid->id);
+            }
+        } catch (\Throwable $e) {
+            \Log::error('Failed to send payment split set email for bid ID ' . $bid->id . ': ' . $e->getMessage());
         }
 
         return response()->json([

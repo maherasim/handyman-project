@@ -279,6 +279,16 @@ class PostJobRequestController extends Controller
                     'bid_status'       => 'Payment split set',
                     'notify_recipient' => 'user',
                 ]);
+
+                // Send detailed payment-split email directly, regardless of DB mail-template enable state
+                try {
+                    if ($bid->customer && $bid->customer->email && $bid->provider) {
+                        Mail::to($bid->customer->email)->locale(getRecipientLocale($bid->customer))->send(new PaymentSplitSetMail($bid->customer, $bid, $bid->provider, getRecipientLocale($bid->customer)));
+                        \Log::info('Payment split set email sent to customer: ' . $bid->customer->email . ' for bid ID: ' . $bid->id);
+                    }
+                } catch (\Throwable $e) {
+                    \Log::error('Failed to send payment split set email for bid ID ' . $bid->id . ': ' . $e->getMessage());
+                }
             }
         } catch (\Throwable $e) {
             \Log::warning('setAdvanceSplit notification failed: ' . $e->getMessage());
@@ -758,6 +768,7 @@ class PostJobRequestController extends Controller
             $totalExtra = 0.0;
             $totalQty   = 0.0;
             $bid = PostJobBid::findOrFail($id);
+            $oldBidStatus = $bid->status;
             // reset existing lines to avoid duplication
             $bid->extraCharges()->delete();
 
@@ -793,6 +804,18 @@ class PostJobRequestController extends Controller
                 \Log::warning('addExtraCharges notification failed: ' . $e->getMessage());
             }
 
+            // Send detailed status-update email directly, regardless of DB mail-template state
+            try {
+                $actor = auth()->user();
+                $actorName = $actor ? ($actor->display_name ?? $actor->first_name ?? 'System') : 'System';
+                if ($bid->customer && $bid->customer->email) {
+                    Mail::to($bid->customer->email)->locale(getRecipientLocale($bid->customer))->send(new PostJobBidStatusUpdateMail($bid->customer, $bid, $oldBidStatus, $bid->status, $actorName, 'provider', 'user', getRecipientLocale($bid->customer)));
+                    \Log::info('Post job bid extra-charges/completed email sent to customer: ' . $bid->customer->email . ' for bid ID: ' . $bid->id);
+                }
+            } catch (\Throwable $e) {
+                \Log::error('Failed to send post job bid extra-charges email for bid ID ' . $bid->id . ': ' . $e->getMessage());
+            }
+
             return response()->json([
                 'status'        => true,
                 'message'       => 'Extra charges added successfully & bid marked as completed',
@@ -810,9 +833,10 @@ class PostJobRequestController extends Controller
         ]);
     
         $bid = PostJobBid::findOrFail($id);
+        $oldBidStatus = $bid->status;
         $quantity    = (int)($request->input('quantity') ?? 1);
         $extraAmount = (float)$request->input('amount');
-    
+
         // Replace any existing lines with this single item
         $bid->extraCharges()->delete();
         PostJobExtraCharge::create([
@@ -838,6 +862,18 @@ class PostJobRequestController extends Controller
             ]);
         } catch (\Throwable $e) {
             \Log::warning('addExtraCharges notification failed: ' . $e->getMessage());
+        }
+
+        // Send detailed status-update email directly, regardless of DB mail-template state
+        try {
+            $actor = auth()->user();
+            $actorName = $actor ? ($actor->display_name ?? $actor->first_name ?? 'System') : 'System';
+            if ($bid->customer && $bid->customer->email) {
+                Mail::to($bid->customer->email)->locale(getRecipientLocale($bid->customer))->send(new PostJobBidStatusUpdateMail($bid->customer, $bid, $oldBidStatus, $bid->status, $actorName, 'provider', 'user', getRecipientLocale($bid->customer)));
+                \Log::info('Post job bid extra-charges/completed email sent to customer: ' . $bid->customer->email . ' for bid ID: ' . $bid->id);
+            }
+        } catch (\Throwable $e) {
+            \Log::error('Failed to send post job bid extra-charges email for bid ID ' . $bid->id . ': ' . $e->getMessage());
         }
 
         return response()->json([
