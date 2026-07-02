@@ -194,17 +194,6 @@
                     <span class="detail-label">{{ __('messages.email_customer_name') }}:</span>
                     <span class="detail-value">{{ $customer->display_name ?? __('messages.not_available') }}</span>
                 </div>
-                @php
-                    $jobAddress = trim(($postJob->working_address ?? '') . ' ' . ($postJob->street_address ?? '') . ' ' . ($postJob->house_number ?? ''));
-                    $locationParts = array_filter([$jobAddress, optional($postJob->city)->name, optional($postJob->state)->name, optional($postJob->country)->name]);
-                    $locationLabel = implode(', ', $locationParts);
-                @endphp
-                @if($locationLabel !== '')
-                <div class="detail-row">
-                    <span class="detail-label">{{ __('messages.email_service_location') }}:</span>
-                    <span class="detail-value" style="text-align: right; max-width: 60%; word-wrap: break-word;">{{ $locationLabel }}</span>
-                </div>
-                @endif
             </div>
 
             <div class="booking-details">
