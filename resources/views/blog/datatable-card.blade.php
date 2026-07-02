@@ -34,11 +34,13 @@
         </div>
 
         <div class="iq-blog-meta-bottom d-flex align-items-center justify-content-between mt-5">
+            @if ($data->author)
             <div class="author-block">
                 <img src="{{ getSingleMedia($data->author,'profile_image', null) }}" alt="blog-image"
                     class="img-fluid rounded-circle avatar-30 object-cover" loading="lazy">
-                <a href="{{ route('provider.detail', ($data->author)->id) }}"><span class="ps-1 fw-500 text-capitalize">{{ ($data->author)->display_name }}</span></a>
+                <a href="{{ route('provider.detail', $data->author->id) }}"><span class="ps-1 fw-500 text-capitalize">{{ $data->author->display_name }}</span></a>
             </div>
+            @endif
             <div class="iq-btn-container">
                 <a class="btn btn-link p-0 text-capitalize" href="{{ route('blog.detail', $data->id) }}">
                     {{__('landingpage.read_more')}}

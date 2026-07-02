@@ -455,4 +455,6 @@
   'bl_select_date_range' => 'Datumsbereich wählen',
   'bl_booking_search_placeholder' => 'Suchen…',
   'bl_select_status' => 'Status auswählen',
+
+  'stripe_payment_success' => 'Zahlung erfolgreich'
 );
