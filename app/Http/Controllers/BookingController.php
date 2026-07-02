@@ -1383,13 +1383,12 @@ public function bookingAssigned(Request $request)
                     $oldStatus = $bookingdata->status;
                     $bookingdata->update(['status' => $request->status]);
                     
-                    // ✅ PROCESS ASYNC: Dispatch job for heavy lifting (Emails, Notifications)
-                    // Only dispatch if status actually changed to avoid unnecessary jobs
+                    // Run notification/email job synchronously (no queue worker required)
+                    // Only run if status actually changed to avoid unnecessary work
                     if ($oldStatus != $request->status) {
                         $actorId = auth()->id();
                         $mailLocale = app()->getLocale();
-                        // Dispatch the job with the current request locale so queued email content stays language-specific.
-                        \App\Jobs\ProcessBookingStatusUpdateJob::dispatch(
+                        \App\Jobs\ProcessBookingStatusUpdateJob::dispatchSync(
                             $bookingdata->id,
                             $request->all(),
                             $oldStatus,

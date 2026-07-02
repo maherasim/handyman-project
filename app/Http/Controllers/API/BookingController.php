@@ -742,9 +742,9 @@ class BookingController extends Controller
         // }
         //$this->addBookingCommission($bookingdata);
 
-        // Dispatch async job to handle notifications and emails on status change
+        // Run notification/email job synchronously (no queue worker required)
         if ($old_status != $data['status']) {
-            \App\Jobs\ProcessBookingStatusUpdateJob::dispatch(
+            \App\Jobs\ProcessBookingStatusUpdateJob::dispatchSync(
                 $id,
                 $data,
                 $old_status,
