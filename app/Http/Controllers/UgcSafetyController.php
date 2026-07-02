@@ -75,6 +75,9 @@ class UgcSafetyController extends Controller
             'status' => 'pending',
         ]);
 
+        $this->notifyAdminNewProfileReport($reportedUser, $user, $request->input('reason'), $request->input('details'));
+        $this->notifyReportedUserProfileReported($reportedUser, $request->input('reason'), $request->input('details'));
+
         return response()->json([
             'message' => __('messages.ugc_report_received'),
             'policy' => __('messages.ugc_policy_24h'),
@@ -125,6 +128,9 @@ class UgcSafetyController extends Controller
             'details' => $request->input('details'),
             'status' => 'pending',
         ]);
+
+        $this->notifyAdminNewProviderReport($provider, $user, $request->input('reason'), $request->input('details'));
+        $this->notifyProviderAccountReported($provider, $request->input('reason'), $request->input('details'));
 
         return response()->json([
             'message' => __('messages.ugc_report_received'),
@@ -276,6 +282,9 @@ class UgcSafetyController extends Controller
             'status' => 'pending',
         ]);
 
+        $this->notifyAdminNewReviewReport($reviewType, $review->id, $reviewOwnerId, $user, $request->input('reason'), $request->input('details'));
+        $this->notifyReviewOwnerReported($reviewOwnerId, $reviewType, $request->input('reason'), $request->input('details'));
+
         return response()->json([
             'message' => __('messages.ugc_report_received'),
             'policy' => __('messages.ugc_policy_24h'),
@@ -398,18 +407,30 @@ class UgcSafetyController extends Controller
         return response()->json(['message' => __('messages.ugc_user_unblocked')]);
     }
 
-    protected function notifyAdminNewReport(Service $service, User $reporter, string $reason, ?string $details): void
+    /**
+     * Admin notification address — sourced from the "Mail From Address" field
+     * on the Mail Settings tab (Setting > mail-setting), same convention used
+     * for other admin-facing notifications (bank transfer, bid payments, etc.).
+     * Falls back to the general-setting inquiry email if the mail setting is empty.
+     */
+    protected function resolveAdminNotificationEmail(): ?string
     {
-        try {
-            $email = null;
+        $email = config('mail.from.address');
+        if (empty($email)) {
             $general = \App\Models\Setting::where('type', 'general-setting')->where('key', 'general-setting')->first();
             if ($general && $general->value) {
                 $decoded = json_decode($general->value);
                 $email = $decoded->inquriy_email ?? $decoded->inquiry_email ?? null;
             }
-            if (empty($email) && config('mail.from.address')) {
-                $email = config('mail.from.address');
-            }
+        }
+
+        return empty($email) ? null : $email;
+    }
+
+    protected function notifyAdminNewReport(Service $service, User $reporter, string $reason, ?string $details): void
+    {
+        try {
+            $email = $this->resolveAdminNotificationEmail();
             if (empty($email)) {
                 return;
             }
@@ -472,15 +493,7 @@ class UgcSafetyController extends Controller
     protected function notifyAdminNewPostJobReport(PostJobRequest $job, User $reporter, string $reason, ?string $details): void
     {
         try {
-            $email = null;
-            $general = \App\Models\Setting::where('type', 'general-setting')->where('key', 'general-setting')->first();
-            if ($general && $general->value) {
-                $decoded = json_decode($general->value);
-                $email = $decoded->inquriy_email ?? $decoded->inquiry_email ?? null;
-            }
-            if (empty($email) && config('mail.from.address')) {
-                $email = config('mail.from.address');
-            }
+            $email = $this->resolveAdminNotificationEmail();
             if (empty($email)) {
                 return;
             }
@@ -533,6 +546,192 @@ class UgcSafetyController extends Controller
                 ]),
                 function ($message) use ($customer) {
                     $message->to($customer->email)->subject(__('messages.ugc_job_owner_email_subject_post_job'));
+                }
+            );
+        } catch (\Throwable $e) {
+            report($e);
+        }
+    }
+
+    protected function notifyAdminNewProfileReport(User $reportedUser, User $reporter, string $reason, ?string $details): void
+    {
+        try {
+            $email = $this->resolveAdminNotificationEmail();
+            if (empty($email)) {
+                return;
+            }
+
+            $reasonLabel = $this->ugcReportReasonLabel($reason);
+            $detailsTrimmed = $details ? trim($details) : '';
+            $detailsLine = $detailsTrimmed !== ''
+                ? "\n".__('messages.ugc_admin_email_post_job_details_line', ['details' => $detailsTrimmed])
+                : '';
+
+            Mail::raw(
+                __('messages.ugc_admin_email_body_profile', [
+                    'reported_name' => $reportedUser->display_name ?? trim(($reportedUser->first_name ?? '').' '.($reportedUser->last_name ?? '')),
+                    'reported_email' => $reportedUser->email,
+                    'reported_id' => $reportedUser->id,
+                    'reporter' => $reporter->email,
+                    'reason' => $reasonLabel,
+                    'details_line' => $detailsLine,
+                    'time' => now()->toDateTimeString(),
+                ]),
+                function ($message) use ($email) {
+                    $message->to($email)->subject(__('messages.ugc_admin_email_subject_profile'));
+                }
+            );
+        } catch (\Throwable $e) {
+            report($e);
+        }
+    }
+
+    protected function notifyReportedUserProfileReported(User $reportedUser, string $reason, ?string $details): void
+    {
+        try {
+            if (empty($reportedUser->email)) {
+                return;
+            }
+
+            $reasonLabel = $this->ugcReportReasonLabel($reason);
+            $detailsTrimmed = $details ? trim($details) : '';
+            $detailsBlock = $detailsTrimmed !== ''
+                ? __('messages.ugc_job_owner_email_details_block', ['details' => $detailsTrimmed])."\n\n"
+                : '';
+
+            Mail::raw(
+                __('messages.ugc_reported_user_email_body_profile', [
+                    'reason' => $reasonLabel,
+                    'details_block' => $detailsBlock,
+                    'time' => now()->toDateTimeString(),
+                ]),
+                function ($message) use ($reportedUser) {
+                    $message->to($reportedUser->email)->subject(__('messages.ugc_reported_user_email_subject_profile'));
+                }
+            );
+        } catch (\Throwable $e) {
+            report($e);
+        }
+    }
+
+    protected function notifyAdminNewProviderReport(User $provider, User $reporter, string $reason, ?string $details): void
+    {
+        try {
+            $email = $this->resolveAdminNotificationEmail();
+            if (empty($email)) {
+                return;
+            }
+
+            $reasonLabel = $this->ugcReportReasonLabel($reason);
+            $detailsTrimmed = $details ? trim($details) : '';
+            $detailsLine = $detailsTrimmed !== ''
+                ? "\n".__('messages.ugc_admin_email_post_job_details_line', ['details' => $detailsTrimmed])
+                : '';
+
+            Mail::raw(
+                __('messages.ugc_admin_email_body_provider', [
+                    'provider_name' => $provider->display_name ?? trim(($provider->first_name ?? '').' '.($provider->last_name ?? '')),
+                    'provider_email' => $provider->email,
+                    'provider_id' => $provider->id,
+                    'reporter' => $reporter->email,
+                    'reason' => $reasonLabel,
+                    'details_line' => $detailsLine,
+                    'time' => now()->toDateTimeString(),
+                ]),
+                function ($message) use ($email) {
+                    $message->to($email)->subject(__('messages.ugc_admin_email_subject_provider'));
+                }
+            );
+        } catch (\Throwable $e) {
+            report($e);
+        }
+    }
+
+    protected function notifyProviderAccountReported(User $provider, string $reason, ?string $details): void
+    {
+        try {
+            if (empty($provider->email)) {
+                return;
+            }
+
+            $reasonLabel = $this->ugcReportReasonLabel($reason);
+            $detailsTrimmed = $details ? trim($details) : '';
+            $detailsBlock = $detailsTrimmed !== ''
+                ? __('messages.ugc_job_owner_email_details_block', ['details' => $detailsTrimmed])."\n\n"
+                : '';
+
+            Mail::raw(
+                __('messages.ugc_provider_email_body_account_reported', [
+                    'reason' => $reasonLabel,
+                    'details_block' => $detailsBlock,
+                    'time' => now()->toDateTimeString(),
+                ]),
+                function ($message) use ($provider) {
+                    $message->to($provider->email)->subject(__('messages.ugc_provider_email_subject_account_reported'));
+                }
+            );
+        } catch (\Throwable $e) {
+            report($e);
+        }
+    }
+
+    protected function notifyAdminNewReviewReport(string $reviewType, int $reviewId, int $reviewOwnerId, User $reporter, string $reason, ?string $details): void
+    {
+        try {
+            $email = $this->resolveAdminNotificationEmail();
+            if (empty($email)) {
+                return;
+            }
+
+            $owner = User::find($reviewOwnerId);
+            $reasonLabel = $this->ugcReportReasonLabel($reason);
+            $detailsTrimmed = $details ? trim($details) : '';
+            $detailsLine = $detailsTrimmed !== ''
+                ? "\n".__('messages.ugc_admin_email_post_job_details_line', ['details' => $detailsTrimmed])
+                : '';
+
+            Mail::raw(
+                __('messages.ugc_admin_email_body_review', [
+                    'review_type' => ReviewReport::reviewTypeLabel($reviewType),
+                    'review_id' => $reviewId,
+                    'owner' => $owner ? ($owner->email ?? ('User ID '.$owner->id)) : 'Unknown',
+                    'reporter' => $reporter->email,
+                    'reason' => $reasonLabel,
+                    'details_line' => $detailsLine,
+                    'time' => now()->toDateTimeString(),
+                ]),
+                function ($message) use ($email) {
+                    $message->to($email)->subject(__('messages.ugc_admin_email_subject_review'));
+                }
+            );
+        } catch (\Throwable $e) {
+            report($e);
+        }
+    }
+
+    protected function notifyReviewOwnerReported(int $reviewOwnerId, string $reviewType, string $reason, ?string $details): void
+    {
+        try {
+            $owner = User::find($reviewOwnerId);
+            if (! $owner || empty($owner->email)) {
+                return;
+            }
+
+            $reasonLabel = $this->ugcReportReasonLabel($reason);
+            $detailsTrimmed = $details ? trim($details) : '';
+            $detailsBlock = $detailsTrimmed !== ''
+                ? __('messages.ugc_job_owner_email_details_block', ['details' => $detailsTrimmed])."\n\n"
+                : '';
+
+            Mail::raw(
+                __('messages.ugc_review_owner_email_body', [
+                    'review_type' => ReviewReport::reviewTypeLabel($reviewType),
+                    'reason' => $reasonLabel,
+                    'details_block' => $detailsBlock,
+                    'time' => now()->toDateTimeString(),
+                ]),
+                function ($message) use ($owner) {
+                    $message->to($owner->email)->subject(__('messages.ugc_review_owner_email_subject'));
                 }
             );
         } catch (\Throwable $e) {
