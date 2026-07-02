@@ -35,6 +35,7 @@ use Illuminate\Support\Facades\App;
 use App\Mail\PostJobBankTransferPaymentNotificationMail;
 use App\Mail\JobRequestedProviderMail;
 use App\Mail\BidAcceptedMail;
+use App\Mail\PaymentSplitSetMail;
 use App\Models\PostJobExtraCharge;
 use App\Traits\NotificationTrait;
 use Illuminate\Support\Facades\Log;
@@ -3030,6 +3031,18 @@ class PostJobRequestController extends Controller
             ]);
         } catch (\Throwable $e) {
             \Log::warning('startWork (split payment) notification failed: ' . $e->getMessage());
+        }
+
+        // Send detailed payment-split email directly, regardless of DB mail-template enable state
+        try {
+            if ($bid->customer && $bid->customer->email && $bid->provider) {
+                Mail::to($bid->customer->email)->locale(getRecipientLocale($bid->customer))->send(new PaymentSplitSetMail($bid->customer, $bid, $bid->provider, getRecipientLocale($bid->customer)));
+                \Log::info('Payment split set email sent to customer: ' . $bid->customer->email . ' for bid ID: ' . $bid->id);
+            } else {
+                \Log::warning('Payment split set email skipped (missing customer/email/provider) for bid ID: ' . $bid->id);
+            }
+        } catch (\Throwable $e) {
+            \Log::error('Failed to send payment split set email for bid ID ' . $bid->id . ': ' . $e->getMessage());
         }
 
         return response()->json([
