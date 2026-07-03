@@ -1697,9 +1697,29 @@
             'no_reviews_available'            => __('messages.no_reviews_available'),
             'no_rating_info_available'        => __('messages.no_rating_info_available'),
             'failed_to_load_customer_rating'  => __('messages.failed_to_load_customer_rating'),
+            'status_updated_successfully'     => __('messages.status_updated_successfully'),
+            'error'                           => __('messages.error'),
+            'something_went_wrong'            => __('messages.something_went_wrong'),
+            'thank_you'                       => __('messages.thank_you'),
+            'assigned'                        => __('messages.assigned'),
+            'unable_to_assign_employer'       => __('messages.unable_to_assign_employer'),
+            'please_select_star_rating'       => __('messages.pjr_js_select_star_rating'),
+            'rating_submitted_successfully'   => __('messages.pjr_js_rating_submitted'),
+            'failed_to_submit_rating'         => __('messages.pjr_js_rating_failed'),
+            'deleted_excl'                    => __('messages.deleted'),
+            'review_removed_successfully'     => __('messages.review_removed_successfully'),
+            'failed_to_delete_review'         => __('messages.failed_to_delete_review'),
+            'upload_error'                    => __('messages.upload_error'),
+            'please_choose_valid_images'      => __('messages.please_choose_valid_images'),
+            'please_wait'                     => __('messages.please_wait'),
+            'images_preparing_for_upload'     => __('messages.images_preparing_for_upload'),
+            'images_ready_for_upload'         => __('messages.images_ready_for_upload'),
         ];
+        $bookingStatusLabels = collect(['pending', 'accept', 'on_going', 'in_progress', 'hold', 'cancelled', 'rejected', 'failed', 'completed', 'pending_approval', 'waiting', 'done_by_provider', 'confirm'])
+            ->mapWithKeys(fn ($status) => [$status => booking_detail_status_label($status)]);
     @endphp
     var bookingJsLang = @json($bookingJsLang);
+    var bookingStatusLabels = @json($bookingStatusLabels);
 
     $(document).ready(function () {
         // Handle booking status dropdown
@@ -1756,9 +1776,9 @@
                     },
                     body: JSON.stringify({ id: bookingId, 'handyman_id[]': handymanIds })
                 }).then(r=>r.json()).then(response => {
-                    Swal.fire('Success!', response.message || 'Assigned', 'success');
+                    Swal.fire(bookingJsLang.success, response.message || bookingJsLang.assigned, 'success');
                     $('.assign-provider-btn, .assign-provider').prop('disabled', true).addClass('disabled');
-                }).catch(() => Swal.fire('Error!', 'Unable to assign Employer', 'error'));
+                }).catch(() => Swal.fire(bookingJsLang.error, bookingJsLang.unable_to_assign_employer, 'error'));
             });
         });
 
@@ -1837,15 +1857,16 @@
                 $('#booking_status__span').text(label);
                 setButtonsPending(false);
                 disableStatusActions();
-                Swal.fire('Updated', 'Booking updated successfully', 'success')
+                Swal.fire(bookingJsLang.success, bookingJsLang.status_updated_successfully, 'success')
                     .then(() => window.location.reload());
             }).catch(err => {
-                Swal.fire('Error', 'Something went wrong', 'error');
+                Swal.fire(bookingJsLang.error, bookingJsLang.something_went_wrong, 'error');
                 setButtonsPending(false);
             });
         }
         function humanizeStatus(val){
             if(!val) return '';
+            if (bookingStatusLabels[val]) return bookingStatusLabels[val];
             return String(val).replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase());
         }
         function setButtonsPending(isPending){
@@ -2022,7 +2043,7 @@
             const review = $('#reviewText').val().trim();
 
             if (selectedRating === 0) {
-                return Swal.fire('Error', 'Please select a star rating.', 'warning');
+                return Swal.fire(bookingJsLang.error, bookingJsLang.please_select_star_rating, 'warning');
             }
 
             const payload = {
@@ -2042,13 +2063,13 @@
                 type: 'POST',
                 data: payload,
                 success: function (response) {
-                    Swal.fire('Thank you!', 'Your rating has been submitted.', 'success');
+                    Swal.fire(bookingJsLang.thank_you, bookingJsLang.rating_submitted_successfully, 'success');
                     $('#ratingModal').modal('hide');
                     window.location.reload();
                 },
                 error: function (xhr) {
                     console.error(xhr);
-                    Swal.fire('Error', 'Failed to submit rating.', 'error');
+                    Swal.fire(bookingJsLang.error, bookingJsLang.failed_to_submit_rating, 'error');
                 }
             });
         });
@@ -2087,12 +2108,12 @@
                         type: 'POST',
                         data: { id: reviewId },
                         success: function (res) {
-                            Swal.fire('Deleted!', 'Your review has been removed.', 'success');
+                            Swal.fire(bookingJsLang.deleted_excl, bookingJsLang.review_removed_successfully, 'success');
                             window.location.reload();
                         },
                         error: function (xhr) {
                             console.error(xhr);
-                            Swal.fire('Error!', 'Failed to delete the review.', 'error');
+                            Swal.fire(bookingJsLang.error, bookingJsLang.failed_to_delete_review, 'error');
                         }
                     });
                 }
@@ -2121,7 +2142,7 @@
             const handymanId = $('#handymanRatingHandymanId').val();
             const review = $('#handymanReviewText').val().trim();
             if (!handymanId || handymanSelectedRating === 0) {
-                return Swal.fire('Error', 'Please select a star rating.', 'warning');
+                return Swal.fire(bookingJsLang.error, bookingJsLang.please_select_star_rating, 'warning');
             }
             $.ajax({
                 url: baseUrl + '/api/save-handyman-rating',
@@ -2140,13 +2161,13 @@
                     review: review
                 },
                 success: function () {
-                    Swal.fire('Thank you!', 'Your rating has been submitted.', 'success');
+                    Swal.fire(bookingJsLang.thank_you, bookingJsLang.rating_submitted_successfully, 'success');
                     $('#handymanRatingModal').modal('hide');
                     window.location.reload();
                 },
                 error: function (xhr) {
                     console.error(xhr);
-                    var msg = 'Failed to submit rating.';
+                    var msg = bookingJsLang.failed_to_submit_rating;
                     if (xhr.responseJSON) {
                         if (xhr.responseJSON.message) {
                             msg = xhr.responseJSON.message;
@@ -2154,7 +2175,7 @@
                             msg = Object.values(xhr.responseJSON.errors).flat().join(' ');
                         }
                     }
-                    Swal.fire('Error', msg, 'error');
+                    Swal.fire(bookingJsLang.error, msg, 'error');
                 }
             });
         });
@@ -2879,9 +2900,9 @@ $(document).ready(function() {
         
         if (!rating || rating == 0) {
             if (typeof Swal !== 'undefined' && Swal.fire) {
-                Swal.fire('Error', 'Please select a star rating.', 'warning');
+                Swal.fire(bookingJsLang.error, bookingJsLang.please_select_star_rating, 'warning');
             } else {
-                alert('Please select a star rating.');
+                alert(bookingJsLang.please_select_star_rating);
             }
             return;
         }
@@ -2921,31 +2942,31 @@ $(document).ready(function() {
                     Swal.fire({
                         icon: 'success',
                         title: bookingJsLang.success,
-                        text: response.message || 'Rating submitted successfully.',
+                        text: response.message || bookingJsLang.rating_submitted_successfully,
                         showConfirmButton: true
                     }).then(function(){
                         location.reload();
                     });
                 } else {
-                    alert('Rating submitted successfully.');
+                    alert(bookingJsLang.rating_submitted_successfully);
                     location.reload();
                 }
             },
             error: function(xhr) {
                 console.error('Error:', xhr);
-                var errorMsg = 'Failed to submit rating.';
+                var errorMsg = bookingJsLang.failed_to_submit_rating;
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMsg = xhr.responseJSON.message;
                 }
                 if (typeof Swal !== 'undefined' && Swal.fire) {
-                    Swal.fire('Error', errorMsg, 'error');
+                    Swal.fire(bookingJsLang.error, errorMsg, 'error');
                 } else {
                     alert(errorMsg);
                 }
             }
         });
     });
-    
+
     // Service Proof Button Click
     $('#service-proof-btn').click(function() {
         var bookingId = $(this).data('id');
@@ -3075,28 +3096,28 @@ $(document).ready(function() {
             }
 
             input.files = dataTransfer.files;
-            updateProofImagePrepareStatus(input.files.length + ' image' + (input.files.length === 1 ? '' : 's') + ' ready for upload.');
+            updateProofImagePrepareStatus(bookingJsLang.images_ready_for_upload.replace(':count', input.files.length));
         } catch (error) {
             input.value = '';
             preview.empty();
             updateProofImagePrepareStatus('');
             if (typeof Swal !== 'undefined' && Swal.fire) {
-                Swal.fire('Upload error', error.message || 'Please choose valid images.', 'error');
+                Swal.fire(bookingJsLang.upload_error, error.message || bookingJsLang.please_choose_valid_images, 'error');
             } else {
-                alert(error.message || 'Please choose valid images.');
+                alert(error.message || bookingJsLang.please_choose_valid_images);
             }
         } finally {
             setProofImagesPreparing(false);
         }
     });
-    
+
     // Submit Service Proof
     $('#submitServiceProof').click(function() {
         if (window.proofImagesPreparing) {
             if (typeof Swal !== 'undefined' && Swal.fire) {
-                Swal.fire('Please wait', 'Images are preparing for upload.', 'info');
+                Swal.fire(bookingJsLang.please_wait, bookingJsLang.images_preparing_for_upload, 'info');
             } else {
-                alert('Images are preparing for upload.');
+                alert(bookingJsLang.images_preparing_for_upload);
             }
             return;
         }

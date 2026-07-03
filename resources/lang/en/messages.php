@@ -2292,7 +2292,17 @@
     'bank_transfer_bank_address'  => 'Bank Address',
     'bank_transfer_email'         => 'Billing Email',
 
-
+    // Booking info page JS popups
+    'thank_you' => 'Thank you!',
+    'assigned' => 'Assigned',
+    'unable_to_assign_employer' => 'Unable to assign Employer',
+    'review_removed_successfully' => 'Your review has been removed.',
+    'failed_to_delete_review' => 'Failed to delete the review.',
+    'upload_error' => 'Upload error',
+    'please_choose_valid_images' => 'Please choose valid images.',
+    'please_wait' => 'Please wait',
+    'images_preparing_for_upload' => 'Images are preparing for upload.',
+    'images_ready_for_upload' => ':count image(s) ready for upload.',
 
     //Missing
     'about_me_label'         => 'About me',

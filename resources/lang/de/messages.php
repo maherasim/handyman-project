@@ -2312,8 +2312,18 @@
     'bank_transfer_bank_address'  => 'Bankadresse',
     'bank_transfer_email'         => 'Rechnungs-E-Mail',
 
+    // Booking info page JS popups
+    'thank_you' => 'Vielen Dank!',
+    'assigned' => 'Zugewiesen',
+    'unable_to_assign_employer' => 'Mitarbeiter konnte nicht zugewiesen werden',
+    'review_removed_successfully' => 'Ihre Bewertung wurde entfernt.',
+    'failed_to_delete_review' => 'Bewertung konnte nicht gelöscht werden.',
+    'upload_error' => 'Upload-Fehler',
+    'please_choose_valid_images' => 'Bitte gültige Bilder auswählen.',
+    'please_wait' => 'Bitte warten',
+    'images_preparing_for_upload' => 'Bilder werden für den Upload vorbereitet.',
+    'images_ready_for_upload' => ':count Bild(er) bereit zum Hochladen.',
 
- 
     // Missing
     'about_me_label'      => 'Über mich',
     'payment_already_pending' => 'Eine Zahlung für diesen Betrag wartet bereits auf Genehmigung. Bitte warten Sie auf die Admin-Überprüfung.',
