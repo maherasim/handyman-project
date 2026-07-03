@@ -2416,6 +2416,9 @@
     'email_handyman_credentials_commission_info' => 'Ihr Provisionssatz wurde von Ihrem Auftraggeber festgelegt. Bei Fragen zu Ihrem Konto wenden Sie sich bitte über das Helpdesk-System innerhalb der Plattform an Ihren Auftraggeber.',
     'email_handyman_credentials_unexpected' => 'Falls Sie diese E-Mail nicht erwartet haben, wenden Sie sich bitte umgehend an den :app-Support.',
     'email_handyman_credentials_sent_to' => 'Diese E-Mail wurde an :email gesendet',
-   
+    'insufficient_wallet_balance'=> 'Ihr Guthaben ist nicht ausreichend, um diese Buchung zu bezahlen. Bitte laden Sie Ihr Guthaben auf oder wählen Sie eine andere Zahlungsmethode.',
+    'wallet_topup_success' => 'Ihr Guthaben wurde erfolgreich aufgeladen.',
+  'stripe_payment_success' => 'Stripe-Zahlung erfolgreich abgeschlossen.',
+  'stripe_payment_failed' => 'Stripe-Zahlung fehlgeschlagen. Bitte versuchen Sie',
 
 );

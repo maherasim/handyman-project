@@ -2412,7 +2412,9 @@
     'chart_months' => 'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec',
     'education_level'  => 'Education Level',
     'stripe_payment_success' => 'Stripe payment completed successfully.',
-
-
+    'insufficient_wallet_balance'=> 'Your wallet balance is insufficient to complete this process. Please top up your wallet or choose a different payment method.',
+    'wallet_topup_success' => 'Your wallet has been successfully topped up.',
+    'stripe_payment_success' => 'Stripe payment completed successfully.',
+    'stripe_payment_failed' => 'Stripe payment failed. Please try again or use a different payment',
 
    );
