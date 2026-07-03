@@ -146,22 +146,8 @@
                      <span class="d-flex gap-3">
                         <span class="d-inline-block w-25 fw-bold">{{__('messages.status')}}:</span>
                         @if(!empty($payment))
-                             @php
-                                 $ps = strtolower(str_replace(' ', '_', (string) $payment->payment_status));
-                                 if (in_array($ps, ['paid', 'completed'], true)) {
-                                     $paymentStatusLabel = __('messages.paid');
-                                 } elseif ($ps === 'failed') {
-                                     $paymentStatusLabel = __('messages.failed');
-                                 } elseif ($ps === 'refunded') {
-                                     $paymentStatusLabel = __('messages.refunded');
-                                 } elseif ($ps === 'pending' || $ps === '') {
-                                     $paymentStatusLabel = __('messages.pending');
-                                 } else {
-                                     $paymentStatusLabel = str_replace('_', ' ', $payment->payment_status ?? '-');
-                                 }
-                             @endphp
                              <span
-                                 class="d-inline-block w-75 status-text text-success text-capitalize">{{ $paymentStatusLabel }}</span>
+                                 class="d-inline-block w-75 status-text text-success text-capitalize">{{ payment_detail_status_label($payment->payment_status ?? null) }}</span>
                          @else
                              <span class="d-inline-block w-75 status-text text-success text-capitalize">{{ __('messages.pending') }}</span>
                          @endif

@@ -328,7 +328,7 @@
                                             <h6 class="text-capitalize m-0">{{__('messages.refund_of')}} {{ getPriceFormat($bookingData['booking_detail']['refund_amount']) ?? 0}}</h6>
                                         </td>
                                         <td class="py-2">
-                                            <h6 class="text-end m-0 text-success">{{ ucfirst($bookingData['booking_detail']['refund_status']) ?? '-'}} </h6>
+                                            <h6 class="text-end m-0 text-success">{{ $bookingData['booking_detail']['refund_status'] === 'completed' ? __('messages.completed') : ($bookingData['booking_detail']['refund_status'] ?? '-') }} </h6>
                                         </td>
                                     </tr>
                                     <tr>
@@ -336,7 +336,7 @@
                                             <h6 class="text-capitalize m-0">{{__('messages.payment_method')}}</h6>
                                         </td>
                                         <td class="py-2">
-                                            <h6 class="text-end m-0"> {{ucfirst($bookingData['booking_detail']['payment_method']) ?? '-'}}</h6>
+                                            <h6 class="text-end m-0"> {{ payment_detail_type_label($bookingData['booking_detail']['payment_method'] ?? null) }}</h6>
                                         </td>
                                     </tr>
                                     <tr>
@@ -566,7 +566,7 @@
                                             <span class="text-capitalize">{{__('messages.method')}}</span>
                                         </td>
                                         <td class="pd-0">
-                                            <span class="d-block text-end text-capitalize">{{ $bookingData['booking_detail']['payment_method'] }}</span>
+                                            <span class="d-block text-end text-capitalize">{{ payment_detail_type_label($bookingData['booking_detail']['payment_method'] ?? null) }}</span>
                                         </td>
                                     </tr>
                                     <tr>
@@ -574,7 +574,7 @@
                                             <span class="text-capitalize">{{__('messages.status')}}</span>
                                         </td>
                                         <td class="pd-0">
-                                            <span class="d-block text-end text-capitalize">{{ str_replace("_"," ",$bookingData['booking_detail']['payment_status']) }}</span>
+                                            <span class="d-block text-end text-capitalize">{{ payment_detail_status_label($bookingData['booking_detail']['payment_status'] ?? null) }}</span>
                                         </td>
                                     </tr>
                                     @if($bookingData['booking_detail']['txn_id'])
