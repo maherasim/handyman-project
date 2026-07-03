@@ -49,77 +49,56 @@ class PostJobRequestController extends Controller
     private function formatStatusBadge(?string $status): string
     {
         $status = (string) ($status ?? '');
-        $label = $status;
         $class = 'badge bg-secondary text-dark';
 
-        switch (strtolower($status)) {
-            case 'requested':
-                $label = 'Requested';
-                $class = 'badge bg-primary-subtle text-dark';
-                break;
-            case 'accepted':
-                $label = 'Accepted';
-                $class = 'badge bg-success text-dark';
-                break;
-            case 'in_progress':
-                $label = 'IN progress';
-                $class = 'badge bg-primary text-dark';
-                break;
-            case 'in_process':
-                $label = 'IN process';
-                $class = 'badge bg-info text-dark';
-                break;
-            case 'advance_payment':
-                $label = 'Advance Payment';
-                $class = 'badge bg-warning text-dark';
-                break;
-            case 'advance_paid':
-                $label = 'Advance Paid';
-                $class = 'badge bg-success text-dark';
-                break;
-            case 'advance_payment_pending_approval':
-            case 'advance_payment_pending':
-                $label = 'Advance (Pending Approval)';
-                $class = 'badge bg-warning text-dark';
-                break;
-            case 'remaining_payment_pending_approval':
-            case 'remaining_payment_pending':
-                $label = 'Remaining (Pending Approval)';
-                $class = 'badge bg-warning text-dark';
-                break;
-            case 'assigned':
-                $label = 'Assigned';
-                $class = 'badge bg-info text-dark';
-                break;
-            case 'hold':
-            case 'on_hold':
-                $label = 'On Hold';
-                $class = 'badge bg-warning text-dark';
-                break;
-            case 'done':
-                $label = 'Done';
-                $class = 'badge bg-success text-dark';
-                break;
-            case 'remaining_paid':
-                $label = 'Remaining Paid';
-                $class = 'badge bg-success text-dark';
-                break;
-            case 'confirm_done':
-                $label = 'Completed';
-                $class = 'badge bg-success text-dark';
-                break;
-            case 'completed':
-                $label = 'Completed';
-                $class = 'badge bg-success text-dark';
-                break;
-            case 'cancelled':
-                $label = 'Cancelled';
-                $class = 'badge bg-danger text-dark';
-                break;
-            default:
-                $label = ucfirst(str_replace('_', ' ', $status));
-                $class = 'badge bg-secondary text-dark';
-        }
+        $statusKeyMap = [
+            'requested' => 'pjr_st_requested',
+            'accepted' => 'pjr_st_accepted',
+            'in_progress' => 'pjr_st_in_progress',
+            'in_process' => 'pjr_st_in_process',
+            'advance_payment' => 'pjr_st_advance_payment',
+            'advance_paid' => 'pjr_st_advance_paid',
+            'advance_payment_pending_approval' => 'pjr_st_advance_payment_pending',
+            'advance_payment_pending' => 'pjr_st_advance_payment_pending',
+            'remaining_payment_pending_approval' => 'pjr_st_remaining_payment_pending',
+            'remaining_payment_pending' => 'pjr_st_remaining_payment_pending',
+            'assigned' => 'pjr_st_assigned',
+            'hold' => 'pjr_st_hold',
+            'on_hold' => 'pjr_st_hold',
+            'done' => 'pjr_st_done',
+            'remaining_paid' => 'pjr_st_remaining_paid',
+            'confirm_done' => 'pjr_st_completed',
+            'completed' => 'pjr_st_completed',
+            'cancelled' => 'pjr_st_cancelled',
+        ];
+
+        $classMap = [
+            'requested' => 'badge bg-primary-subtle text-dark',
+            'accepted' => 'badge bg-success text-dark',
+            'in_progress' => 'badge bg-primary text-dark',
+            'in_process' => 'badge bg-info text-dark',
+            'advance_payment' => 'badge bg-warning text-dark',
+            'advance_paid' => 'badge bg-success text-dark',
+            'advance_payment_pending_approval' => 'badge bg-warning text-dark',
+            'advance_payment_pending' => 'badge bg-warning text-dark',
+            'remaining_payment_pending_approval' => 'badge bg-warning text-dark',
+            'remaining_payment_pending' => 'badge bg-warning text-dark',
+            'assigned' => 'badge bg-info text-dark',
+            'hold' => 'badge bg-warning text-dark',
+            'on_hold' => 'badge bg-warning text-dark',
+            'done' => 'badge bg-success text-dark',
+            'remaining_paid' => 'badge bg-success text-dark',
+            'confirm_done' => 'badge bg-success text-dark',
+            'completed' => 'badge bg-success text-dark',
+            'cancelled' => 'badge bg-danger text-dark',
+        ];
+
+        $slug = strtolower($status);
+        $class = $classMap[$slug] ?? 'badge bg-secondary text-dark';
+        $key = $statusKeyMap[$slug] ?? null;
+        $label = ($key && \Illuminate\Support\Facades\Lang::has('messages.' . $key))
+            ? __('messages.' . $key)
+            : ucfirst(str_replace('_', ' ', $status));
 
         return '<span class="' . $class . '">' . e($label) . '</span>';
     }

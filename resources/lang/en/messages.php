@@ -1999,6 +1999,9 @@
     'pjr_st_cancelled' => 'Cancelled',
     'pjr_st_rejected' => 'Rejected',
     'pjr_st_advance_payment_pending' => 'Advance payment pending',
+    'pjr_st_assigned' => 'Assigned',
+    'pjr_st_advance_payment' => 'Advance Payment',
+    'pjr_st_remaining_payment_pending' => 'Remaining payment pending',
 
     // UGC safety (report / block / moderation)
     'sidebar_content_reports' => 'Content reports',

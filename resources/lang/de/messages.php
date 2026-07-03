@@ -2009,6 +2009,9 @@
     'pjr_st_cancelled' => 'Storniert',
     'pjr_st_rejected' => 'Abgelehnt',
     'pjr_st_advance_payment_pending' => 'Anzahlung ausstehend',
+    'pjr_st_assigned' => 'Zugewiesen',
+    'pjr_st_advance_payment' => 'Anzahlung',
+    'pjr_st_remaining_payment_pending' => 'Restzahlung ausstehend',
 
     // UGC safety (report / block / moderation)
     'sidebar_content_reports' => 'Content-Meldungen',

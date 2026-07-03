@@ -1303,6 +1303,9 @@
     'pjr_st_cancelled' => 'Annulée',
     'pjr_st_rejected' => 'Refusée',
     'pjr_st_advance_payment_pending' => 'Acompte en attente',
+    'pjr_st_assigned' => 'Assignée',
+    'pjr_st_advance_payment' => 'Acompte',
+    'pjr_st_remaining_payment_pending' => 'Solde en attente',
 
     // UGC safety (report / block / moderation)
     'sidebar_content_reports' => 'Signalements de contenu',

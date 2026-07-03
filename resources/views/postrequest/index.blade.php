@@ -281,7 +281,7 @@
                     {
                         data: 'created_at',
                         name: 'created_at',
-                        title: "{{ __('Posted At') }}"
+                        title: "{{ __('messages.pjr_posted_at') }}"
                     },
                     {
                         data: 'start_date',
