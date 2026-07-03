@@ -2400,6 +2400,7 @@
     'dashboard_last_12_months' => 'Letzte 12 Monate',
     'chart_months' => 'Jan,Feb,Mär,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez',
      'education_level'  => 'Bildungsabschluss',
-
+'success' => 'Erfolg',
+'error' => 'Fehler',
 
 );
