@@ -63,6 +63,7 @@ trait NotificationTrait
                 $data['activity_message'] = __('messages.booking_added', ['name' => $customer_name]);
                 $data['activity_type'] = __('messages.add_booking');
                 $activity_data = [
+                    'type_key' => 'add_booking',
                     'service_id' => $booking->service_id,
                     'service_name' => isset($booking->service) ? $booking->service->name : '',
                     'customer_id' => $booking->customer_id,
@@ -175,8 +176,10 @@ trait NotificationTrait
                 $handymanId = $booking->handymanAdded->pluck('handyman_id');
 
                 $activity_data = [
+                    'type_key' => 'assigned_booking',
                     'handyman_id' => $booking->handymanAdded->pluck('handyman_id'),
                     'handyman_name' => $booking->handymanAdded,
+                    'handyman_names' => $assigned_handyman,
                 ];
                 $data['activity_data'] = json_encode($activity_data);
                 \App\Models\BookingActivity::create($data);
@@ -190,6 +193,7 @@ trait NotificationTrait
                 $data['activity_message'] = __('messages.booking_status_update', ['id' => $booking->id, 'from' => $old_status, 'to' => $status]);
                 $handymanId = $booking->handymanAdded ? $booking->handymanAdded->pluck('handyman_id') : null;
                 $activity_data = [
+                    'type_key' => 'update_booking_status',
                     'reason' => $booking->reason,
                     'status' => $booking->status,
                     'status_label' => $status,
@@ -209,6 +213,7 @@ trait NotificationTrait
                 $data['activity_message'] = __('messages.cancel_booking');
                 $handymanId = $booking->handymanAdded ? $booking->handymanAdded->pluck('handyman_id') : null;
                 $activity_data = [
+                    'type_key' => 'cancel_booking',
                     'reason' => $booking->reason,
                     'status' => $booking->status,
                     'status_label' => \App\Models\BookingStatus::bookingStatus($booking->status),
@@ -218,15 +223,16 @@ trait NotificationTrait
                 break;
 
             case "payment_message_status":
+                $raw_payment_status = $data['payment_status'];
                 $data['activity_type'] = __('messages.payment_message_status');
-                $data['activity_message'] = __('messages.payment_message', ['status' => $data['payment_status']]);
-                $data['payment_status'] = ($data['payment_status'] === 'advanced_paid')
+                $data['activity_message'] = __('messages.payment_message', ['status' => payment_detail_status_label($raw_payment_status)]);
+                $data['payment_status'] = ($raw_payment_status === 'advanced_paid')
                     ? __('messages.advance_paid')
-                    : $data['payment_status'];
+                    : $raw_payment_status;
                 $data['pay_amount'] = isset($data['booking_amount']) ? $data['booking_amount'] : '';
                 $activity_data = [
-                    'activity_type' => $data['activity_type'],
-                    'payment_status' => $data['payment_status'],
+                    'type_key' => 'payment_message_status',
+                    'payment_status' => $raw_payment_status,
                     'booking_id' => $data['booking_id'],
                     'booking_amount' => $data['booking_amount'] ?? null,
                 ];

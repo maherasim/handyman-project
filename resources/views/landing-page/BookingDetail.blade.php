@@ -909,6 +909,7 @@ Status Modal
                     $datetime = new DateTime($bookingactivity['datetime']);
                     $date = $datetime->format('d F Y');
                     $time = $datetime->format('h:i A');
+                    $activityLabel = booking_activity_display($bookingactivity);
                     @endphp
                     <li class="done">
                         <div class="status-timeline-wrapper position-relative">
@@ -917,8 +918,8 @@ Status Modal
                                 <p class="text-capitalize m-0 date">{{ date($date_time['date_format'], strtotime($date)) }}</p>
                             </div>
                             <div class="timeline-content-block text-md-start">
-                                <h6 class="text-capitalize m-0 title">{{ $bookingactivity['activity_type'] }}</h6>
-                                <p class="text-capitalize m-0 description">{{ $bookingactivity['activity_message'] }}</p>
+                                <h6 class="text-capitalize m-0 title">{{ $activityLabel['type'] }}</h6>
+                                <p class="text-capitalize m-0 description">{{ $activityLabel['message'] }}</p>
                             </div>
                             <div class="timline-border">
                                 <span class="icon icon-fill">

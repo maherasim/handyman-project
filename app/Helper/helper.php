@@ -2557,6 +2557,60 @@ function payment_detail_type_label(?string $type): string
 }
 
 /**
+ * Re-translate a stored booking_activities row into the viewer's current locale.
+ * activity_type/activity_message columns are baked in the locale active when the
+ * status changed (e.g. an admin's), so the customer-facing timeline re-derives the
+ * label/message from the raw values in activity_data instead of printing them directly.
+ * Falls back to the stored columns for legacy rows saved before type_key existed.
+ */
+function booking_activity_display($activity): array
+{
+    $activity = (array) $activity;
+    $activityData = json_decode($activity['activity_data'] ?? '', true) ?: [];
+    $typeKey = $activityData['type_key'] ?? null;
+
+    switch ($typeKey) {
+        case 'add_booking':
+            return [
+                'type' => __('messages.add_booking'),
+                'message' => __('messages.booking_added', ['name' => $activityData['customer_name'] ?? '']),
+            ];
+        case 'assigned_booking':
+            return [
+                'type' => __('messages.assigned_booking'),
+                'message' => __('messages.booking_assigned', [
+                    'id' => $activity['booking_id'] ?? '',
+                    'name' => $activityData['handyman_names'] ?? '',
+                ]),
+            ];
+        case 'update_booking_status':
+            return [
+                'type' => __('messages.update_booking_status'),
+                'message' => __('messages.booking_status_update', [
+                    'id' => $activity['booking_id'] ?? '',
+                    'from' => booking_detail_status_label($activityData['old_status'] ?? null),
+                    'to' => booking_detail_status_label($activityData['status'] ?? null),
+                ]),
+            ];
+        case 'cancel_booking':
+            return [
+                'type' => __('messages.cancel_booking'),
+                'message' => __('messages.cancel_booking'),
+            ];
+        case 'payment_message_status':
+            return [
+                'type' => __('messages.payment_message_status'),
+                'message' => __('messages.payment_message', ['status' => payment_detail_status_label($activityData['payment_status'] ?? null)]),
+            ];
+        default:
+            return [
+                'type' => $activity['activity_type'] ?? '',
+                'message' => $activity['activity_message'] ?? '',
+            ];
+    }
+}
+
+/**
  * UGC report reason options for JS modals (value stays English snake_case for API; label is translated).
  *
  * @return array<int, array{value: string, label: string}>
