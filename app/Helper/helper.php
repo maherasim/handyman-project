@@ -2413,14 +2413,14 @@ function getAdminMailFromAddress(): ?string {
 
 /**
  * Bank transfer display details (recipient/IBAN/BIC/bank name/address/email) for
- * the requested locale, with the same fallback chain used by /setting/bank-transfer-setting:
- * requested locale record -> English record -> .env defaults.
+ * the requested locale — read straight from the bank_transfer_settings table
+ * (the same data managed on Setting > Bank Transfer Setting), with the requested
+ * locale's record preferred and the English record as fallback. No hardcoded
+ * values: if neither record exists yet, fields come back empty.
  *
- * config('bank_transfer') runs this same DB lookup, but as a config() value it gets
- * frozen by `php artisan config:cache` — including whatever locale/DB state was active
- * at cache-build time — so admin edits to the Bank Transfer Setting page (or the visiting
- * user's own locale) can silently stop taking effect. Call this helper directly instead
- * wherever the value is needed at request time.
+ * Call this directly at request time rather than via config('bank_transfer') —
+ * config() values get frozen by `php artisan config:cache`, so admin edits to
+ * the Bank Transfer Setting page could otherwise silently stop taking effect.
  */
 function getBankTransferDisplayConfig(?string $locale = null): array {
     $locale = $locale ?: app()->getLocale();
@@ -2433,13 +2433,12 @@ function getBankTransferDisplayConfig(?string $locale = null): array {
     }
 
     return [
-        'recipient'    => $setting->recipient    ?? env('BANK_TRANSFER_RECIPIENT',     'Frobster Marketplace'),
-        'iban'         => $setting->iban         ?? env('BANK_TRANSFER_IBAN',          'DE02 1001 0178 1361 6331 79'),
-        'bic'          => $setting->bic          ?? env('BANK_TRANSFER_BIC',           'REVODEB2'),
-        'bank_name'    => $setting->bank_name    ?? env('BANK_TRANSFER_BANK_NAME',     'Revolut Bank UAB'),
-        'bank_address' => $setting->bank_address ?? env('BANK_TRANSFER_BANK_ADDRESS',  ''),
-        'sender_bic'   => env('BANK_TRANSFER_SENDER_BIC', 'CHASDEFX'),
-        'email'        => $setting->email        ?? env('BANK_TRANSFER_EMAIL',         'billing@frobster.com'),
+        'recipient'    => $setting->recipient    ?? '',
+        'iban'         => $setting->iban         ?? '',
+        'bic'          => $setting->bic          ?? '',
+        'bank_name'    => $setting->bank_name    ?? '',
+        'bank_address' => $setting->bank_address ?? '',
+        'email'        => $setting->email        ?? '',
     ];
 }
 

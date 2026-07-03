@@ -235,30 +235,27 @@
                 </div>
             </div>
             
+            @php $bankConfig = getBankTransferDisplayConfig($locale); @endphp
             <div class="bank-info">
                 <h3>{{ __('messages.email_bank_transfer_information') }}</h3>
                 <div class="mb-2"><strong>{{ __('messages.email_for_local_international') }}</strong></div>
                 <div class="bank-details">
                     <div class="bank-row">
                         <span class="bank-label">{{ __('messages.email_recipient') }}:</span>
-                        <span class="bank-value">{{ config('bank_transfer.recipient') }}</span>
+                        <span class="bank-value">{{ $bankConfig['recipient'] }}</span>
                     </div>
                     <div class="bank-row">
                         <span class="bank-label">IBAN:</span>
-                        <span class="bank-value">{{ config('bank_transfer.iban') }}</span>
+                        <span class="bank-value">{{ $bankConfig['iban'] }}</span>
                     </div>
                     <div class="bank-row">
                         <span class="bank-label">BIC:</span>
-                        <span class="bank-value">{{ config('bank_transfer.bic') }}</span>
+                        <span class="bank-value">{{ $bankConfig['bic'] }}</span>
                     </div>
                     <div class="bank-row">
                         <span class="bank-label">{{ __('messages.email_bank_name_address') }}:</span>
-                        <span class="bank-value">{{ config('bank_transfer.bank_name') }},<br>
-                            {!! nl2br(e(config('bank_transfer.bank_address'))) !!}</span>
-                    </div>
-                    <div class="bank-row">
-                        <span class="bank-label">{{ __('messages.email_bic_sender_bank') }}:</span>
-                        <span class="bank-value">{{ config('bank_transfer.sender_bic') }}</span>
+                        <span class="bank-value">{{ $bankConfig['bank_name'] }},<br>
+                            {!! nl2br(e($bankConfig['bank_address'])) !!}</span>
                     </div>
                 </div>
             </div>

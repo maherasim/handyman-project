@@ -54,7 +54,6 @@
         'bankIban' => __('messages.pjr_bank_iban'),
         'bankBic' => __('messages.pjr_bank_bic'),
         'bankNameAddress' => __('messages.pjr_bank_name_address'),
-        'bankBicSender' => __('messages.pjr_bank_bic_sender'),
         'bankInstructionsHeading' => __('messages.provider_sub_bank_instructions_heading'),
         'bankStep1' => __('messages.provider_sub_bank_step1'),
         'bankStep2' => __('messages.provider_sub_bank_step2'),
@@ -1164,10 +1163,6 @@
                             <div class="bank-row">
                                 <span class="bank-label">${planLang.bankNameAddress}</span>
                                 <span class="bank-value">${bankTransferConfig.bank_name},<br>${bankTransferConfig.bank_address.replace(/\n/g,'<br>')}</span>
-                            </div>
-                            <div class="bank-row">
-                                <span class="bank-label">${planLang.bankBicSender}</span>
-                                <span class="bank-value">${bankTransferConfig.sender_bic}</span>
                             </div>
                         </div>
                     </div>
