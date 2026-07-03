@@ -155,11 +155,17 @@ function formatCurrency(number = 0, noOfDecimal, currencyPosition, currencySymbo
 
 
 window.formatCurrency = formatCurrency
+// window.appLocale is set server-side (resources/views/landing-page/partials/_head.blade.php)
+// from app()->getLocale() — the locale actually resolved for this request/domain — so the
+// Vue i18n instance and every component reading useI18n().locale (e.g. Payment.vue's
+// bank-transfer-settings fetch) match what the server rendered instead of defaulting to 'en'.
+const appLocale = window.appLocale || 'en'
 const i18n = createI18n({
   legacy: false,
-  locale: 'en',
+  locale: appLocale,
+  fallbackLocale: 'en',
   globalInjection: true,
-  messages: { en: window.localMessagesUpdate } || {}
+  messages: { [appLocale]: window.localMessagesUpdate } || {}
 })
 
 window.i18n = i18n

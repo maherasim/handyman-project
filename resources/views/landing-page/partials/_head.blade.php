@@ -78,6 +78,7 @@
     <script>
         window.cancellationCharge = @json($serviceconfig);
         window.bankTransferConfig = @json(getBankTransferDisplayConfig());
+        window.appLocale = @json($currentLang);
     </script>
 <script>
     // Static primary color - Red-Blue Gradient
