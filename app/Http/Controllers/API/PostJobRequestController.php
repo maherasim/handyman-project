@@ -105,7 +105,7 @@ class PostJobRequestController extends Controller
                 $recipientType = $isProviderUpdating ? 'user' : 'provider';
 
                 if ($recipient && $recipient->email) {
-                    Mail::to($recipient->email)->locale(getRecipientLocale($recipient))->send(new PostJobBidStatusUpdateMail($recipient, $bid, $oldBidStatus, $bid->status, $actorName, $actorType, $recipientType, getRecipientLocale($recipient)));
+                    Mail::to($recipient->email)->locale(app()->getLocale())->send(new PostJobBidStatusUpdateMail($recipient, $bid, $oldBidStatus, $bid->status, $actorName, $actorType, $recipientType, app()->getLocale()));
                     \Log::info("Post job bid status email sent to {$recipientType}: " . $recipient->email . ' for bid ID: ' . $bid->id . ", status: {$oldBidStatus} -> {$bid->status}");
                 }
             } catch (\Throwable $e) {
@@ -261,7 +261,7 @@ class PostJobRequestController extends Controller
         // Send detailed payment-split email directly, regardless of DB mail-template enable state
         try {
             if ($bid->customer && $bid->customer->email && $bid->provider) {
-                Mail::to($bid->customer->email)->locale(getRecipientLocale($bid->customer))->send(new PaymentSplitSetMail($bid->customer, $bid, $bid->provider, getRecipientLocale($bid->customer)));
+                Mail::to($bid->customer->email)->locale(app()->getLocale())->send(new PaymentSplitSetMail($bid->customer, $bid, $bid->provider, app()->getLocale()));
                 \Log::info('Payment split set email sent to customer: ' . $bid->customer->email . ' for bid ID: ' . $bid->id);
             }
         } catch (\Throwable $e) {

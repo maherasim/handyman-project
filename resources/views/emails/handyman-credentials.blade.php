@@ -43,15 +43,15 @@
         <div class="credentials-box">
             <h3>🔐 {{ __('messages.email_handyman_credentials_heading', [], $locale) }}</h3>
             <div class="cred-row">
-                <span class="cred-label">{{ __('messages.email', [], $locale) }}</span>
+                <span class="cred-label">{{ __('messages.email', [], $locale) }} :</span>
                 <span class="cred-value">{{ $handyman->email }}</span>
             </div>
             <div class="cred-row">
-                <span class="cred-label">{{ __('messages.password', [], $locale) }}</span>
+                <span class="cred-label">{{ __('messages.password', [], $locale) }} :  </span>
                 <span class="cred-value">{{ $plainPassword }}</span>
             </div>
             <div class="cred-row">
-                <span class="cred-label">{{ __('messages.email_login_url_label', [], $locale) }}</span>
+                <span class="cred-label">{{ __('messages.email_login_url_label', [], $locale) }} :</span>
                 <span class="cred-value">{{ $loginUrl }}</span>
             </div>
         </div>
