@@ -2393,6 +2393,36 @@ function getRecipientLocale($user): string {
 }
 
 /**
+ * Resolve the locale strictly from the current request's domain (persotel.de -> de,
+ * frobster.com -> en), ignoring any session/user-preference override.
+ *
+ * Use this — not app()->getLocale() — when picking the locale for an outbound email
+ * whose recipient is someone other than the currently-authenticated/acting user (e.g.
+ * notifying a customer about a bid a *provider* just placed). app()->getLocale() can be
+ * silently overridden by the `SetUserLocale` middleware (api routes) using the ACTING
+ * user's own `language_option`, which defaults to 'en' for every account — so trusting
+ * it there defeats the point of a per-domain locale entirely. Mirrors the logic in
+ * BookingController::resolveInvoicePdfLocale() but without the session-switcher override,
+ * since a recipient's email has no relation to the actor's own session choice.
+ */
+function resolveDomainLocale(): string
+{
+    $domainLocale = config('app.domain_locale', []);
+    $host = request()->getHost();
+    $hostVariants = array_unique(array_filter([
+        $host,
+        preg_replace('/^www\./i', '', $host),
+        str_starts_with(strtolower($host), 'www.') ? null : 'www.'.$host,
+    ]));
+    foreach ($hostVariants as $h) {
+        if ($h !== '' && isset($domainLocale[$h])) {
+            return $domainLocale[$h];
+        }
+    }
+    return config('app.locale', 'en');
+}
+
+/**
  * Admin "Mail From Address" as currently shown on Setting > Mail Settings
  * (/setting/mail-setting). Reads the .env file directly — same technique
  * SettingController uses to render that tab — because config('mail.from.address')

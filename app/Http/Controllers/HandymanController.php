@@ -369,7 +369,7 @@ class HandymanController extends Controller
         // which is just the DB default) so the email matches the domain being used.
         if ($plainPassword !== null && auth()->user()->hasRole('provider')) {
             try {
-                $mailLocale = app()->getLocale();
+                $mailLocale = resolveDomainLocale();
                 \Mail::to($user->email)->locale($mailLocale)->send(
                     new HandymanCredentialsMail($user, auth()->user(), $plainPassword, $mailLocale)
                 );

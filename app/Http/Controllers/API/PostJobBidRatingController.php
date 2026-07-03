@@ -63,7 +63,7 @@ class PostJobBidRatingController extends Controller
                     'rating' => (string) $request->rating,
                     'link' => $link,
                     'company_name' => config('app.name', 'Frobster'),
-                ], app()->getLocale())); // *** domain locale, not stale profile default ***
+                ], resolveDomainLocale())); // *** domain locale, not stale profile default ***
             }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning('post_job_bid_rated_provider notification failed: ' . $e->getMessage());
@@ -75,7 +75,7 @@ class PostJobBidRatingController extends Controller
             $provider = $bid->provider;
             $customer = $bid->customer;
             if ($provider && $provider->email && $customer) {
-                Mail::to($provider->email)->locale(app()->getLocale())->send(new PostJobBidRatingMail($provider, $bid, $customer, (int) $request->rating, (string) ($request->review ?? ''), 'provider', app()->getLocale()));
+                Mail::to($provider->email)->locale(resolveDomainLocale())->send(new PostJobBidRatingMail($provider, $bid, $customer, (int) $request->rating, (string) ($request->review ?? ''), 'provider', resolveDomainLocale()));
                 \Illuminate\Support\Facades\Log::info('Post job bid rating email sent to provider: ' . $provider->email . ' for bid ID: ' . $bid->id);
             }
         } catch (\Throwable $e) {
@@ -147,7 +147,7 @@ class PostJobBidRatingController extends Controller
                     'rating' => (string) $request->rating,
                     'link' => $link,
                     'company_name' => config('app.name', 'Frobster'),
-                ], app()->getLocale())); // *** domain locale, not stale profile default ***
+                ], resolveDomainLocale())); // *** domain locale, not stale profile default ***
             }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning('post_job_bid_rated_customer notification failed: ' . $e->getMessage());
@@ -159,7 +159,7 @@ class PostJobBidRatingController extends Controller
             $customer = $bid->customer;
             $provider = $bid->provider;
             if ($customer && $customer->email && $provider) {
-                Mail::to($customer->email)->locale(app()->getLocale())->send(new PostJobBidRatingMail($customer, $bid, $provider, (int) $request->rating, (string) ($request->review ?? ''), 'user', app()->getLocale()));
+                Mail::to($customer->email)->locale(resolveDomainLocale())->send(new PostJobBidRatingMail($customer, $bid, $provider, (int) $request->rating, (string) ($request->review ?? ''), 'user', resolveDomainLocale()));
                 \Illuminate\Support\Facades\Log::info('Post job bid rating email sent to customer: ' . $customer->email . ' for bid ID: ' . $bid->id);
             }
         } catch (\Throwable $e) {

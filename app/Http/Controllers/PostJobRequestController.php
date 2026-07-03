@@ -283,7 +283,7 @@ class PostJobRequestController extends Controller
                 // Send detailed payment-split email directly, regardless of DB mail-template enable state
                 try {
                     if ($bid->customer && $bid->customer->email && $bid->provider) {
-                        Mail::to($bid->customer->email)->locale(app()->getLocale())->send(new PaymentSplitSetMail($bid->customer, $bid, $bid->provider, app()->getLocale()));
+                        Mail::to($bid->customer->email)->locale(resolveDomainLocale())->send(new PaymentSplitSetMail($bid->customer, $bid, $bid->provider, resolveDomainLocale()));
                         \Log::info('Payment split set email sent to customer: ' . $bid->customer->email . ' for bid ID: ' . $bid->id);
                     }
                 } catch (\Throwable $e) {
@@ -644,7 +644,7 @@ class PostJobRequestController extends Controller
             // Send detailed payment-received email directly, regardless of payment method / DB mail-template state
             try {
                 if ($post->provider && $post->provider->email && $post->customer) {
-                    Mail::to($post->provider->email)->locale(app()->getLocale())->send(new PostJobPaymentReceivedMail($post->provider, $post, $post->customer, $paymentType, app()->getLocale()));
+                    Mail::to($post->provider->email)->locale(resolveDomainLocale())->send(new PostJobPaymentReceivedMail($post->provider, $post, $post->customer, $paymentType, resolveDomainLocale()));
                     \Log::info("Post job {$paymentType} payment email sent to provider: " . $post->provider->email . ' for bid ID: ' . $post->id);
                 }
             } catch (\Throwable $e) {
@@ -732,7 +732,7 @@ class PostJobRequestController extends Controller
                 $recipientType = $isProviderUpdating ? 'user' : 'provider';
 
                 if ($recipient && $recipient->email) {
-                    Mail::to($recipient->email)->locale(app()->getLocale())->send(new PostJobBidStatusUpdateMail($recipient, $bid, $oldBidStatus, $bid->status, $actorName, $actorType, $recipientType, app()->getLocale()));
+                    Mail::to($recipient->email)->locale(resolveDomainLocale())->send(new PostJobBidStatusUpdateMail($recipient, $bid, $oldBidStatus, $bid->status, $actorName, $actorType, $recipientType, resolveDomainLocale()));
                     \Log::info("Post job bid status email sent to {$recipientType}: " . $recipient->email . ' for bid ID: ' . $bid->id . ", status: {$oldBidStatus} -> {$bid->status}");
                 }
             } catch (\Throwable $e) {
@@ -809,7 +809,7 @@ class PostJobRequestController extends Controller
                 $actor = auth()->user();
                 $actorName = $actor ? ($actor->display_name ?? $actor->first_name ?? 'System') : 'System';
                 if ($bid->customer && $bid->customer->email) {
-                    Mail::to($bid->customer->email)->locale(app()->getLocale())->send(new PostJobBidStatusUpdateMail($bid->customer, $bid, $oldBidStatus, $bid->status, $actorName, 'provider', 'user', app()->getLocale()));
+                    Mail::to($bid->customer->email)->locale(resolveDomainLocale())->send(new PostJobBidStatusUpdateMail($bid->customer, $bid, $oldBidStatus, $bid->status, $actorName, 'provider', 'user', resolveDomainLocale()));
                     \Log::info('Post job bid extra-charges/completed email sent to customer: ' . $bid->customer->email . ' for bid ID: ' . $bid->id);
                 }
             } catch (\Throwable $e) {
@@ -869,7 +869,7 @@ class PostJobRequestController extends Controller
             $actor = auth()->user();
             $actorName = $actor ? ($actor->display_name ?? $actor->first_name ?? 'System') : 'System';
             if ($bid->customer && $bid->customer->email) {
-                Mail::to($bid->customer->email)->locale(app()->getLocale())->send(new PostJobBidStatusUpdateMail($bid->customer, $bid, $oldBidStatus, $bid->status, $actorName, 'provider', 'user', app()->getLocale()));
+                Mail::to($bid->customer->email)->locale(resolveDomainLocale())->send(new PostJobBidStatusUpdateMail($bid->customer, $bid, $oldBidStatus, $bid->status, $actorName, 'provider', 'user', resolveDomainLocale()));
                 \Log::info('Post job bid extra-charges/completed email sent to customer: ' . $bid->customer->email . ' for bid ID: ' . $bid->id);
             }
         } catch (\Throwable $e) {
@@ -1156,7 +1156,7 @@ class PostJobRequestController extends Controller
             // Send detailed payment-received email directly, regardless of payment method / DB mail-template state
             try {
                 if ($bid->provider && $bid->provider->email && $bid->customer) {
-                    Mail::to($bid->provider->email)->locale(app()->getLocale())->send(new PostJobPaymentReceivedMail($bid->provider, $bid, $bid->customer, $type, app()->getLocale()));
+                    Mail::to($bid->provider->email)->locale(resolveDomainLocale())->send(new PostJobPaymentReceivedMail($bid->provider, $bid, $bid->customer, $type, resolveDomainLocale()));
                     \Log::info("Post job {$type} payment email sent to provider: " . $bid->provider->email . ' for bid ID: ' . $bid->id);
                 }
             } catch (\Throwable $e) {
@@ -1339,7 +1339,7 @@ class PostJobRequestController extends Controller
             // Send detailed payment-received email directly, regardless of payment method / DB mail-template state
             try {
                 if ($bid->provider && $bid->provider->email && $bid->customer) {
-                    Mail::to($bid->provider->email)->locale(app()->getLocale())->send(new PostJobPaymentReceivedMail($bid->provider, $bid, $bid->customer, $type, app()->getLocale()));
+                    Mail::to($bid->provider->email)->locale(resolveDomainLocale())->send(new PostJobPaymentReceivedMail($bid->provider, $bid, $bid->customer, $type, resolveDomainLocale()));
                     \Log::info("Post job {$type} payment email sent to provider: " . $bid->provider->email . ' for bid ID: ' . $bid->id);
                 }
             } catch (\Throwable $e) {
@@ -1503,7 +1503,7 @@ class PostJobRequestController extends Controller
             // Send detailed payment-received email directly, regardless of payment method / DB mail-template state
             try {
                 if ($bid->provider && $bid->provider->email && $bid->customer) {
-                    Mail::to($bid->provider->email)->locale(app()->getLocale())->send(new PostJobPaymentReceivedMail($bid->provider, $bid, $bid->customer, $type, app()->getLocale()));
+                    Mail::to($bid->provider->email)->locale(resolveDomainLocale())->send(new PostJobPaymentReceivedMail($bid->provider, $bid, $bid->customer, $type, resolveDomainLocale()));
                     \Log::info("Post job {$type} payment email sent to provider: " . $bid->provider->email . ' for bid ID: ' . $bid->id);
                 }
             } catch (\Throwable $e) {
@@ -1846,7 +1846,7 @@ class PostJobRequestController extends Controller
         // Send detailed payment-received email directly, regardless of payment method / DB mail-template state
         try {
             if ($bid->provider && $bid->provider->email && $bid->customer) {
-                Mail::to($bid->provider->email)->locale(app()->getLocale())->send(new PostJobPaymentReceivedMail($bid->provider, $bid, $bid->customer, $type, app()->getLocale()));
+                Mail::to($bid->provider->email)->locale(resolveDomainLocale())->send(new PostJobPaymentReceivedMail($bid->provider, $bid, $bid->customer, $type, resolveDomainLocale()));
                 \Log::info("Post job {$type} payment email sent to provider: " . $bid->provider->email . ' for bid ID: ' . $bid->id);
             }
         } catch (\Throwable $e) {
@@ -2031,7 +2031,7 @@ class PostJobRequestController extends Controller
             // Send detailed payment-received email directly, regardless of payment method / DB mail-template state
             try {
                 if ($bid->provider && $bid->provider->email && $bid->customer) {
-                    Mail::to($bid->provider->email)->locale(app()->getLocale())->send(new PostJobPaymentReceivedMail($bid->provider, $bid, $bid->customer, $type, app()->getLocale()));
+                    Mail::to($bid->provider->email)->locale(resolveDomainLocale())->send(new PostJobPaymentReceivedMail($bid->provider, $bid, $bid->customer, $type, resolveDomainLocale()));
                     \Log::info("Post job {$type} payment email sent to provider: " . $bid->provider->email . ' for bid ID: ' . $bid->id);
                 }
             } catch (\Throwable $e) {
@@ -2207,7 +2207,7 @@ class PostJobRequestController extends Controller
         // Notify admin: cash/bank transfer submitted – verify at cash-payment-list
         try {
             $bid->load(['customer', 'provider', 'request']);
-            Mail::to(getAdminMailFromAddress())->locale(app()->getLocale())->send(new PostJobBankTransferPaymentNotificationMail($payment, $bid, $type, app()->getLocale())); // *** admin email read live from Setting > Mail Settings ***
+            Mail::to(getAdminMailFromAddress())->locale(resolveDomainLocale())->send(new PostJobBankTransferPaymentNotificationMail($payment, $bid, $type, resolveDomainLocale())); // *** admin email read live from Setting > Mail Settings ***
         } catch (\Exception $e) {
             Log::error('Failed to send post job bank transfer notification to admin: ' . $e->getMessage());
         }
@@ -2376,7 +2376,7 @@ class PostJobRequestController extends Controller
         // Send detailed bid-accepted email directly, regardless of DB mail-template enable state
         try {
             if ($bid->provider && $bid->provider->email && $bid->customer) {
-                Mail::to($bid->provider->email)->locale(app()->getLocale())->send(new BidAcceptedMail($bid->provider, $bid, $bid->customer, app()->getLocale()));
+                Mail::to($bid->provider->email)->locale(resolveDomainLocale())->send(new BidAcceptedMail($bid->provider, $bid, $bid->customer, resolveDomainLocale()));
                 \Log::info('Bid accepted email sent to provider: ' . $bid->provider->email . ' for bid ID: ' . $bid->id);
             } else {
                 \Log::warning('Bid accepted email skipped (missing provider/email/customer) for bid ID: ' . $bid->id);
@@ -2871,7 +2871,7 @@ class PostJobRequestController extends Controller
                     // Use the site's active locale (not each provider's saved language_option,
                     // which defaults to 'en' for everyone) so persotel.de job posts always
                     // notify providers in German regardless of a stale profile default.
-                    $mailLocale = app()->getLocale();
+                    $mailLocale = resolveDomainLocale();
                     $matchingProviders = User::whereIn('id', $providerIds)->whereNotNull('email')->get();
                     foreach ($matchingProviders as $providerUser) {
                         try {
@@ -3157,7 +3157,7 @@ class PostJobRequestController extends Controller
         // Send detailed payment-split email directly, regardless of DB mail-template enable state
         try {
             if ($bid->customer && $bid->customer->email && $bid->provider) {
-                Mail::to($bid->customer->email)->locale(app()->getLocale())->send(new PaymentSplitSetMail($bid->customer, $bid, $bid->provider, app()->getLocale()));
+                Mail::to($bid->customer->email)->locale(resolveDomainLocale())->send(new PaymentSplitSetMail($bid->customer, $bid, $bid->provider, resolveDomainLocale()));
                 \Log::info('Payment split set email sent to customer: ' . $bid->customer->email . ' for bid ID: ' . $bid->id);
             } else {
                 \Log::warning('Payment split set email skipped (missing customer/email/provider) for bid ID: ' . $bid->id);

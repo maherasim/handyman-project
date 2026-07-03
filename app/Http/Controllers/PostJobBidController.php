@@ -169,7 +169,7 @@ public function apiIndex(Request $request)
                      $customerUser = $customer->customer ?? User::find($customer->customer_id);
                      $providerUser = auth()->user();
                      if ($customerUser && $customerUser->email && $providerUser) {
-                         Mail::to($customerUser->email)->locale(app()->getLocale())->send(new ProviderBidPlacedMail($customerUser, $result, $customer, $providerUser, app()->getLocale()));
+                         Mail::to($customerUser->email)->locale(resolveDomainLocale())->send(new ProviderBidPlacedMail($customerUser, $result, $customer, $providerUser, resolveDomainLocale()));
                      }
                  } catch (\Throwable $e) {
                      \Log::error('Failed to send provider bid placed email: ' . $e->getMessage());
