@@ -364,11 +364,14 @@ class HandymanController extends Controller
             $user->fill($data)->update();
         }
 
-        // Send credentials email when a provider creates a new handyman
+        // Send credentials email when a provider creates a new handyman.
+        // Uses the active site locale (not the brand-new handyman's language_option,
+        // which is just the DB default) so the email matches the domain being used.
         if ($plainPassword !== null && auth()->user()->hasRole('provider')) {
             try {
-                \Mail::to($user->email)->send(
-                    new HandymanCredentialsMail($user, auth()->user(), $plainPassword)
+                $mailLocale = app()->getLocale();
+                \Mail::to($user->email)->locale($mailLocale)->send(
+                    new HandymanCredentialsMail($user, auth()->user(), $plainPassword, $mailLocale)
                 );
             } catch (\Throwable $th) {
                 \Log::warning('Handyman credentials email failed: ' . $th->getMessage());

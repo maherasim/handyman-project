@@ -2471,4 +2471,18 @@
     'bank_transfer_bank_name'     => 'Nom de la banque',
     'bank_transfer_bank_address'  => 'Adresse de la banque',
     'bank_transfer_email'         => 'E-mail de facturation',
+
+    // Handyman credentials email
+    'handyman_credentials_email_subject' => 'Vos identifiants de compte Ouvrier',
+    'email_handyman_credentials_welcome' => 'Bienvenue chez :app',
+    'email_handyman_credentials_account_created' => 'Votre compte ouvrier a été créé',
+    'email_handyman_credentials_intro' => 'Votre compte ouvrier sur :app a été créé par :provider. Voici vos identifiants de connexion pour accéder à la plateforme.',
+    'email_handyman_credentials_heading' => 'Vos identifiants de connexion',
+    'email_login_url_label' => 'URL de connexion',
+    'email_handyman_credentials_login_button' => 'Connectez-vous à votre compte',
+    'email_important_label' => 'Important',
+    'email_handyman_credentials_password_warning' => 'Veuillez changer votre mot de passe après votre première connexion pour sécuriser votre compte.',
+    'email_handyman_credentials_commission_info' => "Votre taux de commission a été défini par votre agence. Pour toute question concernant votre compte, veuillez contacter votre agence via le système d'assistance de la plateforme.",
+    'email_handyman_credentials_unexpected' => "Si vous n'attendiez pas cet e-mail, veuillez contacter immédiatement le support de :app.",
+    'email_handyman_credentials_sent_to' => 'Cet e-mail a été envoyé à :email',
 ];
