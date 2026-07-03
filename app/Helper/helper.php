@@ -2411,6 +2411,38 @@ function getAdminMailFromAddress(): ?string {
     return config('mail.from.address') ?: null;
 }
 
+/**
+ * Bank transfer display details (recipient/IBAN/BIC/bank name/address/email) for
+ * the requested locale, with the same fallback chain used by /setting/bank-transfer-setting:
+ * requested locale record -> English record -> .env defaults.
+ *
+ * config('bank_transfer') runs this same DB lookup, but as a config() value it gets
+ * frozen by `php artisan config:cache` — including whatever locale/DB state was active
+ * at cache-build time — so admin edits to the Bank Transfer Setting page (or the visiting
+ * user's own locale) can silently stop taking effect. Call this helper directly instead
+ * wherever the value is needed at request time.
+ */
+function getBankTransferDisplayConfig(?string $locale = null): array {
+    $locale = $locale ?: app()->getLocale();
+
+    try {
+        $setting = \App\Models\BankTransferSetting::where('language', $locale)->where('is_active', 1)->first()
+                ?? \App\Models\BankTransferSetting::where('language', 'en')->where('is_active', 1)->first();
+    } catch (\Throwable $e) {
+        $setting = null;
+    }
+
+    return [
+        'recipient'    => $setting->recipient    ?? env('BANK_TRANSFER_RECIPIENT',     'Frobster Marketplace'),
+        'iban'         => $setting->iban         ?? env('BANK_TRANSFER_IBAN',          'DE02 1001 0178 1361 6331 79'),
+        'bic'          => $setting->bic          ?? env('BANK_TRANSFER_BIC',           'REVODEB2'),
+        'bank_name'    => $setting->bank_name    ?? env('BANK_TRANSFER_BANK_NAME',     'Revolut Bank UAB'),
+        'bank_address' => $setting->bank_address ?? env('BANK_TRANSFER_BANK_ADDRESS',  ''),
+        'sender_bic'   => env('BANK_TRANSFER_SENDER_BIC', 'CHASDEFX'),
+        'email'        => $setting->email        ?? env('BANK_TRANSFER_EMAIL',         'billing@frobster.com'),
+    ];
+}
+
 function sendBankTransferConfirmationEmail($user, $subscription, $transaction) {
     try {
         $locale = getRecipientLocale($user);

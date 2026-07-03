@@ -78,7 +78,7 @@
         'noteLabel' => __('messages.provider_sub_note_label'),
         'bankNote' => __('messages.provider_sub_bank_note'),
     ];
-    $bankConfig = config('bank_transfer');
+    $bankConfig = getBankTransferDisplayConfig();
 @endphp
 
 <div class="subscription-management-container">

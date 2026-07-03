@@ -609,7 +609,7 @@ class DashboardController extends Controller
             "data_deletion_request" => $data_deletion_request,
             "earning_type"=> $earning_setting,
             "auto_assign_status" => !empty($other_setting->auto_assign_provider) ? $other_setting->auto_assign_provider: 0,
-            "bank_transfer" => config('bank_transfer'),
+            "bank_transfer" => getBankTransferDisplayConfig(),
 
         ];
         if(!empty($request->is_authenticated) && $request->is_authenticated == 1){

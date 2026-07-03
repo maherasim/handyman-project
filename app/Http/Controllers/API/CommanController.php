@@ -93,9 +93,11 @@ class CommanController extends Controller
         $language = $request->query('language');
 
         if ($language) {
-            $setting = BankTransferSetting::where('language', $language)
-                ->where('is_active', 1)
-                ->first();
+            // Same fallback chain as getBankTransferDisplayConfig(): requested language -> English record,
+            // so the frontend never gets stuck on a stale/wrong-language value just because the admin
+            // hasn't filled in that specific language yet.
+            $setting = BankTransferSetting::where('language', $language)->where('is_active', 1)->first()
+                    ?? BankTransferSetting::where('language', 'en')->where('is_active', 1)->first();
 
             if (!$setting) {
                 return comman_custom_response(['data' => null, 'message' => 'No settings found for the requested language.'], 404);
