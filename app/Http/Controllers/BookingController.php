@@ -263,25 +263,21 @@ class BookingController extends Controller
             // })
             ->editColumn('status', function ($query) {
                 $statusKey = strtolower((string) $query->status);
-                $statusMap = [
-                    'pending' => ['Pending', 'badge bg-dark text-white'],
-                    'accept' => ['Accepted', 'badge bg-info text-white'],
-                    'on_going' => ['On Going', 'badge bg-primary text-white'],
-                    'in_progress' => ['In Progress', 'badge bg-primary text-white'],
-                    'pending_approval' => ['Pending Approval', 'badge bg-warning text-dark'],
-                    'confirm' => ['Confirmed', 'badge bg-success text-white'],
-                    'hold' => ['On Hold', 'badge bg-warning text-dark'],
-                    'completed' => ['Completed', 'badge bg-success text-white'],
-                    'cancelled' => ['Cancelled', 'badge bg-danger text-white'],
-                    'rejected' => ['Rejected', 'badge bg-danger text-white'],
+                $classesMap = [
+                    'pending' => 'badge bg-dark text-white',
+                    'accept' => 'badge bg-info text-white',
+                    'on_going' => 'badge bg-primary text-white',
+                    'in_progress' => 'badge bg-primary text-white',
+                    'pending_approval' => 'badge bg-warning text-dark',
+                    'confirm' => 'badge bg-success text-white',
+                    'hold' => 'badge bg-warning text-dark',
+                    'completed' => 'badge bg-success text-white',
+                    'cancelled' => 'badge bg-danger text-white',
+                    'rejected' => 'badge bg-danger text-white',
                 ];
 
-                if (isset($statusMap[$statusKey])) {
-                    [$label, $classes] = $statusMap[$statusKey];
-                } else {
-                    $label = str_replace('_', ' ', ucfirst((string) $query->status));
-                    $classes = 'badge bg-secondary text-white';
-                }
+                $classes = $classesMap[$statusKey] ?? 'badge bg-secondary text-white';
+                $label = booking_detail_status_label($query->status);
 
                 return '<span class="' . $classes . '">' . e($label) . '</span>';
             })
@@ -298,7 +294,7 @@ class BookingController extends Controller
 
                 if ($payment_status !== null) {
                     $badgeClass = $payment_status === 'cancelled' ? 'bg-danger' : 'bg-primary';
-                    $status = '<span class="text-center text-white badge ' . $badgeClass . '">' . str_replace('_', " ", ucfirst($payment_status)) . '</span>';
+                    $status = '<span class="text-center text-white badge ' . $badgeClass . '">' . e(payment_detail_status_label($payment_status)) . '</span>';
                 } else {
                     $status = '<span class="badge bg-primary text-white">' . __('messages.pending') . '</span>';
                 }
@@ -1223,7 +1219,7 @@ public function bookingAssigned(Request $request)
                     $payment_status = $row['payment_status'];
 
                     if ($payment_status !== null) {
-                        $status = '<span class="text-center text-white badge bg-primary">' . str_replace('_', " ", ucfirst($payment_status)) . '</span>';
+                        $status = '<span class="text-center text-white badge bg-primary">' . e(payment_detail_status_label($payment_status)) . '</span>';
                     } else {
                         $status = '<span class="badge text-primary bg-primary-subtle">' . __('messages.pending') . '</span>';
                     }
