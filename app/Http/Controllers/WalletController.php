@@ -660,12 +660,15 @@ public function getWalletPaymentMethod(Request $request)
 
             })
             ->editColumn('status' , function ($query){
+                $slug = strtolower((string) $query->status);
+                $key = 'messages.' . $slug;
+                $label = \Illuminate\Support\Facades\Lang::has($key) ? __($key) : ucfirst((string) $query->status);
                 if ($query->status == 'paid') {
-                    $status = '<span class="badge badge-active text-success bg-success-subtle">'.ucfirst($query->status).'</span>';
+                    $status = '<span class="badge badge-active text-success bg-success-subtle">'.e($label).'</span>';
                 } elseif ($query->status == 'rejected') {
-                    $status = '<span class="badge badge-inactive text-white bg-danger">'.ucfirst($query->status).'</span>';
+                    $status = '<span class="badge badge-inactive text-white bg-danger">'.e($label).'</span>';
                 } else {
-                    $status = '<span class="badge badge-inactive text-warning bg-warning-subtle">'.ucfirst($query->status).'</span>';
+                    $status = '<span class="badge badge-inactive text-warning bg-warning-subtle">'.e($label).'</span>';
                 }
                 return $status;
             })

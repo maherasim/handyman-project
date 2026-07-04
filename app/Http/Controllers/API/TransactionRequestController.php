@@ -148,7 +148,10 @@ public function indexData(Request $request)
         })
         ->addColumn('status', function ($row) {
             $badgeClass = $row->status === 'pending' ? 'bg-warning text-dark' : 'bg-success';
-            return '<span class="badge ' . $badgeClass . '">' . ucfirst($row->status) . '</span>';
+            $slug = strtolower((string) $row->status);
+            $key = 'messages.' . $slug;
+            $label = \Illuminate\Support\Facades\Lang::has($key) ? __($key) : ucfirst((string) $row->status);
+            return '<span class="badge ' . $badgeClass . '">' . e($label) . '</span>';
         })
         ->addColumn('created_at', function ($row) {
             return \Carbon\Carbon::parse($row->created_at)->toDateString(); // e.g., 2025-07-03
@@ -182,9 +185,9 @@ public function walletindexData(Request $request)
         })
                 ->addColumn('status', function ($row) {
                 if ($row->status == '0') {
-                    return '<span class="badge bg-warning text-dark">Inactive</span>';
+                    return '<span class="badge bg-warning text-dark">' . e(__('messages.inactive')) . '</span>';
                 }
-                return '<span class="badge bg-success">Active</span>';
+                return '<span class="badge bg-success">' . e(__('messages.active')) . '</span>';
             })
 
         ->addColumn('created_at', function ($row) {
