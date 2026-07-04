@@ -947,6 +947,7 @@
             ];
         @endphp
         var pjrJsLang = @json($pjrJsLang);
+        var pjrStatusLabels = @json($pjrStatusLabels ?? []);
         function formatCurrencyJS(amount) {
             const n = Number(amount || 0).toFixed(DECIMALS);
             switch (String(POSITION)) {
@@ -993,9 +994,10 @@
                 btn.addEventListener('click', function() {
                     const bidId = this.dataset.id;
                     const nextStatus = this.dataset.status;
+                    const nextStatusLabel = pjrStatusLabels[nextStatus] || nextStatus.replace(/_/g, ' ');
                     Swal.fire({
                         title: pjrJsLang.confirm,
-                        text: (pjrJsLang.update_status || '').replace(':status', nextStatus.replace(/_/g, ' ')),
+                        text: (pjrJsLang.update_status || '').replace(':status', nextStatusLabel),
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonText: pjrJsLang.yes_update,

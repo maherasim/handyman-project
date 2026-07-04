@@ -1954,6 +1954,7 @@
     'pjr_js_enter_valid_amount'  => 'Gültigen Betrag > 0 eingeben',
     'pjr_js_qty_at_least_1'      => 'Menge muss mindestens 1 betragen',
     'pjr_js_extra_charges_added' => 'Zusatzkosten hinzugefügt',
+    'pjr_extra_charges_added_completed' => 'Zusätzliche Kosten erfolgreich hinzugefügt & Angebot als abgeschlossen markiert.',
     'pjr_js_unable_add_charges'  => 'Zusatzkosten konnten nicht hinzugefügt werden',
     
    
@@ -2420,5 +2421,22 @@
     'wallet_topup_success' => 'Ihr Guthaben wurde erfolgreich aufgeladen.',
   'stripe_payment_success' => 'Stripe-Zahlung erfolgreich abgeschlossen.',
   'stripe_payment_failed' => 'Stripe-Zahlung fehlgeschlagen. Bitte versuchen Sie',
+
+    // Post-job-request bid controller: JSON response messages
+    'pjr_stripe_verification_failed' => 'Stripe-Überprüfung fehlgeschlagen: :error',
+    'pjr_stripe_confirm_failed' => 'Stripe-Bestätigung fehlgeschlagen: :error',
+    'pjr_invalid_payment_amount' => 'Ungültiger Zahlungsbetrag',
+    'pjr_payment_failed' => 'Zahlung fehlgeschlagen: :error',
+    'pjr_bid_accepted_status_updated' => 'Angebot erfolgreich angenommen und Status aktualisiert!',
+    'pjr_action_invalid' => 'Ungültige Aktion',
+    'pjr_bulk_action_updated' => 'Massenaktion aktualisiert',
+    'pjr_bulk_status_updated' => 'Status der Job-Anfragen in Masse aktualisiert',
+    'pjr_bulk_deleted' => 'Job-Anfragen in Masse gelöscht',
+    'pjr_user_not_authenticated' => 'Benutzer nicht authentifiziert',
+    'pjr_unauthorized_bid_access' => 'Kein Zugriff auf dieses Angebot',
+    'pjr_paypal_approval_link_failed' => 'PayPal-Genehmigungslink konnte nicht abgerufen werden',
+    'pjr_paypal_create_payment_error' => 'PayPal-Zahlungserstellungsfehler: :error',
+    'pjr_error_processing_request' => 'Bei der Verarbeitung Ihrer Anfrage ist ein Fehler aufgetreten',
+    'pjr_missing_stripe_session_id' => 'Fehlende Stripe-Sitzungs-ID.',
 
 );

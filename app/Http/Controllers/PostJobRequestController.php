@@ -46,31 +46,46 @@ class PostJobRequestController extends Controller
 {
     use NotificationTrait;
 
+    private const POST_JOB_STATUS_KEY_MAP = [
+        'requested' => 'pjr_st_requested',
+        'accepted' => 'pjr_st_accepted',
+        'in_progress' => 'pjr_st_in_progress',
+        'in_process' => 'pjr_st_in_process',
+        'advance_payment' => 'pjr_st_advance_payment',
+        'advance_paid' => 'pjr_st_advance_paid',
+        'advance_payment_pending_approval' => 'pjr_st_advance_payment_pending',
+        'advance_payment_pending' => 'pjr_st_advance_payment_pending',
+        'remaining_payment_pending_approval' => 'pjr_st_remaining_payment_pending',
+        'remaining_payment_pending' => 'pjr_st_remaining_payment_pending',
+        'assigned' => 'pjr_st_assigned',
+        'hold' => 'pjr_st_hold',
+        'on_hold' => 'pjr_st_hold',
+        'done' => 'pjr_st_done',
+        'remaining_paid' => 'pjr_st_remaining_paid',
+        'confirm_done' => 'pjr_st_completed',
+        'completed' => 'pjr_st_completed',
+        'cancelled' => 'pjr_st_cancelled',
+    ];
+
+    /**
+     * Bare translated label for a raw post-job(-bid) status value — no HTML.
+     * Shared by formatStatusBadge() (server-rendered badges) and any view
+     * that needs to expose status labels to JavaScript (e.g. confirmation dialogs).
+     */
+    private function postJobStatusLabel(?string $status): string
+    {
+        $status = (string) ($status ?? '');
+        $slug = strtolower($status);
+        $key = self::POST_JOB_STATUS_KEY_MAP[$slug] ?? null;
+
+        return ($key && \Illuminate\Support\Facades\Lang::has('messages.' . $key))
+            ? __('messages.' . $key)
+            : ucfirst(str_replace('_', ' ', $status));
+    }
+
     private function formatStatusBadge(?string $status): string
     {
         $status = (string) ($status ?? '');
-        $class = 'badge bg-secondary text-dark';
-
-        $statusKeyMap = [
-            'requested' => 'pjr_st_requested',
-            'accepted' => 'pjr_st_accepted',
-            'in_progress' => 'pjr_st_in_progress',
-            'in_process' => 'pjr_st_in_process',
-            'advance_payment' => 'pjr_st_advance_payment',
-            'advance_paid' => 'pjr_st_advance_paid',
-            'advance_payment_pending_approval' => 'pjr_st_advance_payment_pending',
-            'advance_payment_pending' => 'pjr_st_advance_payment_pending',
-            'remaining_payment_pending_approval' => 'pjr_st_remaining_payment_pending',
-            'remaining_payment_pending' => 'pjr_st_remaining_payment_pending',
-            'assigned' => 'pjr_st_assigned',
-            'hold' => 'pjr_st_hold',
-            'on_hold' => 'pjr_st_hold',
-            'done' => 'pjr_st_done',
-            'remaining_paid' => 'pjr_st_remaining_paid',
-            'confirm_done' => 'pjr_st_completed',
-            'completed' => 'pjr_st_completed',
-            'cancelled' => 'pjr_st_cancelled',
-        ];
 
         $classMap = [
             'requested' => 'badge bg-primary-subtle text-dark',
@@ -95,10 +110,7 @@ class PostJobRequestController extends Controller
 
         $slug = strtolower($status);
         $class = $classMap[$slug] ?? 'badge bg-secondary text-dark';
-        $key = $statusKeyMap[$slug] ?? null;
-        $label = ($key && \Illuminate\Support\Facades\Lang::has('messages.' . $key))
-            ? __('messages.' . $key)
-            : ucfirst(str_replace('_', ' ', $status));
+        $label = $this->postJobStatusLabel($status);
 
         return '<span class="' . $class . '">' . e($label) . '</span>';
     }
@@ -196,7 +208,10 @@ class PostJobRequestController extends Controller
         $canCustomerRate = strtolower((string)($bid->status ?? '')) === 'remaining_paid';
         $showRateNowButton = $canCustomerRate && !$customerHasRatedProvider;
 
-        return view('postrequest.show', compact('bid', 'showRateCustomerButton', 'showRateNowButton', 'customerHasRatedProvider'));
+        $pjrStatusLabels = collect(array_keys(self::POST_JOB_STATUS_KEY_MAP))
+            ->mapWithKeys(fn ($status) => [$status => $this->postJobStatusLabel($status)]);
+
+        return view('postrequest.show', compact('bid', 'showRateCustomerButton', 'showRateNowButton', 'customerHasRatedProvider', 'pjrStatusLabels'));
     }
 
 
@@ -797,7 +812,7 @@ class PostJobRequestController extends Controller
 
             return response()->json([
                 'status'        => true,
-                'message'       => 'Extra charges added successfully & bid marked as completed',
+                'message'       => __('messages.pjr_extra_charges_added_completed', [], resolveDomainLocale()),
                 'extra_charges' => $bid->extra_charges,
                 'quantity'      => $bid->quantity,
                 'new_status'    => $bid->status,
@@ -857,7 +872,7 @@ class PostJobRequestController extends Controller
 
         return response()->json([
             'status'        => true,
-            'message'       => 'Extra charges added successfully & bid marked as completed',
+            'message'       => __('messages.pjr_extra_charges_added_completed', [], resolveDomainLocale()),
             'extra_charges' => $bid->extra_charges,
             'quantity'      => $bid->quantity,
             'new_status'    => $bid->status,
@@ -995,7 +1010,7 @@ class PostJobRequestController extends Controller
 
         if (!$sessionId) {
             return redirect()->route('post-job-bid.show', ['id' => $id])
-                ->withErrors('Missing Stripe session ID.');
+                ->withErrors(__('messages.pjr_missing_stripe_session_id', [], resolveDomainLocale()));
         }
 
         $bid = PostJobBid::findOrFail($id);
@@ -1006,7 +1021,7 @@ class PostJobRequestController extends Controller
             $session = getstripePaymnetId($sessionId, 'stripe');
         } catch (\Exception $e) {
             return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-                ->withErrors('Stripe verification failed: ' . $e->getMessage());
+                ->withErrors(__('messages.pjr_stripe_verification_failed', ['error' => $e->getMessage()], resolveDomainLocale()));
         }
 
         if (!empty($session['payment_intent']) && ($session['payment_status'] ?? '') === 'paid') {
@@ -1182,10 +1197,10 @@ class PostJobRequestController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Stripe verification failed: ' . $e->getMessage(),
+                'message' => __('messages.pjr_stripe_verification_failed', ['error' => $e->getMessage()], resolveDomainLocale()),
             ], 422);
         }
-        
+
         // If not yet confirmed and a payment_method_id is supplied, confirm server-side
         if (in_array(($intent->status ?? ''), ['requires_confirmation', 'requires_payment_method', 'requires_action']) && !empty($paymentMethodId)) {
             try {
@@ -1195,7 +1210,7 @@ class PostJobRequestController extends Controller
             } catch (\Exception $e) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Stripe confirm failed: ' . $e->getMessage(),
+                    'message' => __('messages.pjr_stripe_confirm_failed', ['error' => $e->getMessage()], resolveDomainLocale()),
                     'intent_status' => $intent->status ?? null,
                 ], 422);
             }
@@ -1358,7 +1373,7 @@ class PostJobRequestController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Stripe verification failed: ' . $e->getMessage(),
+                'message' => __('messages.pjr_stripe_verification_failed', ['error' => $e->getMessage()], resolveDomainLocale()),
             ], 422);
         }
 
@@ -1543,14 +1558,14 @@ class PostJobRequestController extends Controller
             
             // Check if user is authenticated
             if (!auth()->check()) {
-                return response()->json(['status' => false, 'error' => 'User not authenticated'], 401);
+                return response()->json(['status' => false, 'error' => __('messages.pjr_user_not_authenticated', [], resolveDomainLocale())], 401);
             }
-            
+
             $user = auth()->user();
-            
+
             // Check user authorization
             if ((int)$user->id !== (int)$bid->customer_id) {
-                return response()->json(['status' => false, 'error' => 'Unauthorized access to this bid'], 403);
+                return response()->json(['status' => false, 'error' => __('messages.pjr_unauthorized_bid_access', [], resolveDomainLocale())], 403);
             }
     
             // Get payment type and amount directly from frontend
@@ -1626,20 +1641,20 @@ class PostJobRequestController extends Controller
                 $approvalLink = collect($response->result->links)->firstWhere('rel', 'approve')->href ?? null;
     
                 if (!$approvalLink) {
-                    return response()->json(['status' => false, 'error' => 'Unable to get PayPal approval link'], 500);
+                    return response()->json(['status' => false, 'error' => __('messages.pjr_paypal_approval_link_failed', [], resolveDomainLocale())], 500);
                 }
-    
+
                 return response()->json(['status' => true, 'url' => $approvalLink]);
             } catch (\Exception $e) {
                 return response()->json([
-                    'status' => false, 
-                    'error' => 'PayPal Create Payment Error: ' . $e->getMessage()
+                    'status' => false,
+                    'error' => __('messages.pjr_paypal_create_payment_error', ['error' => $e->getMessage()], resolveDomainLocale())
                 ], 500);
             }
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'error' => 'An error occurred while processing your request',
+                'error' => __('messages.pjr_error_processing_request', [], resolveDomainLocale()),
                 'details' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
@@ -1688,7 +1703,7 @@ class PostJobRequestController extends Controller
 
         if ($payAmount <= 0) {
             return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-                ->with('error', 'Invalid payment amount');
+                ->with('error', __('messages.pjr_invalid_payment_amount', [], resolveDomainLocale()));
         }
 
         // 🔹 Create New Payment Record
@@ -1838,7 +1853,7 @@ class PostJobRequestController extends Controller
     } catch (\Exception $e) {
         \Log::error('PayPal capture error: ' . $e->getMessage());
         return redirect()->route('post-job-bid.show', ['id' => $bid->post_request_id])
-            ->with('error', 'Payment failed: ' . $e->getMessage());
+            ->with('error', __('messages.pjr_payment_failed', ['error' => $e->getMessage()], resolveDomainLocale()));
     }
 }
 
@@ -1888,7 +1903,7 @@ class PostJobRequestController extends Controller
             $payAmount = (float) ($response->result->purchase_units[0]->amount->value ?? 0);
 
             if ($payAmount <= 0) {
-                return response()->json(['status' => false, 'message' => 'Invalid payment amount'], 400);
+                return response()->json(['status' => false, 'message' => __('messages.pjr_invalid_payment_amount', [], resolveDomainLocale())], 400);
             }
 
             $payment = PaymentPostJob::create([
@@ -2032,7 +2047,7 @@ class PostJobRequestController extends Controller
             \Log::error('PayPal API capture error: ' . $e->getMessage());
             return response()->json([
                 'status'  => false,
-                'message' => 'Payment failed: ' . $e->getMessage()
+                'message' => __('messages.pjr_payment_failed', ['error' => $e->getMessage()], resolveDomainLocale())
             ], 400);
         }
     }
@@ -2366,7 +2381,7 @@ class PostJobRequestController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Bid accepted successfully and status updated!'
+            'message' => __('messages.pjr_bid_accepted_status_updated', [], resolveDomainLocale())
         ]);
     }
 
@@ -2529,20 +2544,20 @@ class PostJobRequestController extends Controller
 
         $actionType = $request->action_type;
 
-        $message = 'Bulk Action Updated';
+        $message = __('messages.pjr_bulk_action_updated', [], resolveDomainLocale());
         switch ($actionType) {
             case 'change-status':
                 $branches = PostJobRequest::whereIn('id', $ids)->update(['status' => $request->status]);
-                $message = 'Bulk PostJobRequest Status Updated';
+                $message = __('messages.pjr_bulk_status_updated', [], resolveDomainLocale());
                 break;
 
             case 'delete':
                 PostJobRequest::whereIn('id', $ids)->delete();
-                $message = 'Bulk PostJobRequest Deleted';
+                $message = __('messages.pjr_bulk_deleted', [], resolveDomainLocale());
                 break;
 
             default:
-                return response()->json(['status' => false, 'message' => 'Action Invalid']);
+                return response()->json(['status' => false, 'message' => __('messages.pjr_action_invalid', [], resolveDomainLocale())]);
                 break;
         }
 

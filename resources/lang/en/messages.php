@@ -1946,6 +1946,7 @@
     'pjr_js_enter_valid_amount'  => 'Enter a valid amount > 0',
     'pjr_js_qty_at_least_1'      => 'Quantity must be at least 1',
     'pjr_js_extra_charges_added' => 'Extra charges added',
+    'pjr_extra_charges_added_completed' => 'Extra charges added successfully & bid marked as completed.',
     'pjr_js_unable_add_charges'  => 'Unable to add charges',
           'pjr_js_stripe' => 'Stripe',
     'pjr_js_paypal' => 'PayPal',
@@ -2416,5 +2417,22 @@
     'wallet_topup_success' => 'Your wallet has been successfully topped up.',
     'stripe_payment_success' => 'Stripe payment completed successfully.',
     'stripe_payment_failed' => 'Stripe payment failed. Please try again or use a different payment',
+
+    // Post-job-request bid controller: JSON response messages
+    'pjr_stripe_verification_failed' => 'Stripe verification failed: :error',
+    'pjr_stripe_confirm_failed' => 'Stripe confirm failed: :error',
+    'pjr_invalid_payment_amount' => 'Invalid payment amount',
+    'pjr_payment_failed' => 'Payment failed: :error',
+    'pjr_bid_accepted_status_updated' => 'Bid accepted successfully and status updated!',
+    'pjr_action_invalid' => 'Action Invalid',
+    'pjr_bulk_action_updated' => 'Bulk Action Updated',
+    'pjr_bulk_status_updated' => 'Bulk Job Request Status Updated',
+    'pjr_bulk_deleted' => 'Bulk Job Requests Deleted',
+    'pjr_user_not_authenticated' => 'User not authenticated',
+    'pjr_unauthorized_bid_access' => 'Unauthorized access to this bid',
+    'pjr_paypal_approval_link_failed' => 'Unable to get PayPal approval link',
+    'pjr_paypal_create_payment_error' => 'PayPal Create Payment Error: :error',
+    'pjr_error_processing_request' => 'An error occurred while processing your request',
+    'pjr_missing_stripe_session_id' => 'Missing Stripe session ID.',
 
    );
