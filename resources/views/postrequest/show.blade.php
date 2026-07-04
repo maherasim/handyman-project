@@ -327,7 +327,7 @@
                             <div class="card-body text-center">
                                 <i class="fas fa-dollar-sign fa-2x text-warning mb-2"></i>
                                 <h6 class="fw-bold mb-1">{{ __('messages.pjr_rate_type') }}</h6>
-                                <p class="mb-0">{{ $bid->postrequest->job_price ?? '-' }}</p>
+                                <p class="mb-0">{{ post_job_price_type_label($bid->postrequest->price_type ?? $bid->postrequest->job_price ?? null) }}</p>
                             </div>
                         </div>
                     </div>
