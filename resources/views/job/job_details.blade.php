@@ -473,7 +473,7 @@
                                 <div class="content-section">
                                     @if(!empty($jobrequest->description))
                                         <div class="job-content" id="fullDescriptionSection">
-                                            {!! nl2br(e($descriptionPlain)) !!}
+                                            {!! $jobrequest->description !!}
                                         </div>
                                     @else
                                         <div class="no-content text-muted">
