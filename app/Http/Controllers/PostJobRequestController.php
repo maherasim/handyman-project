@@ -46,43 +46,6 @@ class PostJobRequestController extends Controller
 {
     use NotificationTrait;
 
-    private const POST_JOB_STATUS_KEY_MAP = [
-        'requested' => 'pjr_st_requested',
-        'accepted' => 'pjr_st_accepted',
-        'in_progress' => 'pjr_st_in_progress',
-        'in_process' => 'pjr_st_in_process',
-        'advance_payment' => 'pjr_st_advance_payment',
-        'advance_paid' => 'pjr_st_advance_paid',
-        'advance_payment_pending_approval' => 'pjr_st_advance_payment_pending',
-        'advance_payment_pending' => 'pjr_st_advance_payment_pending',
-        'remaining_payment_pending_approval' => 'pjr_st_remaining_payment_pending',
-        'remaining_payment_pending' => 'pjr_st_remaining_payment_pending',
-        'assigned' => 'pjr_st_assigned',
-        'hold' => 'pjr_st_hold',
-        'on_hold' => 'pjr_st_hold',
-        'done' => 'pjr_st_done',
-        'remaining_paid' => 'pjr_st_remaining_paid',
-        'confirm_done' => 'pjr_st_completed',
-        'completed' => 'pjr_st_completed',
-        'cancelled' => 'pjr_st_cancelled',
-    ];
-
-    /**
-     * Bare translated label for a raw post-job(-bid) status value — no HTML.
-     * Shared by formatStatusBadge() (server-rendered badges) and any view
-     * that needs to expose status labels to JavaScript (e.g. confirmation dialogs).
-     */
-    private function postJobStatusLabel(?string $status): string
-    {
-        $status = (string) ($status ?? '');
-        $slug = strtolower($status);
-        $key = self::POST_JOB_STATUS_KEY_MAP[$slug] ?? null;
-
-        return ($key && \Illuminate\Support\Facades\Lang::has('messages.' . $key))
-            ? __('messages.' . $key)
-            : ucfirst(str_replace('_', ' ', $status));
-    }
-
     private function formatStatusBadge(?string $status): string
     {
         $status = (string) ($status ?? '');
@@ -110,7 +73,7 @@ class PostJobRequestController extends Controller
 
         $slug = strtolower($status);
         $class = $classMap[$slug] ?? 'badge bg-secondary text-dark';
-        $label = $this->postJobStatusLabel($status);
+        $label = post_job_status_label($status);
 
         return '<span class="' . $class . '">' . e($label) . '</span>';
     }
@@ -208,8 +171,8 @@ class PostJobRequestController extends Controller
         $canCustomerRate = strtolower((string)($bid->status ?? '')) === 'remaining_paid';
         $showRateNowButton = $canCustomerRate && !$customerHasRatedProvider;
 
-        $pjrStatusLabels = collect(array_keys(self::POST_JOB_STATUS_KEY_MAP))
-            ->mapWithKeys(fn ($status) => [$status => $this->postJobStatusLabel($status)]);
+        $pjrStatusLabels = collect(array_keys(post_job_status_key_map()))
+            ->mapWithKeys(fn ($status) => [$status => post_job_status_label($status)]);
 
         return view('postrequest.show', compact('bid', 'showRateCustomerButton', 'showRateNowButton', 'customerHasRatedProvider', 'pjrStatusLabels'));
     }

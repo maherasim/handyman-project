@@ -457,7 +457,7 @@
                                             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
                                             backdrop-filter: blur(10px);
                                         ">
-                                            €{{ number_format($jobRequest->price) }} / {{ ucfirst($jobRequest->price_type ?? 'fixed') }}
+                                            €{{ number_format($jobRequest->price) }} / {{ post_job_price_type_label($jobRequest->price_type) }}
                                         </div>
                                         
                                         <!-- Heart Icon -->
@@ -619,7 +619,7 @@
                                                     text-transform: uppercase;
                                                     letter-spacing: 0.5px;
                                                 ">
-                                                    Job Type 
+                                                    {{ __('messages.pjr_job_type') }}
                                                 </span>
                                                 <span class="status-badge" style="
                                                 padding: 3px 6px;
@@ -631,7 +631,7 @@
                                                 background: #e8f5e8;
                                                 color: #2d5a2d;
                                             ">
-                                                {{ ucfirst($jobRequest->type ?? 'N/A') }}
+                                                {{ post_job_type_label($jobRequest->type) }}
                                             </span>
                                             
                                             </div>
@@ -648,7 +648,7 @@
                                             <span role="button" tabindex="0" class="social-link share-link"
                                                   data-platform="facebook"
                                                   data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}"
-                                                  data-quote="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}"
+                                                  data-quote="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ post_job_price_type_label($jobRequest->price_type) }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}"
                                                   onclick="return window.__shareClickHandler(event, this);"
                                                   style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
                                                 <img src="{{ asset('assets/fb.png') }}?v=20260303"
@@ -657,7 +657,7 @@
                                             <span role="button" tabindex="0" class="social-link share-link"
                                                   data-platform="telegram"
                                                   data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}"
-                                                  data-quote="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}"
+                                                  data-quote="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ post_job_price_type_label($jobRequest->price_type) }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}"
                                                   onclick="return window.__shareClickHandler(event, this);"
                                                   style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
                                                 <img src="{{ asset('assets/telegram.png') }}?v=20260303"
@@ -666,7 +666,7 @@
                                             <span role="button" tabindex="0" class="social-link share-link"
                                                   data-platform="twitter"
                                                   data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}"
-                                                  data-text="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}"
+                                                  data-text="{{ $jobRequest->title }} • €{{ number_format($jobRequest->price) }} • {{ post_job_price_type_label($jobRequest->price_type) }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}"
                                                   onclick="return window.__shareClickHandler(event, this);"
                                                   style="width: 24px; height: 24px; border-radius: 5px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer;">
                                                 <img src="{{ asset('assets/twiter.png') }}?v=20260303"

@@ -317,7 +317,7 @@
                             <div class="card-body text-center">
                                 <i class="fas fa-briefcase fa-2x text-warning mb-2"></i>
                                 <h6 class="fw-bold mb-1">{{ __('messages.pjr_job_type') }}</h6>
-                                <p class="mb-0">{{ $bid->postrequest->type ?? '-' }}</p>
+                                <p class="mb-0">{{ post_job_type_label($bid->postrequest->type ?? null) }}</p>
                             </div>
                         </div>
                     </div>

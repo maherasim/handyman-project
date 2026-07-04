@@ -346,7 +346,7 @@
                                      backdrop-filter: blur(10px);
                                  ">
                                             {{ getPriceFormat($jobRequest->price) }} /
-                                             {{ ucfirst($jobRequest->price_type ?? 'fixed') }}
+                                             {{ post_job_price_type_label($jobRequest->price_type) }}
                                          </div>
 
                                          <!-- Heart Icon -->
@@ -528,7 +528,7 @@
                                                     $statusKey = strtolower((string)($jobRequest->status ?? ''));
                                                     $isCompleted = in_array($statusKey, ['confirm_done', 'completed']);
                                                     $isGreen = $isCompleted || $jobRequest->status === 'active';
-                                                    $statusLabel = $isCompleted ? __('landingpage.jd_completed') : ucfirst($jobRequest->status ?? __('landingpage.jd_pending'));
+                                                    $statusLabel = $statusKey !== '' ? post_job_status_label($jobRequest->status) : __('landingpage.jd_pending');
                                                 @endphp
                                                 <span class="status-badge"
                                                      style="
@@ -555,7 +555,7 @@
                                      padding: 8px 12px 12px;
                                      border-top: 1px solid #f0f0f0;
                                  ">
-                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-job-id="{{ $jobRequest->id }}" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-quote="{{ $jobRequest->title }} • {{ getPriceFormat($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);"
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="facebook" data-job-id="{{ $jobRequest->id }}" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-quote="{{ $jobRequest->title }} • {{ getPriceFormat($jobRequest->price) }} • {{ post_job_price_type_label($jobRequest->price_type) }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
                                          width: 24px;
                                          height: 24px;
@@ -570,7 +570,7 @@
                                                 <img src="{{ asset('assets/fb.png') }}?v=20260303"
                                                     alt="{{ __('landingpage.pd_alt_facebook') }}" style="width: 24px; height: 24px; object-fit: contain; transform: scale(1.16);">
                                             </span>
-                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="telegram" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-quote="{{ $jobRequest->title }} • {{ getPriceFormat($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);"
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="telegram" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-quote="{{ $jobRequest->title }} • {{ getPriceFormat($jobRequest->price) }} • {{ post_job_price_type_label($jobRequest->price_type) }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
                                          width: 24px;
                                          height: 24px;
@@ -585,7 +585,7 @@
                                                  <img src="{{ asset('assets/telegram.png') }}?v=20260303"
                                                      alt="{{ __('landingpage.pd_alt_telegram') }}" style="width: 24px; height: 24px; object-fit: contain;">
                                             </span>
-                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobRequest->title }} • {{ getPriceFormat($jobRequest->price) }} • {{ ucfirst($jobRequest->price_type ?? 'fixed') }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);"
+                                            <span role="button" tabindex="0" class="social-link share-link" data-platform="twitter" data-share-url="{{ route('job.details', $jobRequest->id) }}?v={{ optional($jobRequest->updated_at)->timestamp ?? time() }}" data-text="{{ $jobRequest->title }} • {{ getPriceFormat($jobRequest->price) }} • {{ post_job_price_type_label($jobRequest->price_type) }} • {{ data_get($jobRequest,'city.name','City') }}, {{ data_get($jobRequest,'country.name','Country') }}" onclick="return window.__shareClickHandler(event, this);"
                                                  style="
                                          width: 24px;
                                          height: 24px;

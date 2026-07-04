@@ -2423,6 +2423,141 @@ function resolveDomainLocale(): string
 }
 
 /**
+ * Raw post-job(-bid) status value -> messages.pjr_st_* translation key.
+ * Shared by PostJobRequestController (authenticated customer/provider dashboard)
+ * and FrontendController::jobDatatable() (public /job-datatable listing) so both
+ * surfaces translate the same status set consistently instead of drifting apart.
+ */
+function post_job_status_key_map(): array
+{
+    return [
+        'requested' => 'pjr_st_requested',
+        'accepted' => 'pjr_st_accepted',
+        'in_progress' => 'pjr_st_in_progress',
+        'in_process' => 'pjr_st_in_process',
+        'advance_payment' => 'pjr_st_advance_payment',
+        'advance_paid' => 'pjr_st_advance_paid',
+        'advance_payment_pending_approval' => 'pjr_st_advance_payment_pending',
+        'advance_payment_pending' => 'pjr_st_advance_payment_pending',
+        'remaining_payment_pending_approval' => 'pjr_st_remaining_payment_pending',
+        'remaining_payment_pending' => 'pjr_st_remaining_payment_pending',
+        'assigned' => 'pjr_st_assigned',
+        'hold' => 'pjr_st_hold',
+        'on_hold' => 'pjr_st_hold',
+        'done' => 'pjr_st_done',
+        'remaining_paid' => 'pjr_st_remaining_paid',
+        'confirm_done' => 'pjr_st_completed',
+        'completed' => 'pjr_st_completed',
+        'cancelled' => 'pjr_st_cancelled',
+    ];
+}
+
+/**
+ * Bare translated label for a raw post-job(-bid) status value — no HTML.
+ */
+function post_job_status_label(?string $status): string
+{
+    $status = (string) ($status ?? '');
+    $slug = strtolower($status);
+    $key = post_job_status_key_map()[$slug] ?? null;
+
+    return ($key && \Illuminate\Support\Facades\Lang::has('messages.' . $key))
+        ? __('messages.' . $key)
+        : ucfirst(str_replace('_', ' ', $status));
+}
+
+/**
+ * Translated label for a post-job(-bid) price type ('fixed'/'hourly'/'Daily').
+ * Reuses the same messages.fixed/hourly/daily keys already used by the
+ * Service create form's "Rate type" dropdown.
+ */
+function post_job_price_type_label(?string $priceType): string
+{
+    $priceType = (string) ($priceType ?: 'fixed');
+    $key = 'messages.' . strtolower($priceType);
+
+    return \Illuminate\Support\Facades\Lang::has($key)
+        ? __($key)
+        : ucfirst($priceType);
+}
+
+/**
+ * Translated label for a post-job-request "Job Type" value ('onsite'/'remote'/'hybrid').
+ * This is PostJobRequest.type, unrelated to Booking.type (which uses 'service'/'user_post_job')
+ * or the separate remote_work_level field (onsite/25_remote/50_remote/...).
+ */
+function post_job_type_label(?string $type): string
+{
+    $map = [
+        'onsite' => 'pjr_onsite',
+        'remote' => 'pjr_remote_homeoffice',
+        'hybrid' => 'pjr_hybrid',
+    ];
+    $key = $map[strtolower((string) ($type ?? ''))] ?? null;
+
+    return $key ? __('messages.' . $key) : __('messages.not_available');
+}
+
+/**
+ * Raw post-job education_level DB value -> messages.education_* translation key.
+ */
+function post_job_education_level_key_map(): array
+{
+    return [
+        'not_specified' => 'education_not_specified',
+        'any_graduate' => 'education_any_graduate',
+        'apprenticeship_degree' => 'education_apprenticeship_degree',
+        'traineeship_degree' => 'education_traineeship_degree',
+        'secondary_degree' => 'education_secondary_degree',
+        'undergraduate_diploma' => 'education_undergraduate_diploma',
+        'high_school_graduate' => 'education_high_school_graduate',
+        'associate_degree' => 'education_associate_degree',
+        'college_degree' => 'education_college_degree',
+        'university_degree' => 'education_university_degree',
+        'bachelors_degree' => 'education_bachelor_degree',
+        'masters_degree' => 'education_master_degree',
+        'doctorate_degree' => 'education_doctorate_degree',
+        'professional_degree' => 'education_professional_degree',
+    ];
+}
+
+/**
+ * Bare translated label for a raw post-job career_level value.
+ */
+function post_job_career_level_label(?string $careerLevel): string
+{
+    $careerLevel = (string) ($careerLevel ?? '');
+    if ($careerLevel === '') {
+        return __('messages.na');
+    }
+
+    $slug = strtolower(trim(str_replace(' ', '_', $careerLevel)));
+    $key = 'career_level_' . $slug;
+
+    return \Illuminate\Support\Facades\Lang::has('messages.' . $key)
+        ? __('messages.' . $key)
+        : ucwords(str_replace('_', ' ', $slug));
+}
+
+/**
+ * Bare translated label for a raw post-job education_level value.
+ */
+function post_job_education_level_label(?string $educationLevel): string
+{
+    $educationLevel = (string) ($educationLevel ?? '');
+    if ($educationLevel === '') {
+        return __('messages.na');
+    }
+
+    $slug = strtolower(trim(str_replace(' ', '_', $educationLevel)));
+    $key = post_job_education_level_key_map()[$slug] ?? null;
+
+    return ($key && \Illuminate\Support\Facades\Lang::has('messages.' . $key))
+        ? __('messages.' . $key)
+        : ucwords(str_replace('_', ' ', $slug));
+}
+
+/**
  * Admin "Mail From Address" as currently shown on Setting > Mail Settings
  * (/setting/mail-setting). Reads the .env file directly — same technique
  * SettingController uses to render that tab — because config('mail.from.address')

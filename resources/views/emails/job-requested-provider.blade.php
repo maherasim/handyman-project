@@ -172,7 +172,7 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">{{ __('messages.email_job_work_type') }}:</span>
-                    <span class="detail-value">{{ ucfirst($postJob->type ?? '') ?: __('messages.not_available') }}</span>
+                    <span class="detail-value">{{ post_job_type_label($postJob->type) }}</span>
                 </div>
                 @if($postJob->remote_work_level)
                 <div class="detail-row">

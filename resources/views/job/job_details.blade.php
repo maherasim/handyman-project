@@ -592,7 +592,7 @@
                                 @endif
                                 <span class="cta-stat">
                                     <i class="fas fa-briefcase"></i>
-                                    {{ formatJobDetailLabel($jobrequest->type ?? null) }}
+                                    {{ post_job_type_label($jobrequest->type ?? null) }}
                                 </span>
                             </div>
                             <div class="cta-trust">
@@ -742,7 +742,7 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_type') }}</b></span>
-                                        <span class="detail-value"> {{ formatJobDetailLabel($jobrequest->type ?? null) }}</span>
+                                        <span class="detail-value"> {{ post_job_type_label($jobrequest->type ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_remote_level') }}</b></span>
@@ -750,7 +750,7 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_career_level') }}</b></span>
-                                        <span class="detail-value"> {{ formatJobDetailLabel($jobrequest->career_level ?? null) }}</span>
+                                        <span class="detail-value"> {{ post_job_career_level_label($jobrequest->career_level ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_travel_required') }}</b></span>
@@ -758,14 +758,14 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_education_level') }}</b></span>
-                                        <span class="detail-value"> {{ formatJobDetailLabel($jobrequest->education_level ?? null) }}</span>
+                                        <span class="detail-value"> {{ post_job_education_level_label($jobrequest->education_level ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('messages.status') }}:</b></span>
                                         <span class="detail-value">
                                             @php
                                                 $statusKey = strtolower((string)($jobrequest->status ?? ''));
-                                                $statusDisplay = in_array($statusKey, ['confirm_done', 'completed']) ? __('landingpage.jd_completed') : formatJobDetailLabel($jobrequest->status ?? null);
+                                                $statusDisplay = post_job_status_label($jobrequest->status ?? null);
                                                 $statusBg = in_array($statusKey, ['confirm_done', 'completed']) ? 'success' : ($jobrequest->status === 'active' ? 'success' : 'warning');
                                             @endphp
                                             <span class="badge bg-{{ $statusBg }} text-dark">{{ $statusDisplay }}</span>
@@ -852,7 +852,7 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_type_lower') }}</b></span>
-                                        <span class="detail-value"> {{ formatJobDetailLabel($jobrequest->type ?? null) }}</span>
+                                        <span class="detail-value"> {{ post_job_type_label($jobrequest->type ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_remote_level_lower') }}</b></span>
@@ -860,7 +860,7 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_career_level_lower') }}</b></span>
-                                        <span class="detail-value"> {{ formatJobDetailLabel($jobrequest->career_level ?? null) }}</span>
+                                        <span class="detail-value"> {{ post_job_career_level_label($jobrequest->career_level ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_travel_required_lower') }}</b></span>
@@ -868,14 +868,14 @@
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('landingpage.jdd_education_level_lower') }}</b></span>
-                                        <span class="detail-value"> {{ formatJobDetailLabel($jobrequest->education_level ?? null) }}</span>
+                                        <span class="detail-value"> {{ post_job_education_level_label($jobrequest->education_level ?? null) }}</span>
                                     </div>
                                     <div class="detail-item mb-2">
                                         <span class="detail-label"><b>{{ __('messages.status') }}:</b></span>
                                         <span class="detail-value">
                                             @php
                                                 $statusKeyCd = strtolower((string)($jobrequest->status ?? ''));
-                                                $statusDisplayCd = in_array($statusKeyCd, ['confirm_done', 'completed']) ? __('landingpage.jd_completed') : formatJobDetailLabel($jobrequest->status ?? null);
+                                                $statusDisplayCd = post_job_status_label($jobrequest->status ?? null);
                                                 $statusBgCd = in_array($statusKeyCd, ['confirm_done', 'completed']) ? 'success' : ($jobrequest->status === 'active' ? 'success' : 'warning');
                                             @endphp
                                             <span class="badge bg-{{ $statusBgCd }} text-dark">{{ $statusDisplayCd }}</span>
