@@ -234,7 +234,7 @@ class PaymentController extends Controller
             ->editColumn('payment_status', function ($query) {
                 if ($query->payment_status !== null) {
                     return '<span class="text-center text-white badge bg-primary">'
-                            . str_replace('_', " ", ucfirst($query->payment_status)) .
+                            . e(payment_detail_status_label($query->payment_status)) .
                             '</span>';
                 }
                 return '<span class="text-center d-block">-</span>';
@@ -317,7 +317,7 @@ class PaymentController extends Controller
             ->editColumn('payment_status', function ($query) {
                 if ($query->payment_status !== null) {
                     return '<span class="text-center text-white badge bg-primary">'
-                            . str_replace('_', " ", ucfirst($query->payment_status)) .
+                            . e(payment_detail_status_label($query->payment_status)) .
                             '</span>';
                 }
                 return '<span class="text-center d-block">-</span>';
@@ -402,7 +402,7 @@ class PaymentController extends Controller
             ->editColumn('payment_status', function ($query) {
                 $payment = $query->payment_status;
                 if ($payment !== null) {
-                    $payment_status = '<span class="text-center text-white badge bg-primary">' . str_replace('_', " ", ucfirst($payment)) . '</span>';
+                    $payment_status = '<span class="text-center text-white badge bg-primary">' . e(payment_detail_status_label($payment)) . '</span>';
                 } else {
                     $payment_status = '<span class="text-center d-block">-</span>';
                 }
@@ -700,7 +700,7 @@ class PaymentController extends Controller
             })
             ->editColumn('status', function ($query) {
                 return $query->payment_status
-                    ? '<span class="text-center badge badge-primary1">' . str_replace('_', ' ', ucfirst($query->payment_status)) . '</span>'
+                    ? '<span class="text-center badge badge-primary1">' . e(payment_detail_status_label($query->payment_status)) . '</span>'
                     : '<span class="text-center d-block">-</span>';
             })
             ->editColumn('action', function ($payment) {
@@ -810,21 +810,13 @@ class PaymentController extends Controller
                 if (empty($payment->payment_type)) {
                     return '-';
                 }
-                
-                $method = $payment->payment_type;
-                
-                // Convert bank_transfer to Bank Transfer
-                if ($method === 'bank_transfer' || $method === 'bank') {
-                    return 'Bank Transfer';
-                }
-                
-                // Convert other methods: replace underscores with spaces and capitalize
-                return ucwords(str_replace('_', ' ', $method));
+
+                return payment_detail_type_label($payment->payment_type);
             })
             ->editColumn('payment_status', function ($query) {
                 $payment = $query->payment_status;
                 if ($payment !== null) {
-                    $payment_status = '<span class="text-center text-white badge bg-primary">' . str_replace('_', " ", ucfirst($payment)) . '</span>';
+                    $payment_status = '<span class="text-center text-white badge bg-primary">' . e(payment_detail_status_label($payment)) . '</span>';
                 } else {
                     $payment_status = '<span class="text-center d-block">-</span>';
                 }

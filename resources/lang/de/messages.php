@@ -203,6 +203,13 @@
     'payment_status_display_cancelled' => 'Storniert',
     'payment_status_display_failed' => 'Fehlgeschlagen',
     'payment_status_display_advanced_refund' => 'Anzahlung erstattet',
+    'payment_status_display_completed' => 'Abgeschlossen',
+    'payment_status_display_advance_pending' => 'Anzahlung ausstehend',
+    'payment_status_display_remaining_pending' => 'Restzahlung ausstehend',
+    'payment_status_display_approved_by_admin' => 'Von Admin genehmigt',
+    'payment_status_display_approved_by_provider' => 'Von Agentur genehmigt',
+    'payment_status_display_pending_by_provider' => 'Genehmigung durch Agentur ausstehend',
+    'payment_status_display_approved_by_handyman' => 'Von Fachkraft genehmigt',
     'payment_type_stripe' => 'Stripe',
     'payment_type_paypal' => 'PayPal',
     'payment_type_bank_transfer' => 'Banküberweisung',
@@ -2438,5 +2445,10 @@
     'pjr_paypal_create_payment_error' => 'PayPal-Zahlungserstellungsfehler: :error',
     'pjr_error_processing_request' => 'Bei der Verarbeitung Ihrer Anfrage ist ein Fehler aufgetreten',
     'pjr_missing_stripe_session_id' => 'Fehlende Stripe-Sitzungs-ID.',
+    'account_holder' => 'Kontoinhaber',
+    'account_number' => 'Kontonummer',
+    'iban_code' => 'IBAN-Code',
+    'swift_bic_code' => 'SWIFT/BIC-Code',
+    'mobile_number' => 'Mobilnummer'
 
 );

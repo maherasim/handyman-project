@@ -205,6 +205,13 @@
     'payment_status_display_cancelled' => 'Cancelled',
     'payment_status_display_failed' => 'Failed',
     'payment_status_display_advanced_refund' => 'Advance refund',
+    'payment_status_display_completed' => 'Completed',
+    'payment_status_display_advance_pending' => 'Advance pending',
+    'payment_status_display_remaining_pending' => 'Remaining pending',
+    'payment_status_display_approved_by_admin' => 'Approved by Admin',
+    'payment_status_display_approved_by_provider' => 'Approved by Agency',
+    'payment_status_display_pending_by_provider' => 'Pending Agency Approval',
+    'payment_status_display_approved_by_handyman' => 'Approved by Handyman',
     'payment_type_stripe' => 'Stripe',
     'payment_type_paypal' => 'PayPal',
     'payment_type_bank_transfer' => 'Bank transfer',
@@ -2434,5 +2441,9 @@
     'pjr_paypal_create_payment_error' => 'PayPal Create Payment Error: :error',
     'pjr_error_processing_request' => 'An error occurred while processing your request',
     'pjr_missing_stripe_session_id' => 'Missing Stripe session ID.',
-
-   );
+    'account_holder' => 'Account Holder',
+    'account_number' => 'Account Number',
+    'iban_code' => 'IBAN Code',
+    'swift_bic_code' => 'SWIFT/BIC Code',
+    'mobile_number' => 'Mobile Number'
+);
