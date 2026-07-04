@@ -300,7 +300,7 @@ class PostJobRequestController extends Controller
                 return ($post && $post->country) ? ($post->country->name ?? 'N/A') : 'N/A';
             })
             ->addColumn('job_type', function ($bid) {
-                return $bid->postrequest->type ?? null;
+                return post_job_type_label($bid->postrequest->type ?? null);
             })
             ->addColumn('start_date', function ($bid) {
                 $d = optional($bid->postrequest)->start_date;
@@ -317,7 +317,7 @@ class PostJobRequestController extends Controller
                 }
                 $amount = getPriceFormat((float) ($post->total_budget ?? 0));
                 $type = strtolower((string)($post->price_type ?? $post->job_price ?? 'fixed'));
-                $label = $type === 'hourly' ? 'hourly' : ($type === 'daily' ? 'daily' : ($type === 'fixed' ? 'fixed' : $type));
+                $label = post_job_price_type_label($type);
                 return trim($amount . ' ' . $label);
             })
             ->addColumn('applications', function ($bid) {
@@ -335,7 +335,7 @@ class PostJobRequestController extends Controller
                 $amount = getPriceFormat((float) ($bid->price ?? 0));
                 $post = $bid->postrequest;
                 $type = $post ? strtolower((string)($post->price_type ?? $post->job_price ?? 'fixed')) : 'fixed';
-                $label = $type === 'hourly' ? 'hourly' : ($type === 'daily' ? 'daily' : ($type === 'fixed' ? 'fixed' : $type));
+                $label = post_job_price_type_label($type);
                 return trim($amount . ' ' . $label);
             })
             ->addColumn('status', fn($bid) => $this->formatStatusBadge($bid->status ?? ''))
@@ -2411,7 +2411,7 @@ class PostJobRequestController extends Controller
             ->editColumn('price', function ($query) {
                 $amount = getPriceFormat($query->price);
                 $type = strtolower((string)($query->price_type ?? $query->job_price ?? 'fixed'));
-                $label = $type === 'hourly' ? 'hourly' : ($type === 'daily' ? 'daily' : ($type === 'fixed' ? 'fixed' : $type));
+                $label = post_job_price_type_label($type);
                 return trim($amount . ' ' . $label);
             })
             ->editColumn('start_date', function ($query) {
@@ -2951,7 +2951,7 @@ class PostJobRequestController extends Controller
                 $budget = $post->price;
                 $amount = $budget !== null ? getPriceFormat($budget) : '-';
                 $type = strtolower((string)($post->price_type ?? $post->job_price ?? 'fixed'));
-                $label = $type === 'hourly' ? 'hourly' : ($type === 'daily' ? 'daily' : ($type === 'fixed' ? 'fixed' : $type));
+                $label = post_job_price_type_label($type);
                 return trim($amount . ' ' . $label);
             })
             // Start Date / End Date (date-only)
@@ -2976,26 +2976,12 @@ class PostJobRequestController extends Controller
                 $amount = getPriceFormat($bid->price);
                 $post = $bid->postrequest;
                 $type = $post ? strtolower((string)($post->price_type ?? $post->job_price ?? 'fixed')) : 'fixed';
-                $label = $type === 'hourly' ? 'hourly' : ($type === 'daily' ? 'daily' : ($type === 'fixed' ? 'fixed' : $type));
+                $label = post_job_price_type_label($type);
                 return trim($amount . ' ' . $label);
             })
             // Status label with colors
             ->addColumn('status', function ($bid) {
-                $key = strtolower((string)($bid->status ?? ''));
-                $map = [
-                    'requested' => ['Requested', 'badge bg-secondary text-white'],
-                    'accepted' => ['Accepted', 'badge bg-info text-white'],
-                    'advance_paid' => ['Advance Paid', 'badge bg-primary text-white'],
-                    'in_progress' => ['IN Progress', 'badge bg-primary text-white'],
-                    'confirm_done' => ['Confirm Done', 'badge bg-success text-white'],
-                    'completed' => ['Completed', 'badge bg-success text-white'],
-                    'cancelled' => ['Cancelled', 'badge bg-danger text-white'],
-                    'rejected' => ['Rejected', 'badge bg-danger text-white'],
-                    'hold' => ['On Hold', 'badge bg-warning text-dark'],
-                ];
-                if (isset($map[$key])) { [$label,$cls] = $map[$key]; }
-                else { $label = ucwords(str_replace('_',' ', (string)$bid->status)); $cls='badge bg-secondary text-white'; }
-                return '<span class="'.$cls.'">'.e($label).'</span>';
+                return $this->formatStatusBadge($bid->status ?? '');
             })
             // Action: View Job (go to the specific bid details)
             ->addColumn('action', function ($bid) {
