@@ -721,6 +721,7 @@ class PaymentController extends Controller
     public function index_data(DataTables $datatable, Request $request)
     {
         $query = Payment::query()->myPayment()
+            ->where('payment_type', '!=', 'wallet')
             ->where(function ($q) {
                 $q->where('payment_type', '!=', 'bank_transfer')
                     ->orWhere(function ($sub) {
