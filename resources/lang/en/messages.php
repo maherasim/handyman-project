@@ -2445,5 +2445,6 @@
     'account_number' => 'Account Number',
     'iban_code' => 'IBAN Code',
     'swift_bic_code' => 'SWIFT/BIC Code',
-    'mobile_number' => 'Mobile Number'
+    'mobile_number' => 'Mobile Number',
+    'request_confirmed_wallet'=>"Request confirmed Successfully"
 );
