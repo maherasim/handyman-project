@@ -9,6 +9,27 @@ use App\Models\PostJobBid;
 
 class PostJobRequestDetailResource extends JsonResource
 {
+    protected function normalizeRichText($value): array
+    {
+        $raw = is_string($value) ? $value : '';
+        $decoded = html_entity_decode($raw, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $decoded = preg_replace('/\r\n?/', "\n", $decoded);
+        $decoded = trim($decoded);
+
+        $html = $decoded !== '' ? $decoded : null;
+        $text = $html ? strip_tags($html) : null;
+
+        if ($text !== null) {
+            $text = preg_replace('/\s*\n\s*/u', "\n", $text);
+            $text = preg_replace('/\n{3,}/u', "\n\n", trim($text));
+        }
+
+        return [
+            'html' => $html,
+            'text' => $text,
+        ];
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -17,8 +38,11 @@ class PostJobRequestDetailResource extends JsonResource
      */
     public function toArray($request)
     {
-      
         $user = auth()->user();
+        $description = $this->normalizeRichText($this->description);
+        $requirement = $this->normalizeRichText($this->requirement);
+        $duties = $this->normalizeRichText($this->duties);
+        $benefits = $this->normalizeRichText($this->benefits);
         $can_bid = null;
         if($user->hasRole('provider')){
           $can_bid = true;
@@ -30,14 +54,29 @@ class PostJobRequestDetailResource extends JsonResource
         return [
             'id'                => $this->id,
             'title'             => $this->title,
-            'description'       => $this->description,
+            'description'       => $description['html'],
+            'description_text'  => $description['text'],
+            'description_blocks' => [
+                'html' => $description['html'],
+                'text' => $description['text'],
+            ],
             'reason'            => $this->reason,
             'price'             => $this->price,
             'provider_id'       => $this->provider_id,
             'status'            => $this->status,
             'start_date'        => $this->start_date,
-            'benefits'          => $this->benefits,
-            'duties'            => $this->duties,
+            'benefits'          => $benefits['html'],
+            'benefits_text'     => $benefits['text'],
+            'benefits_blocks'   => [
+                'html' => $benefits['html'],
+                'text' => $benefits['text'],
+            ],
+            'duties'            => $duties['html'],
+            'duties_text'       => $duties['text'],
+            'duties_blocks'     => [
+                'html' => $duties['html'],
+                'text' => $duties['text'],
+            ],
             'education_level'   => $this->education_level,
             'career_level'      => $this->career_level,
             'travel_required'   => (int) ($this->travel_required ?? 0),
@@ -83,7 +122,12 @@ class PostJobRequestDetailResource extends JsonResource
 })(),
 
             'state_id'          => $this->state_id,
-            'requirement'      => $this->requirement,
+            'requirement'      => $requirement['html'],
+            'requirement_text' => $requirement['text'],
+            'requirement_blocks' => [
+                'html' => $requirement['html'],
+                'text' => $requirement['text'],
+            ],
             'type'             => $this->type,
             'category_id'       => $this->category_id,
             'subcategory_id'     => $this->subcategory_id,
