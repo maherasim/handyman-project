@@ -229,7 +229,7 @@ public function cancelSubscription(Request $request)
 
     public function getHistory(Request $request){
         $user_id = auth()->id();
-        $subscription_history = ProviderSubscription::where('user_id',$user_id);
+        $subscription_history = ProviderSubscription::where('user_id',$user_id)->with('plan');
         $per_page = config('constant.PER_PAGE_LIMIT');
 
         $orderBy = $request->orderby ? $request->orderby: 'asc';

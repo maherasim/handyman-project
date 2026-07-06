@@ -21,6 +21,10 @@ class ProviderSubscription extends Model
     public function payment(){
         return $this->belongsTo(SubscriptionTransaction::class, 'subscription_plan_id','id');
     }
+
+    public function plan(){
+        return $this->belongsTo(Plans::class, 'plan_id', 'id');
+    }
     public function getPlanIconAttribute()
 {
     switch (strtolower($this->plan_type)) {
