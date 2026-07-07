@@ -367,12 +367,11 @@ class BookingPayPalController extends Controller
                     Wallet::firstOrCreate(['user_id' => $payout['handyman_id']])->increment('amount', $payout['amount']);
                     HandymanPayout::create([
                         'handyman_id' => $payout['handyman_id'],
-                        'booking_id' => $booking->id,
+                        'payment_id'  => $result->id,
                         'amount' => $payout['amount'],
                         'status' => 'paid',
                         'paid_date' => Carbon::now(),
                         'payment_method' => 'paypal',
-                        'payment_gateway' => 'paypal',
                     ]);
 
                     CommissionEarning::create([
