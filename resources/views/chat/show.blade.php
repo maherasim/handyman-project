@@ -104,6 +104,7 @@
         .policy-warning-bubble { box-shadow: 0 0 0 2px rgba(220,53,69,.1) inset; }
     </style>
 
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const conversationId = {{ $conversation->id }};
@@ -432,10 +433,63 @@
                 }
             });
 
+            // ── Pusher real-time ──────────────────────────────────────────
+            let pusherChannel = null;
+            let typingHideTimer = null;
+            let pusherConnected = false;
+
+            if (typeof Pusher !== 'undefined') {
+                const pusher = new Pusher('{{ config('broadcasting.connections.pusher.key') }}', {
+                    cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
+                    authEndpoint: '/broadcasting/auth',
+                    auth: {
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                    }
+                });
+
+                pusherChannel = pusher.subscribe('private-chat.{{ $conversation->id }}');
+
+                // Incoming message — render instantly, skip polling
+                pusherChannel.bind('ChatMessageSent', (data) => {
+                    if (data.sender_id === currentUserId) return; // we already did optimistic render
+                    if (data.id && data.id <= newestId) return;  // dedup
+                    newestId = Math.max(newestId, data.id || 0);
+                    renderMessage(data);
+                    msgScroll.scrollTop = msgScroll.scrollHeight;
+                    playNotify();
+                    // hide typing indicator when message arrives
+                    typingEl.style.display = 'none';
+                });
+
+                // Other person is typing
+                pusherChannel.bind('client-typing', () => {
+                    typingEl.style.display = '';
+                    clearTimeout(typingHideTimer);
+                    typingHideTimer = setTimeout(() => typingEl.style.display = 'none', 3000);
+                });
+
+                pusher.connection.bind('connected', () => {
+                    pusherConnected = true;
+                    // Slow down polling — Pusher handles new messages now
+                    clearInterval(pollTimer);
+                    pollTimer = setInterval(pollNewer, 15000);
+                });
+
+                pusher.connection.bind('disconnected', () => {
+                    pusherConnected = false;
+                    // Fall back to fast polling if Pusher drops
+                    clearInterval(pollTimer);
+                    pollTimer = setInterval(pollNewer, 3000);
+                });
+            }
+
+            // Typing — send client event to Pusher so the OTHER person sees it
             textInput.addEventListener('input', () => {
                 clearTimeout(typingTimer);
-                typingEl.style.display = '';
-                typingTimer = setTimeout(() => typingEl.style.display = 'none', 1200);
+                if (pusherChannel && pusherConnected) {
+                    try { pusherChannel.trigger('client-typing', {}); } catch(e) {}
+                }
+                typingTimer = setTimeout(() => {}, 1200); // keep timer reference for cleanup
             });
 
             // init
