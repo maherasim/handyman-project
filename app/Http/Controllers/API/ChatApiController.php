@@ -129,6 +129,27 @@ class ChatApiController extends Controller
         return response()->json(['status' => true, 'conversation_id' => $conversation->id]);
     }
 
+    public function openByBooking(Request $request)
+    {
+        $request->validate([
+            'booking_id' => 'required|integer|exists:bookings,id',
+        ]);
+        $booking = Booking::findOrFail($request->input('booking_id'));
+        $uid = Auth::id();
+        abort_unless($uid && ($uid === ($booking->provider_id ?? 0) || $uid === ($booking->customer_id ?? 0)), 403);
+
+        $conversation = ChatConversation::firstOrCreate(
+            ['booking_id' => $booking->id],
+            [
+                'user_one_id' => $booking->provider_id,
+                'user_two_id' => $booking->customer_id,
+                'conversation_type' => 'booking',
+            ]
+        );
+
+        return response()->json(['status' => true, 'conversation_id' => $conversation->id]);
+    }
+
     public function openWithUser(Request $request)
     {
         $request->validate([
@@ -278,8 +299,23 @@ class ChatApiController extends Controller
         
         // Load sender relationship for notification
         $msg->load('sender');
-        
-        // Send notification to the recipient using CommonNotification template system
+
+        // Broadcast to Pusher so the other participant gets it instantly (no polling needed)
+        broadcast(new \App\Events\ChatMessageSent($conversation->id, [
+            'id'          => $msg->id,
+            'sender_id'   => $msg->sender_id,
+            'sender_name' => $msg->sender?->display_name ?? $msg->sender?->name,
+            'message'     => $containsPii ? null : $msg->message,
+            'created_at'  => $msg->created_at?->toDateTimeString(),
+            'flagged'     => (bool) $containsPii,
+            'attachment'  => $attachmentPath ? [
+                'type'         => $attachmentType,
+                'name'         => basename($attachmentPath),
+                'download_url' => route('api.chat.download', $msg->id),
+            ] : null,
+        ]))->toOthers();
+
+        // Send push notification (FCM) for when the app is in background/closed
         $this->sendMessageNotification($conversation, $msg);
         
         return response()->json([
@@ -578,6 +614,7 @@ class ChatApiController extends Controller
             
             $notificationData = [
                 'id' => $message->id,
+                'type' => 'chat_message',
                 'message_id' => $message->id,
                 'conversation_id' => $conversation->id,
                 'sender_id' => $sender->id,

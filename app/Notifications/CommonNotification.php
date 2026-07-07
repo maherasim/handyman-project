@@ -206,43 +206,63 @@ class CommonNotification extends Notification implements ShouldQueue
 
     public function toFcm($notifiable)
     {
-        $msg = strip_tags($this->data['message']);
-        if (! isset($msg) && $msg == '') {
+        $type = isset($this->data['type']) && $this->data['type'] !== ''
+            ? $this->data['type']
+            : 'booking';
+
+        $isChatMessage = $type === 'chat_message';
+
+        // For chat: title = sender name, body = message preview
+        // For everything else: title = type label, body = message field
+        $heading = $isChatMessage
+            ? ($this->data['sender_name'] ?? __('messages.new_message'))
+            : ($this->data['type'] ?? '');
+
+        $msg = $isChatMessage
+            ? strip_tags($this->data['message_preview'] ?? __('messages.chat_new_attachment'))
+            : strip_tags($this->data['message'] ?? '');
+
+        if ($msg === '') {
             $msg = __('message.notification_body');
         }
-        $type = 'booking';
-        if (isset($this->data['type']) && $this->data['type'] !== '') {
-            $type = $this->data['type'];
+
+        $additionalData = json_encode($this->data);
+
+        // Top-level FCM data fields — Flutter reads these directly without JSON parsing
+        $fcmData = [
+            "sound"          => "default",
+            "type"           => $type,
+            "additional_data"=> $additionalData,
+            "click_action"   => "FLUTTER_NOTIFICATION_CLICK",
+        ];
+
+        // For chat: promote key fields to top level so Flutter can navigate on tap
+        if ($isChatMessage) {
+            $fcmData["conversation_id"] = (string) ($this->data['conversation_id'] ?? '');
+            $fcmData["sender_id"]       = (string) ($this->data['sender_id'] ?? '');
+            $fcmData["sender_name"]     = (string) ($this->data['sender_name'] ?? '');
+            $fcmData["is_chat"]         = "1";
         }
 
-        $heading =  $this->data['type'] ?? '';
-       
-        $additionalData = json_encode($this->data);
         return fcm([
             "message" => [
-                "topic" => 'user_'.$notifiable->id,
+                "topic"        => 'user_'.$notifiable->id,
                 "notification" => [
                     "title" => $heading,
-                    "body" => $msg,
+                    "body"  => $msg,
                 ],
-                "data" => [                    
-                    "sound"=>"default", 
-                    "story_id" => "story_12345",
-                    "type" => $type,
-                    "additional_data" => $additionalData,
-                    "click_action"=> "FLUTTER_NOTIFICATION_CLICK",
-                ],
+                "data"    => $fcmData,
                 "android" => [
-                    "priority" => "high",
-                    "notification" => [                        
-                        "sound" => "default",
-                        "click_action"=> "FLUTTER_NOTIFICATION_CLICK",
+                    "priority"     => "high",
+                    "notification" => [
+                        "sound"        => "default",
+                        "click_action" => "FLUTTER_NOTIFICATION_CLICK",
                     ],
                 ],
                 "apns" => [
                     "payload" => [
                         "aps" => [
-                            "sound" => "default",
+                            "sound"    => "default",
                             "category" => "NEW_MESSAGE_CATEGORY",
                         ],
                     ],
