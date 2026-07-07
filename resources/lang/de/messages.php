@@ -2451,6 +2451,8 @@
     'swift_bic_code' => 'SWIFT/BIC-Code',
     'mobile_number' => 'Mobilnummer',
    'request_confirmed_wallet' => 'Anfrage erfolgreich bestätigt und Betrag dem Wallet gutgeschrieben.',
+   'payment_already_processed' => 'Zahlung für diese Anfrage wurde bereits verarbeitet.',
+`
 
 
 );

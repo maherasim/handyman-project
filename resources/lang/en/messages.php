@@ -2446,5 +2446,6 @@
     'iban_code' => 'IBAN Code',
     'swift_bic_code' => 'SWIFT/BIC Code',
     'mobile_number' => 'Mobile Number',
-    'request_confirmed_wallet'=>"Request confirmed Successfully"
+    'request_confirmed_wallet'=>"Request confirmed Successfully",
+    'payment_already_processed' => 'Payment for this request has already been processed.',
 );
