@@ -80,8 +80,7 @@ Route::post('service-reviews', [ API\ServiceController::class, 'serviceReviewsLi
 Route::get('post-job-status', [ API\PostJobRequestController::class, 'postRequestStatus' ] );
 // Route::get('booking-list', [ API\BookingController::class, 'getBookingList' ] );sinc
 
-// Post Job PayPal – pure API return/cancel (no auth; PayPal redirects the browser here)
-Route::post('postjob/paypal/create/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobPayPalPayment'])->name('postjob.paypal.create');
+// Post Job PayPal – success/cancel stay public (PayPal browser redirect carries no Bearer token)
 Route::get('postjob/paypal/success/{id}', [App\Http\Controllers\PostJobRequestController::class, 'postJobPayPalSuccessApi'])->name('api.postjob.paypal.success');
 Route::get('postjob/paypal/cancel', [App\Http\Controllers\PostJobRequestController::class, 'postJobPayPalCancelApi'])->name('api.postjob.paypal.cancel');
 
@@ -235,6 +234,7 @@ Route::group(['middleware' => ['auth:sanctum', 'active']], function () {
 
     // payment
     Route::post('paythrough/wallet/{id}', [App\Http\Controllers\PostJobRequestController::class, 'payAdvance'])->name('post-job-request.pay-advance');
+    Route::post('postjob/paypal/create/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobPayPalPayment'])->name('postjob.paypal.create');
     Route::post('postjob/stripe/create/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobStripePayment'])->name('postjob.stripe.create');
     Route::post('postjob/stripe/confirm/{id}', [App\Http\Controllers\PostJobRequestController::class, 'confirmPostJobStripePaymentIntent'])->name('postjob.stripe.confirm');
     Route::post('postjob/bank-transfer/{id}', [App\Http\Controllers\PostJobRequestController::class, 'createPostJobBankTransfer'])->name('postjob.bank.transfer');
