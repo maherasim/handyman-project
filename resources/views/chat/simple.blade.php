@@ -29,14 +29,12 @@
             <div class="col-12">
                 <div id="messagesContainer" class="chat-body">
                     <div id="messages"></div>
-                </div>
-            </div>
-
-            <!-- Typing indicator — shown above composer when other person is typing -->
-            <div class="col-12" id="typingIndicator" style="display:none;">
-                <div class="typing-bubble">
-                    <span id="typingName">{{ $targetUser->display_name }}</span>
-                    <span class="typing-dots"><span></span><span></span><span></span></span>
+                    <div id="typingIndicator" style="display:none;" class="chat-row is-other typing-row">
+                        <img src="{{ getSingleMedia($targetUser, 'profile_image', null) ?? $fallbackAvatar }}" class="chat-mini-avatar">
+                        <div class="chat-bubble other typing-bubble-inner">
+                            <span class="typing-dots"><span></span><span></span><span></span></span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -207,7 +205,7 @@
                 });
 
                 pusherChannel.bind('client-typing', () => {
-                    typingIndicator.style.display = 'block';
+                    typingIndicator.style.display = 'flex';
                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                     clearTimeout(typingHideTimer);
                     typingHideTimer = setTimeout(() => { typingIndicator.style.display = 'none'; }, 3000);
@@ -517,28 +515,21 @@
             border-color: rgba(252, 165, 165, 0.4);
         }
 
-        /* Typing indicator bubble */
-        .typing-bubble {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: #ffffff;
-            border-top: 1px solid #eef1f4;
-            font-size: 13px;
-            color: #6b7280;
-        }
-        .typing-dots { display: flex; gap: 3px; align-items: center; }
+        /* Typing indicator — inside the blue messages area as a chat bubble */
+        .typing-row { margin-bottom: 10px; }
+        .typing-bubble-inner { padding: 10px 14px !important; min-width: 56px; }
+        .typing-dots { display: flex; gap: 5px; align-items: center; height: 18px; }
         .typing-dots span {
-            width: 6px; height: 6px; border-radius: 50%;
+            display: inline-block;
+            width: 8px; height: 8px; border-radius: 50%;
             background: #9ca3af;
             animation: typingBounce 1.2s infinite ease-in-out;
         }
         .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
         .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes typingBounce {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-            30% { transform: translateY(-4px); opacity: 1; }
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
+            30% { transform: translateY(-5px); opacity: 1; }
         }
     </style>
 </x-master-layout>
