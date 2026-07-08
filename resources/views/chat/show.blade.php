@@ -367,17 +367,6 @@
 
                 const fd = new FormData();
                 const text = (textInput.value || '').trim();
-                const violate = text && clientPiiCheck(text);
-                if (violate) {
-                    const warn = document.getElementById('policyWarning');
-                    if (warn) {
-                        warn.textContent = chatPiiWarning;
-                        warn.classList.remove('d-none');
-                    }
-                    if (window.Swal) {
-                        Swal.fire({ icon:'warning', title: chatPolicyViolationTitle, text: chatPiiWarning, confirmButtonText: chatOkText });
-                    }
-                }
                 if (text) fd.append('message', text);
                 if (fileInput.files && fileInput.files[0]) fd.append('attachment', fileInput.files[0]);
                 

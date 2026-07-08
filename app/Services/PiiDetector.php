@@ -17,8 +17,9 @@ class PiiDetector
 
         // ── Step 1: Unicode normalisation ────────────────────────────────────
         // Converts fullwidth digits ０１２３ → 012, superscripts, etc.
-        if (class_exists('Normalizer')) {
-            $text = \Normalizer::normalize($text, \Normalizer::FORM_NFKC) ?: $text;
+        // Use integer 16 (NFKC) directly to avoid constant availability issues across intl versions
+        if (function_exists('normalizer_normalize')) {
+            $text = normalizer_normalize($text, 16) ?: $text;
         }
 
         // Fullwidth digits (manual fallback if Normalizer not available)

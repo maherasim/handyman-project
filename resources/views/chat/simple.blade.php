@@ -395,16 +395,6 @@
                     return;
                 }
 
-                // Client-side PII pre-check — warn before sending
-                if (messageText && clientPiiCheck(messageText)) {
-                    if (window.Swal) {
-                        Swal.fire({ icon:'warning', title: @json(__('messages.chat_policy_violation_title')), text: @json(__('messages.chat_pii_warning')) });
-                    } else {
-                        alert(@json(__('messages.chat_pii_warning')));
-                    }
-                    // Still allow send — server will flag and hide the message
-                }
-
                 // Set sending flag and disable form
                 isSending = true;
                 const sendButton = messageForm.querySelector('button[type="submit"]');
