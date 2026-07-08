@@ -106,6 +106,85 @@
 
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script>
+        // ── Client-side PII pre-check (mirrors PiiDetector.php) ──────────────
+        function clientPiiCheck(text) {
+            if (!text) return false;
+            const t = text.toLowerCase();
+
+            // Normalise obfuscation
+            let norm = t
+                .replace(/\b(at the rate|at)\b/g, '@')
+                .replace(/[\[{(]\s*at\s*[\]})]|@/g, '@')
+                .replace(/\b(dot|punkt)\b/g, '.')
+                .replace(/[\[{(]\s*dot\s*[\]})]|\./g, '.')
+                .replace(/\s*(@|\.)\s*/g, '$1')
+                .replace(/g\s*mail/g,'gmail').replace(/y\s*ahoo/g,'yahoo')
+                .replace(/hot\s*mail/g,'hotmail').replace(/out\s*look/g,'outlook')
+                .replace(/proton\s*mail/g,'protonmail').replace(/i\s*cloud/g,'icloud')
+                .replace(/y\s*andex/g,'yandex').replace(/z\s*o\s*h\s*o/g,'zoho')
+                .replace(/web\s*\.?\s*de/g,'web.de').replace(/t\s*-?\s*online/g,'t-online');
+
+            const emailRe = /[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}/i;
+            if (emailRe.test(t) || emailRe.test(norm)) return true;
+
+            // Email providers
+            if (['gmail','yahoo','hotmail','outlook','icloud','protonmail','ymail','gmx','aol',
+                 'mail.com','yandex','zoho','web.de','gmx.de','gmx.net','t-online',
+                 'freenet','posteo','mailbox.org'].some(p => t.includes(p))) return true;
+
+            // Phone — numeric (7+ digits)
+            const digits = (t.match(/\d/g) || []).length;
+            if (digits >= 7 && /(?:(?:\+|00)?\d{1,3}[\s.\-]?)?(?:\(?\d{2,4}\)?[\s.\-]?)?\d{3,4}[\s.\-]?\d{3,4}/.test(t)) return true;
+            // Space-separated single digits: "0 3 0 1 2 3 4 5 6"
+            if (/(?<!\d)\d(\s\d){6,}(?!\d)/.test(t)) return true;
+
+            // English spelled-out digits
+            const enMap = {zero:'0',oh:'0',one:'1',two:'2',three:'3',four:'4',five:'5',six:'6',seven:'7',eight:'8',nine:'9'};
+            let cnt = 0, rep = 1;
+            for (const w of t.split(/[^a-z0-9+]+/).filter(Boolean)) {
+                if (w==='double'){rep=2;continue;} if(w==='triple'){rep=3;continue;}
+                const d = enMap[w] ? enMap[w].repeat(rep) : (/^\+?\d+$/.test(w) ? w.replace(/\D/g,'').repeat(rep) : '');
+                if (d) { cnt += d.length; if (cnt>=7) return true; } else cnt=0;
+                rep=1;
+            }
+
+            // German spelled-out digits
+            const deMap = {null:'0',nul:'0',eins:'1',ein:'1',zwei:'2',drei:'3',vier:'4',
+                           fuenf:'5',fünf:'5',sechs:'6',sieben:'7',acht:'8',neun:'9',
+                           zehn:'00',zwanzig:'00',dreissig:'000',dreißig:'000'};
+            cnt = 0;
+            for (const w of t.split(/[\s,\-\/]+/).filter(Boolean)) {
+                if (deMap[w]) { cnt += deMap[w].length; if (cnt>=7) return true; }
+                else if (/^\d+$/.test(w)) { cnt += w.length; if (cnt>=7) return true; }
+                else cnt = 0;
+            }
+
+            // Messaging platforms
+            if (['whatsapp','wa.me','telegram','t.me/','skype','viber','wechat',
+                 'discord','snapchat','instagram','linkedin','twitter','x.com/',
+                 'signal.org','zoom.us','facebook','messenger','fb.com','m.me/'].some(p=>t.includes(p))) return true;
+            if (/\bsignal\s*(app|me|id|\.org)\b|\bget\s+signal\b/i.test(t)) return true;
+            if (/\bline\s*(app|id|me)\b|\bmy\s+line\s+(is|:)/i.test(t)) return true;
+            if (/\b(ms\s+teams|microsoft\s+teams|teams\s+id)\b/i.test(t)) return true;
+            if (/\bzoom\s*(id|link|meeting|call)\b|\bjoin\s+(my\s+)?zoom\b/i.test(t)) return true;
+            if (/\b\w{2,32}#\d{4}\b/.test(t)) return true; // Discord tag
+            if (/\bsnapchat\b|\bmy\s+snap\b/i.test(t)) return true;
+            if (/\binstagram\b|\bmy\s+insta\b|\big\s*:/i.test(t)) return true;
+
+            // Any URL
+            if (/https?:\/\//i.test(t) || t.includes('calendly.com') || t.includes('cal.com')) return true;
+
+            // @handle (not already caught as email)
+            if (!emailRe.test(t) && /@[a-z0-9_\.]{3,}/i.test(t)) return true;
+
+            // Contact intent phrases
+            if (['call me','reach me','contact me','find me on','message me on','dm me',
+                 'text me','add me on','ping me','hit me up','connect on',
+                 'ruf mich an','schreib mir','kontaktiere mich','füge mich hinzu'].some(p=>t.includes(p))) return true;
+
+            return false;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const conversationId = {{ $conversation->id }};
             const currentUserId = {{ (int) auth()->id() }};
@@ -288,47 +367,7 @@
 
                 const fd = new FormData();
                 const text = (textInput.value || '').trim();
-                // Client-side quick PII check
-                const lower = text.toLowerCase();
-                const emailRe = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i;
-                const phoneRe = /(?:(?:\+|00)?\d{1,3}[\s.-]?)?(?:\(?\d{2,4}\)?[\s.-]?)?\d{3,4}[\s.-]?\d{3,4}/;
-                const hasMinDigits = (text.match(/\d/g) || []).length >= 7;
-                const isWhats = lower.includes('whatsapp') || lower.includes('wa.me/') || lower.includes('api.whatsapp.com');
-                const mentionsEmailProviders = ['gmail','yahoo','hotmail','outlook','icloud','protonmail','ymail','gmx','aol','mail.com','yandex','zoho'].some(p => lower.includes(p));
-                const mentionsFacebook = lower.includes('facebook.com') || lower.includes('fb.com') || lower.includes('m.me/') || lower.includes('messenger.com') || lower.includes('facebook');
-                // Basic obfuscation normalization for email
-                const norm = lower
-                    .replace(/\b(at the rate|at)\b/g, '@')
-                    .replace(/[\[{(]\s*at\s*[\]})]/g, '@')
-                    .replace(/\b(dot)\b/g, '.')
-                    .replace(/[\[{(]\s*dot\s*[\]})]/g, '.')
-                    .replace(/\s*(@|\.)\s*/g, '$1')
-                    .replace(/g\s*mail/g, 'gmail')
-                    .replace(/y\s*ahoo/g, 'yahoo')
-                    .replace(/hot\s*mail/g, 'hotmail')
-                    .replace(/out\s*look/g, 'outlook')
-                    .replace(/proton\s*mail/g, 'protonmail')
-                    .replace(/i\s*cloud/g, 'icloud')
-                    .replace(/y\s*andex/g, 'yandex')
-                    .replace(/z\s*o\s*h\s*o/g, 'zoho');
-                const emailObfuscated = emailRe.test(norm);
-
-                // Spelled-out phone detection: count digits reconstructed
-                const words = lower.split(/[^a-z0-9+]+/).filter(Boolean);
-                const map = {zero:'0', oh:'0', o:'0', one:'1', two:'2', three:'3', four:'4', five:'5', six:'6', seven:'7', eight:'8', nine:'9'};
-                let count = 0, rep = 1;
-                for (const w of words) {
-                  if (w === 'double') { rep = 2; continue; }
-                  if (w === 'triple') { rep = 3; continue; }
-                  let add = '';
-                  if (map[w]) add = map[w].repeat(rep);
-                  else if (/^\+?\d+$/.test(w)) add = (w.replace(/\D/g,'')).repeat(rep);
-                  if (add) { count += add.length; if (count >= 7) break; }
-                  rep = 1;
-                }
-                const phoneSpelled = count >= 7;
-
-                const violate = text && (emailRe.test(text) || emailObfuscated || mentionsEmailProviders || (phoneRe.test(text) && hasMinDigits) || phoneSpelled || isWhats || lower.includes('telegram') || lower.includes('t.me/') || mentionsFacebook);
+                const violate = text && clientPiiCheck(text);
                 if (violate) {
                     const warn = document.getElementById('policyWarning');
                     if (warn) {

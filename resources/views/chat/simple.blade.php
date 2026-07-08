@@ -59,6 +59,56 @@
 
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script>
+        function clientPiiCheck(text) {
+            if (!text) return false;
+            const t = text.toLowerCase();
+            let norm = t
+                .replace(/\b(at the rate|at)\b/g,'@').replace(/[\[{(]\s*at\s*[\]})]|@/g,'@')
+                .replace(/\b(dot|punkt)\b/g,'.').replace(/[\[{(]\s*dot\s*[\]})]|\./g,'.')
+                .replace(/\s*(@|\.)\s*/g,'$1')
+                .replace(/g\s*mail/g,'gmail').replace(/y\s*ahoo/g,'yahoo')
+                .replace(/hot\s*mail/g,'hotmail').replace(/out\s*look/g,'outlook')
+                .replace(/proton\s*mail/g,'protonmail').replace(/i\s*cloud/g,'icloud')
+                .replace(/web\s*\.?\s*de/g,'web.de').replace(/t\s*-?\s*online/g,'t-online');
+            const emailRe = /[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}/i;
+            if (emailRe.test(t) || emailRe.test(norm)) return true;
+            if (['gmail','yahoo','hotmail','outlook','icloud','protonmail','ymail','gmx','aol',
+                 'mail.com','yandex','zoho','web.de','gmx.de','gmx.net','t-online','freenet',
+                 'posteo','mailbox.org'].some(p=>t.includes(p))) return true;
+            const digits = (t.match(/\d/g)||[]).length;
+            if (digits>=7 && /(?:(?:\+|00)?\d{1,3}[\s.\-]?)?(?:\(?\d{2,4}\)?[\s.\-]?)?\d{3,4}[\s.\-]?\d{3,4}/.test(t)) return true;
+            if (/(?<!\d)\d(\s\d){6,}(?!\d)/.test(t)) return true;
+            const enMap={zero:'0',oh:'0',one:'1',two:'2',three:'3',four:'4',five:'5',six:'6',seven:'7',eight:'8',nine:'9'};
+            let cnt=0,rep=1;
+            for(const w of t.split(/[^a-z0-9+]+/).filter(Boolean)){
+                if(w==='double'){rep=2;continue;}if(w==='triple'){rep=3;continue;}
+                const d=enMap[w]?enMap[w].repeat(rep):(/^\+?\d+$/.test(w)?w.replace(/\D/g,'').repeat(rep):'');
+                if(d){cnt+=d.length;if(cnt>=7)return true;}else cnt=0;rep=1;
+            }
+            const deMap={null:'0',nul:'0',eins:'1',ein:'1',zwei:'2',drei:'3',vier:'4',
+                         fuenf:'5',fünf:'5',sechs:'6',sieben:'7',acht:'8',neun:'9'};
+            cnt=0;
+            for(const w of t.split(/[\s,\-\/]+/).filter(Boolean)){
+                if(deMap[w]){cnt+=deMap[w].length;if(cnt>=7)return true;}
+                else if(/^\d+$/.test(w)){cnt+=w.length;if(cnt>=7)return true;}
+                else cnt=0;
+            }
+            if(['whatsapp','wa.me','telegram','t.me/','skype','viber','wechat','discord',
+                'snapchat','instagram','linkedin','twitter','x.com/','signal.org','zoom.us',
+                'facebook','messenger','fb.com','m.me/'].some(p=>t.includes(p))) return true;
+            if(/\bsignal\s*(app|me|id)\b|\bget\s+signal\b/i.test(t)) return true;
+            if(/\b(ms\s+teams|microsoft\s+teams|teams\s+id)\b/i.test(t)) return true;
+            if(/\bzoom\s*(id|link|meeting)\b|\bjoin\s+(my\s+)?zoom\b/i.test(t)) return true;
+            if(/\b\w{2,32}#\d{4}\b/.test(t)) return true;
+            if(/\binstagram\b|\bmy\s+insta\b|\big\s*:/i.test(t)) return true;
+            if(/https?:\/\//i.test(t)||t.includes('calendly.com')||t.includes('cal.com')) return true;
+            if(!emailRe.test(t)&&/@[a-z0-9_\.]{3,}/i.test(t)) return true;
+            if(['call me','reach me','contact me','find me on','message me on','dm me',
+                'text me','add me on','ping me','hit me up','ruf mich an','schreib mir',
+                'kontaktiere mich'].some(p=>t.includes(p))) return true;
+            return false;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const conversationId = {{ $conversation->id }};
             const currentUserId = {{ (int) auth()->id() }};
@@ -344,7 +394,17 @@
                 if (!messageText && !fileInput.files[0]) {
                     return;
                 }
-                
+
+                // Client-side PII pre-check — warn before sending
+                if (messageText && clientPiiCheck(messageText)) {
+                    if (window.Swal) {
+                        Swal.fire({ icon:'warning', title: @json(__('messages.chat_policy_violation_title')), text: @json(__('messages.chat_pii_warning')) });
+                    } else {
+                        alert(@json(__('messages.chat_pii_warning')));
+                    }
+                    // Still allow send — server will flag and hide the message
+                }
+
                 // Set sending flag and disable form
                 isSending = true;
                 const sendButton = messageForm.querySelector('button[type="submit"]');
