@@ -51,6 +51,7 @@
         </div>
     </div>
 
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const conversationId = {{ $conversation->id }};
@@ -65,8 +66,11 @@
 
             let pollTimer = null;
             let typingTimer = null;
+            let typingHideTimer = null;
             let lastRenderedDate = null;
-            let isSending = false; // Flag to prevent double submissions
+            let isSending = false;
+            let pusherChannel = null;
+            let pusherConnected = false;
 
             // Browser Notification Support (WhatsApp-like)
             let notificationPermission = Notification.permission;
@@ -159,31 +163,63 @@
                 }
             }
 
-            // Realtime via Pusher (Laravel Echo)
-            try {
-                // Requires window.Echo to be bootstrapped globally once (in layout) or add minimal init here
-                if (!window.Echo && window.Pusher && window.EchoFactory) {
-                    window.Echo = window.EchoFactory();
-                }
-                if (window.Echo) {
-                    window.Echo.private(`chat.${conversationId}`).listen('.ChatMessageSent', (e) => {
-                        // Append the incoming message immediately
-                        if (e && typeof e === 'object') {
-                            // Only show notification if message is from someone else
-                            if (e.sender_id !== currentUserId) {
-                                console.log('New message received via WebSocket, showing notification');
-                                showBrowserNotification(e);
-                            }
-                            maybeRenderDateSeparator(e.created_at);
-                            renderMessage(e);
-                            scrollToBottom();
-                        }
-                    });
-                    console.log('WebSocket listener registered for chat.' + conversationId);
-                } else {
-                    console.log('WebSocket (Echo) not available, using polling fallback');
-                }
-            } catch (err) { /* fallback to polling only */ }
+            // ── Pusher real-time ─────────────────────────────────────────
+            if (typeof Pusher !== 'undefined') {
+                Pusher.logToConsole = true;
+                const pusher = new Pusher('82c4fc5181123cb5e639', {
+                    cluster: 'eu',
+                    authEndpoint: '/broadcasting/auth',
+                    auth: { headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } }
+                });
+
+                pusher.connection.bind('state_change', (s) => {
+                    console.log('[Pusher] ' + s.previous + ' → ' + s.current);
+                });
+                pusher.connection.bind('error', (err) => {
+                    console.error('[Pusher] connection error', err);
+                });
+
+                pusherChannel = pusher.subscribe('private-chat.' + conversationId);
+
+                pusherChannel.bind('pusher:subscription_succeeded', () => {
+                    console.log('[Pusher] ✅ Subscribed to private-chat.' + conversationId);
+                });
+                pusherChannel.bind('pusher:subscription_error', (err) => {
+                    console.error('[Pusher] ❌ Subscription failed', err);
+                });
+
+                pusherChannel.bind('ChatMessageSent', (e) => {
+                    console.log('[Pusher] ChatMessageSent received', e);
+                    if (!e || e.sender_id === currentUserId) return;
+                    typingIndicator.style.display = 'none';
+                    maybeRenderDateSeparator(e.created_at);
+                    renderMessage(e);
+                    scrollToBottom();
+                    showBrowserNotification(e);
+                });
+
+                pusherChannel.bind('client-typing', () => {
+                    console.log('[Pusher] client-typing received');
+                    typingIndicator.style.display = 'block';
+                    clearTimeout(typingHideTimer);
+                    typingHideTimer = setTimeout(() => typingIndicator.style.display = 'none', 3000);
+                });
+
+                pusher.connection.bind('connected', () => {
+                    pusherConnected = true;
+                    console.log('[Pusher] ✅ Connected — slowing poll to 15s');
+                    clearInterval(pollTimer);
+                    pollTimer = setInterval(loadMessages, 15000);
+                });
+                pusher.connection.bind('disconnected', () => {
+                    pusherConnected = false;
+                    console.warn('[Pusher] ⚠️ Disconnected — fast poll 3s');
+                    clearInterval(pollTimer);
+                    pollTimer = setInterval(loadMessages, 3000);
+                });
+            } else {
+                console.error('[Pusher] library not loaded');
+            }
 
             // Load messages
             function loadMessages() {
@@ -366,13 +402,15 @@
                 filePreview.innerHTML = '';
             };
 
-            // Typing indicator
+            // Typing — fire client event so the OTHER person's browser shows the indicator
             messageInput.addEventListener('input', () => {
                 clearTimeout(typingTimer);
-                typingIndicator.style.display = 'block';
-                typingTimer = setTimeout(() => {
-                    typingIndicator.style.display = 'none';
-                }, 1000);
+                if (pusherChannel && pusherConnected) {
+                    try { pusherChannel.trigger('client-typing', {}); } catch(e) {
+                        console.error('[Pusher] trigger client-typing failed', e);
+                    }
+                }
+                typingTimer = setTimeout(() => {}, 1200);
             });
 
             // Auto-scroll to bottom
@@ -387,14 +425,9 @@
                 return div.innerHTML;
             }
 
-            // Poll for new messages every 3 seconds
-            function startPolling() {
-                pollTimer = setInterval(loadMessages, 3000);
-            }
-
-            // Initialize
+            // Initialize — start with 3s polling; Pusher 'connected' event slows it to 15s
             loadMessages();
-            startPolling();
+            pollTimer = setInterval(loadMessages, 3000);
             
             // Cleanup on page unload
             window.addEventListener('beforeunload', () => {
