@@ -786,12 +786,12 @@ class PostJobRequestController extends Controller
         $request->validate([
             'title'    => 'required|string|max:255',
             'amount'   => 'required|numeric|min:0.01',
-            'quantity' => 'nullable|integer|min:1'
+            'quantity' => 'nullable|numeric|min:0.01'
         ]);
-    
+
         $bid = PostJobBid::findOrFail($id);
         $oldBidStatus = $bid->status;
-        $quantity    = (int)($request->input('quantity') ?? 1);
+        $quantity    = (float)($request->input('quantity') ?? 1.0);
         $extraAmount = (float)$request->input('amount');
 
         // Replace any existing lines with this single item
@@ -857,11 +857,11 @@ class PostJobRequestController extends Controller
     
         // Compute payable server-side if not provided or invalid
         if ($payAmount <= 0) {
-            $quantity      = (int) ($bid->quantity ?? 1);
+            $quantity      = (float) ($bid->quantity ?? 1);
             $quantity      = $quantity > 0 ? $quantity : 1;
             $baseAmount    = (float) ($bid->price ?? 0) * $quantity;
             $extrasTotal   = (float) $bid->extraCharges()->get()->reduce(function($carry, $charge) {
-                $q = (int) ($charge->quantity ?? 1);
+                $q = (float) ($charge->quantity ?? 1);
                 return $carry + ((float) $charge->amount * ($q > 0 ? $q : 1));
             }, 0.0);
             $totalDue      = $baseAmount + $extrasTotal;
