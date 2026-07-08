@@ -486,10 +486,14 @@
 
                 // Other person is typing
                 pusherChannel.bind('client-typing', (data) => {
-                    console.log('[Pusher] client-typing received from other user');
-                    typingEl.style.display = '';
+                    console.log('[Pusher] ✅ client-typing callback fired!', data);
+                    console.log('[Pusher] typingEl:', typingEl);
+                    if (!typingEl) { console.error('[Pusher] typingEl is NULL'); return; }
+                    typingEl.removeAttribute('style');
+                    typingEl.style.setProperty('display', 'inline-block', 'important');
+                    console.log('[Pusher] typingEl computed display:', window.getComputedStyle(typingEl).display);
                     clearTimeout(typingHideTimer);
-                    typingHideTimer = setTimeout(() => typingEl.style.display = 'none', 3000);
+                    typingHideTimer = setTimeout(() => { typingEl.style.display = 'none'; }, 3000);
                 });
 
                 pusher.connection.bind('connected', () => {

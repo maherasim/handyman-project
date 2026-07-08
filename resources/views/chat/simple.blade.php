@@ -198,11 +198,19 @@
                     showBrowserNotification(e);
                 });
 
-                pusherChannel.bind('client-typing', () => {
-                    console.log('[Pusher] client-typing received');
-                    typingIndicator.style.display = 'block';
+                pusherChannel.bind('client-typing', (data) => {
+                    console.log('[Pusher] ✅ client-typing callback fired!', data);
+                    console.log('[Pusher] typingIndicator el:', typingIndicator);
+                    if (!typingIndicator) {
+                        console.error('[Pusher] typingIndicator element is NULL — check id="typingIndicator"');
+                        return;
+                    }
+                    typingIndicator.removeAttribute('style'); // clear inline display:none
+                    typingIndicator.style.setProperty('display', 'block', 'important');
+                    typingIndicator.textContent = '{{ $targetUser->display_name }} ' + @json(__('messages.chat_typing'));
+                    console.log('[Pusher] typingIndicator display after set:', typingIndicator.style.display, 'computed:', window.getComputedStyle(typingIndicator).display);
                     clearTimeout(typingHideTimer);
-                    typingHideTimer = setTimeout(() => typingIndicator.style.display = 'none', 3000);
+                    typingHideTimer = setTimeout(() => { typingIndicator.style.display = 'none'; }, 3000);
                 });
 
                 pusher.connection.bind('connected', () => {
