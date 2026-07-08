@@ -439,8 +439,8 @@
             let pusherConnected = false;
 
             if (typeof Pusher !== 'undefined') {
-                const pusher = new Pusher('{{ config('broadcasting.connections.pusher.key') }}', {
-                    cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
+                const pusher = new Pusher('82c4fc5181123cb5e639', {
+                    cluster: 'eu',
                     authEndpoint: '/broadcasting/auth',
                     auth: {
                         headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
