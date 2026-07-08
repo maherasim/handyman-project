@@ -27,15 +27,15 @@
             $extraChargesCount = 0;
             $extraChargesTotal = 0.0;
             $extraChargeUnit = (float) ($bid->extra_charges ?? 0);
-            $extraChargeQty = (int) ($bid->quantity ?? 1);
+            $extraChargeQty = (float) ($bid->quantity ?? 1);
             if ($hasExtraLines) {
                 foreach ($bid->extraCharges as $ec) {
                     $lineAmount = (float) ($ec->amount ?? 0);
-                    $lineQty = (int) ($ec->quantity ?? 0);
+                    $lineQty = (float) ($ec->quantity ?? 0);
                     $extraChargesTotal += ($lineAmount * $lineQty);
                 }
                 $extraChargesCount = $bid->extraCharges->count();
-                $extraChargeQty = (int) $bid->extraCharges->sum('quantity');
+                $extraChargeQty = (float) $bid->extraCharges->sum('quantity');
             } else {
                 $extraChargesTotal = $extraChargeUnit * $extraChargeQty;
                 $extraChargesCount = $extraChargeQty > 0 ? 1 : 0;
@@ -553,9 +553,9 @@
                             @foreach($bid->extraCharges as $line)
                                 <tr>
                                     <td>{{ $line->title }}</td>
-                                    <td class="text-end">{{ (int) ($line->quantity ?? 0) }}</td>
+                                    <td class="text-end">{{ rtrim(rtrim(number_format((float) ($line->quantity ?? 0), 2, '.', ''), '0'), '.') }}</td>
                                     <td class="text-end">{{ getPriceFormat((float) ($line->amount ?? 0)) }}</td>
-                                    <td class="text-end">{{ getPriceFormat(((float) ($line->amount ?? 0)) * ((int) ($line->quantity ?? 0))) }}</td>
+                                    <td class="text-end">{{ getPriceFormat(((float) ($line->amount ?? 0)) * ((float) ($line->quantity ?? 0))) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
