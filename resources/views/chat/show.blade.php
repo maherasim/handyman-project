@@ -438,7 +438,11 @@
             let typingHideTimer = null;
             let pusherConnected = false;
 
+            console.log('[Pusher] Starting init. conversationId=' + conversationId + ' userId=' + currentUserId);
+
             if (typeof Pusher !== 'undefined') {
+                Pusher.logToConsole = true; // enable Pusher's own verbose logging
+
                 const pusher = new Pusher('82c4fc5181123cb5e639', {
                     cluster: 'eu',
                     authEndpoint: '/broadcasting/auth',
@@ -447,22 +451,42 @@
                     }
                 });
 
+                console.log('[Pusher] Instance created. Key=82c4fc5181123cb5e639 cluster=eu');
+
+                pusher.connection.bind('state_change', (states) => {
+                    console.log('[Pusher] Connection state: ' + states.previous + ' → ' + states.current);
+                });
+
+                pusher.connection.bind('error', (err) => {
+                    console.error('[Pusher] Connection error:', err);
+                });
+
                 pusherChannel = pusher.subscribe('private-chat.{{ $conversation->id }}');
+                console.log('[Pusher] Subscribed to channel: private-chat.{{ $conversation->id }}');
+
+                pusherChannel.bind('pusher:subscription_succeeded', () => {
+                    console.log('[Pusher] ✅ Subscription succeeded on private-chat.{{ $conversation->id }}');
+                });
+
+                pusherChannel.bind('pusher:subscription_error', (err) => {
+                    console.error('[Pusher] ❌ Subscription FAILED on private-chat.{{ $conversation->id }}:', err);
+                });
 
                 // Incoming message — render instantly, skip polling
                 pusherChannel.bind('ChatMessageSent', (data) => {
+                    console.log('[Pusher] ChatMessageSent received:', data);
                     if (data.sender_id === currentUserId) return; // we already did optimistic render
                     if (data.id && data.id <= newestId) return;  // dedup
                     newestId = Math.max(newestId, data.id || 0);
                     renderMessage(data);
                     msgScroll.scrollTop = msgScroll.scrollHeight;
                     playNotify();
-                    // hide typing indicator when message arrives
                     typingEl.style.display = 'none';
                 });
 
                 // Other person is typing
-                pusherChannel.bind('client-typing', () => {
+                pusherChannel.bind('client-typing', (data) => {
+                    console.log('[Pusher] client-typing received from other user');
                     typingEl.style.display = '';
                     clearTimeout(typingHideTimer);
                     typingHideTimer = setTimeout(() => typingEl.style.display = 'none', 3000);
@@ -470,26 +494,33 @@
 
                 pusher.connection.bind('connected', () => {
                     pusherConnected = true;
-                    // Slow down polling — Pusher handles new messages now
+                    console.log('[Pusher] ✅ Connected to Pusher');
                     clearInterval(pollTimer);
                     pollTimer = setInterval(pollNewer, 15000);
                 });
 
                 pusher.connection.bind('disconnected', () => {
                     pusherConnected = false;
-                    // Fall back to fast polling if Pusher drops
+                    console.warn('[Pusher] ⚠️ Disconnected — falling back to 3s polling');
                     clearInterval(pollTimer);
                     pollTimer = setInterval(pollNewer, 3000);
                 });
+            } else {
+                console.error('[Pusher] ❌ Pusher library not loaded — check CDN script tag');
             }
 
             // Typing — send client event to Pusher so the OTHER person sees it
             textInput.addEventListener('input', () => {
                 clearTimeout(typingTimer);
                 if (pusherChannel && pusherConnected) {
-                    try { pusherChannel.trigger('client-typing', {}); } catch(e) {}
+                    console.log('[Pusher] Sending client-typing event');
+                    try { pusherChannel.trigger('client-typing', {}); } catch(e) {
+                        console.error('[Pusher] Failed to trigger client-typing:', e);
+                    }
+                } else {
+                    console.log('[Pusher] Typing not sent — channel=' + !!pusherChannel + ' connected=' + pusherConnected);
                 }
-                typingTimer = setTimeout(() => {}, 1200); // keep timer reference for cleanup
+                typingTimer = setTimeout(() => {}, 1200);
             });
 
             // init
