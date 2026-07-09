@@ -1151,35 +1151,38 @@ public function register(UserRequest $request)
             return;
         }
 
-        $startDate = now();
-        $planType = 'weekly';
+        try {
+            $plan         = \App\Models\Plans::with('planlimit')->find(1);
+            $startDate    = now();
+            $planType     = $plan ? strtolower($plan->type) : 'yearly';
+            $planDuration = $plan ? (int) ($plan->duration ?: 1) : 1;
+            $endDate      = get_plan_expiration_date($startDate, $planType, 0, $planDuration);
 
-        $endDate = match ($planType) {
-            'monthly' => $startDate->copy()->addMonth(),
-            'yearly' => $startDate->copy()->addYear(),
-            default => $startDate->copy()->addWeek(),
-        };
-
-        ProviderSubscription::create([
-            'plan_id'         => 1,
-            'user_id'         => $user->id,
-            'title'           => 'Free plan',
-            'identifier'      => 'free',
-            'type'            => $planType,
-            'start_at'        => $startDate,
-            'end_at'          => $endDate,
-            'amount'          => 0,
-            'status'          => 'active',
-            'payment_id'      => '1',
-            'plan_limitation' => json_encode([
-                'featured_service' => ['is_checked' => null, 'limit' => null],
-                'handyman'         => ['is_checked' => null, 'limit' => null],
-                'service'          => ['is_checked' => null, 'limit' => null],
-            ]),
-            'duration'        => null,
-            'description'     => 'Free plan',
-            'plan_type'       => 'Free plan',
-        ]);
+            ProviderSubscription::create([
+                'plan_id'         => 1,
+                'user_id'         => $user->id,
+                'title'           => $plan ? $plan->title : 'Free plan',
+                'identifier'      => $plan ? $plan->identifier : 'free',
+                'type'            => $planType,
+                'start_at'        => $startDate,
+                'end_at'          => $endDate,
+                'amount'          => $plan ? $plan->amount : 0,
+                'status'          => 'active',
+                'payment_id'      => '1',
+                'plan_limitation' => ($plan && $plan->planlimit)
+                    ? json_encode($plan->planlimit->plan_limitation)
+                    : json_encode([
+                        'featured_service' => ['is_checked' => null, 'limit' => null],
+                        'handyman'         => ['is_checked' => null, 'limit' => null],
+                        'service'          => ['is_checked' => null, 'limit' => null],
+                    ]),
+                'duration'        => $planDuration,
+                'description'     => $plan ? $plan->description : 'Free plan',
+                'plan_type'       => $plan ? $plan->plan_type : 'Free plan',
+            ]);
+        } catch (\Throwable $e) {
+            \Log::warning('Could not create free subscription on provider register (API): ' . $e->getMessage());
+        }
     }
 
 }
