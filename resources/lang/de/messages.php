@@ -2451,7 +2451,9 @@
     'swift_bic_code' => 'SWIFT/BIC-Code',
     'mobile_number' => 'Mobilnummer',
    'request_confirmed_wallet' => 'Anfrage erfolgreich bestätigt und Betrag dem Wallet gutgeschrieben.',
-   'payment_already_processed' => 'Zahlung für diese Anfrage wurde bereits verarbeitet.',
+    'payment_already_processed' => 'Zahlung für diese Anfrage wurde bereits verarbeitet.',
+    'payment_split_updated' => 'Zahlung erfolgreich aufgeteilt und an die entsprechenden Parteien verteilt.',
+    'payment_split_failed' => 'Fehler beim Aufteilen der Zahlung. Bitte versuchen Sie',
 
 
 

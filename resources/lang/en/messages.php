@@ -2448,4 +2448,6 @@
     'mobile_number' => 'Mobile Number',
     'request_confirmed_wallet'=>"Request confirmed Successfully",
     'payment_already_processed' => 'Payment for this request has already been processed.',
+    'payment_split_updated' => 'Payment split successfully.',
+    'payment_split_failed' => 'Error occurred while splitting the payment. Please try again.',
 );
