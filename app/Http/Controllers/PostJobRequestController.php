@@ -2596,11 +2596,6 @@ class PostJobRequestController extends Controller
             $data['job_price'] = $data['price_type'];
         }
 
-        // Enforce daily rule: hours = 8 * days
-        if (($data['job_price'] ?? null) === 'daily') {
-            $days = (int)($data['total_days'] ?? 0);
-            $data['total_hours'] = $days * 8;
-        }
 
         // Compute total_budget based on price type
         $price = (float)($data['price'] ?? 0);
