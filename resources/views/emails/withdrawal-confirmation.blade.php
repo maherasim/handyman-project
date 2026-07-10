@@ -1,111 +1,11 @@
-@php $locale = $mailLocale ?? app()->getLocale(); @endphp
+﻿@php $locale = $mailLocale ?? app()->getLocale(); @endphp
 <!DOCTYPE html>
 <html lang="{{ $locale }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ __('messages.email_withdrawal_title') }}</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        .email-container {
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        .header {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 300;
-        }
-        .content {
-            padding: 30px 20px;
-        }
-        .success-box {
-            background-color: #d4edda;
-            border-left: 4px solid #28a745;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .success-box h3 {
-            margin-top: 0;
-            color: #155724;
-            font-size: 20px;
-        }
-        .withdrawal-details {
-            background-color: #e3f2fd;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            border-left: 4px solid #2196f3;
-        }
-        .withdrawal-details h3 {
-            margin-top: 0;
-            color: #1976d2;
-            font-size: 20px;
-        }
-        .bank-details {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            border-left: 4px solid #6c757d;
-        }
-        .bank-details h3 {
-            margin-top: 0;
-            color: #495057;
-            font-size: 20px;
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 10px 0;
-            padding: 8px 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-        .detail-label {
-            font-weight: 600;
-            color: #495057;
-        }
-        .detail-value {
-            color: #212529;
-            text-align: right;
-        }
-        .amount-highlight {
-            font-size: 24px;
-            font-weight: bold;
-            color: #28a745;
-        }
-        .footer {
-            background-color: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-            color: #6c757d;
-            font-size: 14px;
-        }
-        .footer a {
-            color: #007bff;
-            text-decoration: none;
-        }
-    </style>
+        @include('emails._email_styles')
 </head>
 <body>
     <div class="email-container">

@@ -1,4 +1,4 @@
-@php
+﻿@php
     $locale = $mailLocale ?? app()->getLocale();
     $t = fn ($key, $replace = []) => __($key, $replace, $locale);
     $statusLabel = function ($status) use ($locale) {
@@ -22,19 +22,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $t('messages.booking_status_email_title') }}</title>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: #667eea; color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-        .status-box { background: white; border-left: 4px solid #667eea; padding: 20px; margin: 20px 0; border-radius: 5px; }
-        .status-label { font-weight: bold; color: #667eea; font-size: 18px; }
-        .booking-info { background: white; padding: 15px; margin: 15px 0; border-radius: 5px; border: 1px solid #ddd; }
-        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
-        .info-row:last-child { border-bottom: none; }
-        .info-label { font-weight: bold; color: #666; }
-        .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #999; font-size: 12px; }
-        .button { display: inline-block; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-    </style>
+        @include('emails._email_styles')
 </head>
 <body>
     <div class="header">
@@ -50,7 +38,7 @@
             <p style="margin: 10px 0;">
                 <strong>{{ $statusLabel($oldStatus) }}</strong>
                 &rarr;
-                <strong style="color: #667eea;">{{ $statusLabel($newStatus) }}</strong>
+                <strong>{{ $statusLabel($newStatus) }}</strong>
             </p>
             <p style="margin-top: 10px; color: #666;">
                 {{ $t('messages.booking_status_email_updated_by') }}
@@ -60,7 +48,7 @@
         </div>
 
         <div class="booking-info">
-            <h3 style="margin-top: 0; color: #667eea;">{{ $t('messages.booking_status_email_details') }}</h3>
+            <h3 style="margin-top: 0;">{{ $t('messages.booking_status_email_details') }}</h3>
             <div class="info-row">
                 <span class="info-label">{{ $t('messages.booking_id') }}:</span>
                 <span>#{{ $booking->id }}</span>

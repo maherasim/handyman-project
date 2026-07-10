@@ -1,112 +1,11 @@
-@php $locale = $mailLocale ?? app()->getLocale(); @endphp
+﻿@php $locale = $mailLocale ?? app()->getLocale(); @endphp
 <!DOCTYPE html>
 <html lang="{{ $locale }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ __('messages.email_advance_title') }}</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        .email-container {
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 300;
-        }
-        .content {
-            padding: 30px 20px;
-        }
-        .highlight-box {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        .highlight-box .amount {
-            font-size: 32px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        .info-box {
-            background-color: #f8f9fa;
-            border-left: 4px solid #667eea;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .info-box h3 {
-            margin-top: 0;
-            color: #667eea;
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-        .detail-label {
-            font-weight: 600;
-            color: #6c757d;
-        }
-        .detail-value {
-            color: #212529;
-            text-align: right;
-        }
-        .reassurance-box {
-            background-color: #e7f3ff;
-            border-left: 4px solid #2196f3;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .reassurance-box h3 {
-            margin-top: 0;
-            color: #1976d2;
-        }
-        .reassurance-box ul {
-            margin: 10px 0;
-            padding-left: 20px;
-        }
-        .reassurance-box li {
-            margin: 8px 0;
-            color: #1976d2;
-        }
-        .footer {
-            background-color: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-            color: #6c757d;
-            font-size: 14px;
-        }
-        .footer a {
-            color: #667eea;
-            text-decoration: none;
-        }
-    </style>
+        @include('emails._email_styles')
 </head>
 <body>
     <div class="email-container">
