@@ -2330,18 +2330,6 @@ class PostJobRequestController extends Controller
             \Log::warning('user_accept_bid notification failed: ' . $e->getMessage());
         }
 
-        // Send detailed bid-accepted email directly, regardless of DB mail-template enable state
-        try {
-            if ($bid->provider && $bid->provider->email && $bid->customer) {
-                Mail::to($bid->provider->email)->locale(resolveDomainLocale())->send(new BidAcceptedMail($bid->provider, $bid, $bid->customer, resolveDomainLocale()));
-                \Log::info('Bid accepted email sent to provider: ' . $bid->provider->email . ' for bid ID: ' . $bid->id);
-            } else {
-                \Log::warning('Bid accepted email skipped (missing provider/email/customer) for bid ID: ' . $bid->id);
-            }
-        } catch (\Throwable $e) {
-            \Log::error('Failed to send bid accepted email for bid ID ' . $bid->id . ': ' . $e->getMessage());
-        }
-
         return response()->json([
             'status' => true,
             'message' => __('messages.pjr_bid_accepted_status_updated', [], resolveDomainLocale())

@@ -30,10 +30,8 @@ use App\Models\ServiceSlot;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\ServiceBookingNotificationMail;
 use App\Mail\AdvancePaymentNotificationMail;
 use App\Mail\FullPaymentReceivedMail;
-use App\Mail\HandymanAssignedMail;
 use App\Models\Wallet;
 use App\Traits\EarningTrait;
 use App\Traits\NotificationTrait;
@@ -578,25 +576,6 @@ class BookingController extends Controller
             'booking' => $result,
         ];
         $this->sendNotification($activity_data);
-        
-        // Send email notification to provider about new booking
-        try {
-            // Only send email if this is a new booking (not an update)
-            if ($result->wasRecentlyCreated) {
-                $result->load(['service', 'customer', 'slots']);
-                $provider = User::find($result->provider_id);
-                $customer = User::find($result->customer_id);
-                
-                if ($provider && $provider->email && $customer) {
-                    Mail::to($provider->email)->locale(getRecipientLocale($provider))->send(new ServiceBookingNotificationMail($provider, $result, $customer, getRecipientLocale($provider))); // *** new: locale-aware email ***
-                    \Log::info('Service booking notification email sent to provider: ' . $provider->email . ' for booking ID: ' . $result->id);
-                }
-            }
-        } catch (\Exception $e) {
-            // Log error but don't fail the booking creation
-            \Log::error('Failed to send service booking notification email: ' . $e->getMessage());
-        }
-
 
         if ($data['coupon_id'] != null) {
             $coupons = Coupon::find($data['coupon_id']);
@@ -1089,19 +1068,6 @@ public function bookingAssigned(Request $request)
     }
 
     $bookingdata->save();
-
-    // Send detailed assignment email directly to each newly assigned handyman
-    if (!empty($newlyAssignedHandymen) && $bookingdata->provider) {
-        $bookingdata->load(['service', 'customer', 'provider', 'slots']);
-        foreach ($newlyAssignedHandymen as $handymanUser) {
-            try {
-                Mail::to($handymanUser->email)->locale(getRecipientLocale($handymanUser))->send(new HandymanAssignedMail($handymanUser, $bookingdata, $bookingdata->provider, getRecipientLocale($handymanUser)));
-                \Log::info('Handyman assigned notification email sent to: ' . $handymanUser->email . ' for booking ID: ' . $bookingdata->id);
-            } catch (\Exception $e) {
-                \Log::error('Failed to send handyman assigned notification email: ' . $e->getMessage());
-            }
-        }
-    }
 
     $activity_data = [
         'activity_type'    => $activity_type,

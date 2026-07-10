@@ -123,9 +123,11 @@
                     },
                     
                     {
-                      data:'contact_number',
-                      name:'contact_number',
-                      title:"{{ __('messages.contact_number') }}"
+                      data:'city_country',
+                      name:'city_country',
+                      title:"{{ __('messages.location') }}",
+                      orderable: false,
+                      searchable: false,
                     },
                     {
                         data: 'status',

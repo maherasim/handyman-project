@@ -730,25 +730,6 @@ public function getWalletPaymentMethod(Request $request)
     $withdraw_money->status = 'paid';
     $withdraw_money->save();
     
-    // Send confirmation email to user
-    $emailSent = false;
-    try {
-        $user = $withdraw_money->providers;
-        if ($user && $user->email) {
-            Mail::to($user->email)->locale(getRecipientLocale($user))->send(new WithdrawalConfirmationMail($user, $withdraw_money, getRecipientLocale($user))); // *** new: locale-aware email ***
-            $emailSent = true;
-            \Log::info('Withdrawal confirmation email sent successfully to: ' . $user->email . ' for withdrawal ID: ' . $id);
-        } else {
-            \Log::warning('Cannot send withdrawal email: User or email not found for withdrawal ID: ' . $id);
-        }
-    } catch (\Exception $e) {
-        // Log error but don't fail the withdrawal confirmation
-        \Log::error('Failed to send withdrawal confirmation email: ' . $e->getMessage(), [
-            'withdrawal_id' => $id,
-            'user_id' => $withdraw_money->user_id,
-            'trace' => $e->getTraceAsString()
-        ]);
-    }
 
     $message = __('messages.transaction_complete_success');
     if ($emailSent) {

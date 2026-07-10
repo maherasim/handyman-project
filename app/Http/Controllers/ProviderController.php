@@ -168,6 +168,7 @@ class ProviderController extends Controller
 {
     // Start the query with the user's favorite providers
     $query = User::query()
+        ->with(['city', 'country'])
         ->whereHas('userFavourites', function ($subQuery) {
             $subQuery->where('user_id', auth()->user()->id);
         })
@@ -204,6 +205,13 @@ class ProviderController extends Controller
         ->editColumn('display_name', function ($query) {
             return view('provider.user', compact('query'));
         })
+        ->addColumn('city_country', function ($query) {
+            $parts = array_filter([
+                optional($query->city)->name,
+                optional($query->country)->name,
+            ]);
+            return $parts ? implode(', ', $parts) : '-';
+        })
         ->editColumn('status', function ($query) {
             if ($query->status == '0') {
                 $status = '<a class="btn-sm text-white btn-success" href='.route('provider.approve', $query->id).'><i class="fa fa-check"></i>Approve</a>';
@@ -236,6 +244,7 @@ class ProviderController extends Controller
         ->rawColumns(['check', 'display_name', 'status'])
         ->toJson();
 }
+
 
     /* bulck action method */
     public function bulk_action(Request $request)

@@ -2608,27 +2608,13 @@ function getBankTransferDisplayConfig(?string $locale = null): array {
 }
 
 function sendBankTransferConfirmationEmail($user, $subscription, $transaction) {
-    try {
-        $locale = getRecipientLocale($user);
-        \Mail::to($user->email)->locale($locale)->send(new \App\Mail\BankTransferInstructionsMail($user, $subscription, $transaction, $locale));
-        \Log::info('Bank transfer instructions email sent successfully to: ' . $user->email);
-        return true;
-    } catch (\Exception $e) {
-        \Log::error('Failed to send bank transfer instructions email: ' . $e->getMessage());
-        return false;
-    }
+    // Email handled by database template via sendNotification
+    return true;
 }
 
 function sendSubscriptionUpgradeEmail($user, $subscription, $paymentMethod, $transactionId) {
-    try {
-        $locale = getRecipientLocale($user);
-        \Mail::to($user->email)->locale($locale)->send(new \App\Mail\SubscriptionUpgradeMail($user, $subscription, $paymentMethod, $transactionId, $locale));
-        \Log::info('Subscription upgrade email sent successfully to: ' . $user->email);
-        return true;
-    } catch (\Exception $e) {
-        \Log::error('Failed to send subscription upgrade email: ' . $e->getMessage());
-        return false;
-    }
+    // Email handled by database template via sendNotification
+    return true;
 }
 
 function stripe_unit_amount_from_decimal($amountDecimal, $currencyCode){

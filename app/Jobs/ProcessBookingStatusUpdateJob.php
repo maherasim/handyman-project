@@ -9,16 +9,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Booking;
-use App\Models\User;
-use App\Models\Notification;
-use App\Models\Wallet;
-use App\Models\CommissionEarning;
-use App\Models\BookingHandymanMapping;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Traits\NotificationTrait;
-use App\Mail\BookingStatusUpdateMail;
-use App\Mail\BookingAcceptedMail;
 
 class ProcessBookingStatusUpdateJob implements ShouldQueue
 {
@@ -71,118 +63,10 @@ class ProcessBookingStatusUpdateJob implements ShouldQueue
         ];
 
         try {
-            // 1. Send System Notifications (Traits/NotificationTrait)
             $this->sendNotification($activity_data);
-
-            // 2. Direct Database Notification fallback
             $this->createDirectDatabaseNotification($bookingdata, $activity_type, $this->oldStatus, $this->data['status']);
-
         } catch (\Exception $e) {
             Log::error('ProcessBookingStatusUpdateJob: Failed to send notification: ' . $e->getMessage());
-        }
-
-        // 3. Send Emails (Explicit Logic moved from Controller)
-        // Only if status actually changed (Controller check passed, but double check good practice)
-        if ($this->oldStatus != $this->data['status']) {
-            try {
-                $this->sendBookingStatusEmails($bookingdata, $this->oldStatus, $this->data['status']);
-            } catch (\Exception $e) {
-                Log::error('ProcessBookingStatusUpdateJob: Failed to send emails: ' . $e->getMessage());
-            }
-        }
-    }
-
-    /**
-     * Encapsulated email sending logic from BookingController
-     */
-    protected function sendBookingStatusEmails($bookingdata, $oldStatus, $newStatus)
-    {
-        $actor = User::find($this->actorId);
-        $actorName = $actor ? ($actor->display_name ?? $actor->first_name ?? 'System') : 'System';
-        $actorType = 'system';
-
-        if ($actor) {
-            if ($actor->hasAnyRole(['provider']) && $actor->id == $bookingdata->provider_id) {
-                $actorType = 'provider';
-            } elseif ($actor->hasAnyRole(['handyman'])) {
-                $actorType = 'handyman';
-            } elseif ($actor->hasAnyRole(['user']) && $actor->id == $bookingdata->customer_id) {
-                $actorType = 'user';
-            }
-        }
-
-        $emailsToSend = [];
-
-        if ($actorType === 'handyman') {
-            // Handyman action: notify provider and user
-            if ($bookingdata->provider && $bookingdata->provider->email) {
-                $emailsToSend[] = ['user' => $bookingdata->provider, 'type' => 'provider'];
-            }
-            if ($bookingdata->customer && $bookingdata->customer->email) {
-                $emailsToSend[] = ['user' => $bookingdata->customer, 'type' => 'user'];
-            }
-        } elseif ($actorType === 'provider') {
-            // Provider action: notify user and handyman
-            if ($bookingdata->customer && $bookingdata->customer->email) {
-                $emailsToSend[] = ['user' => $bookingdata->customer, 'type' => 'user'];
-            }
-            if ($bookingdata->handymanAdded && $bookingdata->handymanAdded->count() > 0) {
-                foreach ($bookingdata->handymanAdded as $handymanMapping) {
-                    if ($handymanMapping->handyman && $handymanMapping->handyman->email) {
-                        $emailsToSend[] = ['user' => $handymanMapping->handyman, 'type' => 'handyman'];
-                    }
-                }
-            }
-        } elseif ($actorType === 'user') {
-            // User action: notify provider and handyman
-            if ($bookingdata->provider && $bookingdata->provider->email) {
-                $emailsToSend[] = ['user' => $bookingdata->provider, 'type' => 'provider'];
-            }
-            if ($bookingdata->handymanAdded && $bookingdata->handymanAdded->count() > 0) {
-                foreach ($bookingdata->handymanAdded as $handymanMapping) {
-                    if ($handymanMapping->handyman && $handymanMapping->handyman->email) {
-                        $emailsToSend[] = ['user' => $handymanMapping->handyman, 'type' => 'handyman'];
-                    }
-                }
-            }
-        } else {
-            // System/admin action: notify all parties
-            if ($bookingdata->provider && $bookingdata->provider->email) {
-                $emailsToSend[] = ['user' => $bookingdata->provider, 'type' => 'provider'];
-            }
-            if ($bookingdata->customer && $bookingdata->customer->email) {
-                $emailsToSend[] = ['user' => $bookingdata->customer, 'type' => 'user'];
-            }
-            if ($bookingdata->handymanAdded && $bookingdata->handymanAdded->count() > 0) {
-                foreach ($bookingdata->handymanAdded as $handymanMapping) {
-                    if ($handymanMapping->handyman && $handymanMapping->handyman->email) {
-                        $emailsToSend[] = ['user' => $handymanMapping->handyman, 'type' => 'handyman'];
-                    }
-                }
-            }
-        }
-
-        foreach ($emailsToSend as $entry) {
-            $recipient = $entry['user'];
-            $recipientType = $entry['type'];
-
-            try {
-                if ($recipientType === 'user' && $newStatus === 'accept') {
-                    // Customer-facing "booking accepted" email, matching the same
-                    // rich format/detail as the "new booking" email sent to the provider.
-                    Mail::to($recipient->email)
-                        ->locale($this->mailLocale)
-                        ->send(new BookingAcceptedMail($recipient, $bookingdata, $bookingdata->provider, $this->mailLocale));
-                } else {
-                    Mail::to($recipient->email)
-                        ->locale($this->mailLocale)
-                        ->send(new BookingStatusUpdateMail($recipient, $bookingdata, $oldStatus, $newStatus, $actorName, $actorType, $recipientType, $this->mailLocale));
-                }
-
-                Log::info("ProcessBookingStatusUpdateJob: Booking status email sent to {$recipientType} ({$recipient->email}) for booking #{$bookingdata->id}, status: {$oldStatus} -> {$newStatus}");
-            } catch (\Exception $e) {
-                Log::error("ProcessBookingStatusUpdateJob: Failed to send booking status email to {$recipientType} ({$recipient->email}): " . $e->getMessage());
-            }
         }
     }
 

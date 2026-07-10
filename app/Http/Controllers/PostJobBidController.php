@@ -163,17 +163,6 @@ public function apiIndex(Request $request)
              // Notify job creator (customer): in-app notification + email when a provider places a bid
              if ($result->wasRecentlyCreated) {
                  $this->sendNotification($activity_data);
-
-                 // Send detailed bid-placed email directly, regardless of DB mail-template enable state
-                 try {
-                     $customerUser = $customer->customer ?? User::find($customer->customer_id);
-                     $providerUser = auth()->user();
-                     if ($customerUser && $customerUser->email && $providerUser) {
-                         Mail::to($customerUser->email)->locale(resolveDomainLocale())->send(new ProviderBidPlacedMail($customerUser, $result, $customer, $providerUser, resolveDomainLocale()));
-                     }
-                 } catch (\Throwable $e) {
-                     \Log::error('Failed to send provider bid placed email: ' . $e->getMessage());
-                 }
              }
      
              $message = __('messages.update_form', ['form' => __('messages.postbid')]);
