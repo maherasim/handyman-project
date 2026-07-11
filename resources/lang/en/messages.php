@@ -2450,4 +2450,8 @@
     'payment_already_processed' => 'Payment for this request has already been processed.',
     'payment_split_updated' => 'Payment split successfully.',
     'payment_split_failed' => 'Error occurred while splitting the payment. Please try again.',
+    'transaction_request'=>'Transaction has been successfully done',
+    'transaction_type'=>'Transaction Type',
+    'request_date'=>'Request Date',
+    
 );

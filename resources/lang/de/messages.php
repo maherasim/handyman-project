@@ -2453,7 +2453,10 @@
    'request_confirmed_wallet' => 'Anfrage erfolgreich bestätigt und Betrag dem Wallet gutgeschrieben.',
     'payment_already_processed' => 'Zahlung für diese Anfrage wurde bereits verarbeitet.',
     'payment_split_updated' => 'Zahlung erfolgreich aufgeteilt und an die entsprechenden Parteien verteilt.',
-    'payment_split_failed' => 'Fehler beim Aufteilen der Zahlung. Bitte versuchen Sie',
+    'payment_split_failed' => 'Fehler beim Aufteilen der Zahlung. Bitte versuchen Sie es erneut.',
+    'transaction_request'=>'Transaktion erfolgreich abgeschlossen',
+    'transaction_type'=>'Transaktionsart',
+    'request_date'=>'Anfragdatum',
 
 
 
