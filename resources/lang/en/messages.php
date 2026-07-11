@@ -2453,5 +2453,7 @@
     'transaction_request'=>'Transaction has been successfully done',
     'transaction_type'=>'Transaction Type',
     'request_date'=>'Request Date',
+    'created_at_label' => 'Created At',
+    'user_name' => 'Customer Name',
     
 );

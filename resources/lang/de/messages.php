@@ -2457,6 +2457,8 @@
     'transaction_request'=>'Transaktion erfolgreich abgeschlossen',
     'transaction_type'=>'Transaktionsart',
     'request_date'=>'Anfragdatum',
+    'created_at_label' => 'Gutgeschrieben am',
+    'user_name' => 'Benutzername',
 
 
 
