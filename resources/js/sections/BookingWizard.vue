@@ -1063,24 +1063,21 @@ const decrement = () => {
 };
 
 const subtotal = computed(() => {
-
+  let raw;
   if (coupondiscount.value > 0) {
     if (props.serviceaddon) {
-      return (props.service.price * quantity.value) + addonAmount.value - discount.value - coupondiscount.value
+      raw = (props.service.price * quantity.value) + addonAmount.value - discount.value - coupondiscount.value
     } else {
-      return (props.service.price * quantity.value) - discount.value - coupondiscount.value
+      raw = (props.service.price * quantity.value) - discount.value - coupondiscount.value
     }
-
   } else {
-
     if (props.serviceaddon) {
-      return (props.service.price * quantity.value) + addonAmount.value - discount.value
+      raw = (props.service.price * quantity.value) + addonAmount.value - discount.value
     } else {
-      return (props.service.price * quantity.value) - discount.value
+      raw = (props.service.price * quantity.value) - discount.value
     }
-
   }
-
+  return Math.round(raw * 100) / 100;
 });
 
 const taxAmount = computed(() => {
@@ -1099,7 +1096,7 @@ const taxAmount = computed(() => {
       }
 
     }
-    return totalTaxAmount;
+    return Math.round(totalTaxAmount * 100) / 100;
 
   }
 
@@ -1109,7 +1106,7 @@ const discount = computed(() => {
 
   if (props.service.discount != '' && props.service.discount > 0) {
 
-    return props.service.price * quantity.value * props.service.discount / 100
+    return Math.round(props.service.price * quantity.value * props.service.discount / 100 * 100) / 100
   }
 
   return 0
@@ -1121,10 +1118,10 @@ const coupondiscount = computed(() => {
 
   if (selectedCoupon.value != null) {
     if (selectedCoupon.value.discount_type == 'fixed') {
-      return selectedCoupon.value.discount
+      return Math.round(selectedCoupon.value.discount * 100) / 100
     } else {
 
-      return props.service.price * quantity.value * selectedCoupon.value.discount / 100
+      return Math.round(props.service.price * quantity.value * selectedCoupon.value.discount / 100 * 100) / 100
     }
   }
 
@@ -1136,7 +1133,7 @@ const totalAmount = computed(() => {
     if (props.payment_type == 'paid') {
        return props.total_booking_amount;
     }else{
-        return taxAmount.value + subtotal.value;
+        return Math.round((taxAmount.value + subtotal.value) * 100) / 100;
     }
 
 });
