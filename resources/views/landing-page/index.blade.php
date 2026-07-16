@@ -2136,22 +2136,30 @@
             width: 100%;
             position: relative;
             height: 500px;
+            background: #0a1628;
+            border-radius: 20px;
         }
 
         .provider-banner-slider .swiper-slide {
             height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .provider-banner-item {
             width: 100%;
             height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
 
         .provider-banner-image {
             width: 100%;
             height: 500px;
-            object-fit: cover;
-            object-position: top center;
+            object-fit: contain;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
@@ -2223,7 +2231,9 @@
         @media (max-width: 767px) {
             .provider-banner-slider,
             .provider-banner-slider .swiper-slide,
-            .provider-banner-item,
+            .provider-banner-item {
+                height: 350px;
+            }
             .provider-banner-image {
                 height: 350px;
             }
