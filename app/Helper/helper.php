@@ -182,10 +182,10 @@ function getFileExistsCheck($media){
     $mediaCondition = false;
 
     if($media) {
-        if($media->disk == 'public') {
-            $mediaCondition = file_exists($media->getPath());
-        } else {
-            $mediaCondition = \Storage::disk($media->disk)->exists($media->getPath());
+        try {
+            $mediaCondition = \Storage::disk($media->disk)->exists($media->getPathRelativeToRoot());
+        } catch (\Exception $e) {
+            $mediaCondition = false;
         }
     }
 

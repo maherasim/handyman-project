@@ -66,7 +66,7 @@
                             <div class="row blog_attachment_div">
                                 <div class="col-md-12">
                                     <div class="row" id="new_blog_attachment_previews"></div>
-                                    @if(getMediaFileExit($blogdata, 'blog_attachment'))
+                                    @if($blogdata->id && $blogdata->getMedia('blog_attachment')->isNotEmpty())
                                         @php
                                     $attchments = $blogdata->getMedia('blog_attachment');
                                     $file_extention = config('constant.IMAGE_EXTENTIONS');

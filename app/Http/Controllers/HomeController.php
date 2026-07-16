@@ -1176,6 +1176,13 @@ $data['remaining_payout'] = round($providerRemainingPayout, $digitafter_decimal_
             }
             break;
 
+        case 'blog_attachment':
+            $blogData = \App\Models\Blog::find($id);
+            if ($blogData) {
+                $attachments = $blogData->getMedia('blog_attachment');
+            }
+            break;
+
         default:
             $attachments = null;
             break;

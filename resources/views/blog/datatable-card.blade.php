@@ -1,7 +1,11 @@
 <div class="iq-blog blog-standard position-relative">
     <div class="blog-image position-relative">
         <a href="{{ route('blog.detail', $data->id) }}" class="d-block overflow-hidden">
-            <img src="{{ getSingleMedia($data,'blog_attachment', null) }}" alt="blog-image"
+            @php
+                $blogMedia = $data->getFirstMedia('blog_attachment');
+                $blogImgUrl = $blogMedia ? $blogMedia->getFullUrl() : asset('images/default.png');
+            @endphp
+            <img src="{{ $blogImgUrl }}" alt="blog-image"
                 class="img-fluid w-100 blog-image rounded-3" loading="lazy">
         </a>
         <span class="d-inline-flex align-items-center gap-1 px-2 bg-primary border border-2 border-white rounded-5 text-white font-size-14 fw-500 position-absolute top-0 end-0 mt-3 me-3">
