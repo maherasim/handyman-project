@@ -2115,6 +2115,8 @@
                     slidesPerView: 1,
                     spaceBetween: 0,
                     loop: true,
+                    observer: true,
+                    observeParents: true,
                     autoplay: {
                         delay: 3000,
                         disableOnInteraction: false,
@@ -2133,17 +2135,23 @@
         .provider-banner-slider {
             width: 100%;
             position: relative;
+            height: 500px;
+        }
+
+        .provider-banner-slider .swiper-slide {
+            height: 500px;
         }
 
         .provider-banner-item {
             width: 100%;
-            height: 100%;
+            height: 500px;
         }
 
         .provider-banner-image {
             width: 100%;
             height: 500px;
             object-fit: cover;
+            object-position: top center;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
@@ -2213,6 +2221,9 @@
         }
 
         @media (max-width: 767px) {
+            .provider-banner-slider,
+            .provider-banner-slider .swiper-slide,
+            .provider-banner-item,
             .provider-banner-image {
                 height: 350px;
             }
