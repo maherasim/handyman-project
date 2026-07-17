@@ -64,8 +64,7 @@ class WalletPayPalController extends Controller
         }
 
         $baseURL    = config('app.url') ?: 'https://frobster.com';
-        $userId     = auth()->id();
-        $returnUrl  = $baseURL . '/api/wallet-paypal/success?user_id=' . $userId . '&amount=' . $amount;
+        $returnUrl  = $baseURL . '/api/wallet-paypal/success?amount=' . $amount;
         $cancelUrl  = $baseURL . '/api/wallet-paypal/cancel';
 
         $order = new OrdersCreateRequest();
@@ -101,11 +100,15 @@ class WalletPayPalController extends Controller
     public function successApi(Request $request)
     {
         $token  = $request->query('token');
-        $userId = (int) $request->query('user_id');
+        $userId = auth()->id();
         $amount = (float) $request->query('amount', 0);
 
         if (!$token) {
             return response()->json(['status' => false, 'message' => 'Missing PayPal token.'], 400);
+        }
+
+        if (!$userId) {
+            return response()->json(['status' => false, 'message' => 'Unauthenticated.'], 401);
         }
 
         // Capture the PayPal order
@@ -124,10 +127,6 @@ class WalletPayPalController extends Controller
         }
 
         // Credit the wallet
-        if ($userId <= 0) {
-            return response()->json(['status' => false, 'message' => 'Invalid user.'], 400);
-        }
-
         $wallet = Wallet::where('user_id', $userId)->first();
 
         if (!$wallet) {
