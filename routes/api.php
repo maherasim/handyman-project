@@ -89,6 +89,11 @@ Route::post('booking-paypal/create/{id?}', [API\BookingPayPalController::class, 
 Route::get('booking-paypal/success/{booking_id}', [App\Http\Controllers\API\BookingPayPalController::class, 'successApi'])->name('api.booking-paypal.success');
 Route::get('booking-paypal/cancel', [App\Http\Controllers\API\BookingPayPalController::class, 'cancelApi'])->name('api.booking-paypal.cancel');
 
+// Wallet PayPal API – success/cancel are public (PayPal browser redirect carries no Bearer token)
+Route::post('wallet-paypal/create', [API\WalletPayPalController::class, 'createPayment'])->name('api.wallet-paypal.create');
+Route::get('wallet-paypal/success', [API\WalletPayPalController::class, 'successApi'])->name('api.wallet-paypal.success');
+Route::get('wallet-paypal/cancel', [API\WalletPayPalController::class, 'cancelApi'])->name('api.wallet-paypal.cancel');
+
 Route::group(['middleware' => ['auth:sanctum', 'active']], function () {
     // ===== Chat API (Mobile/Web) =====
     // Open or create conversation by bid id
