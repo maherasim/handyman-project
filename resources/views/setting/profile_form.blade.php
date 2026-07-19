@@ -171,6 +171,12 @@
                                     'masters_degree' => __('messages.education_master_degree'),
                                     'doctorate_degree' => __('messages.education_doctorate_degree'),
                                     'professional_degree' => __('messages.education_professional_degree'),
+                                    'not_specified_2' => __('messages.education_not_specified_2'),
+                                    'any_graduate_2' => __('messages.education_any_graduate_2'),
+                                    'apprenticeship_degree_2' => __('messages.education_apprenticeship_degree_2'),
+                                    'traineeship_degree_2' => __('messages.education_traineeship_degree_2'),
+                                    'secondary_degree_2' => __('messages.education_secondary_degree_2'),
+                                    'undergraduate_diploma_2' => __('messages.education_undergraduate_diploma_2'),
                                 ],
                                 $user_data->education ?? '',
                             )->class('form-control')->attribute('data-placeholder', __('messages.education')) }}

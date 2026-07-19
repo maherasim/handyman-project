@@ -224,6 +224,12 @@
                                         <option value="masters_degree" {{ $oldEdu == 'masters_degree' ? 'selected' : '' }}>{{ __('messages.education_master_degree') }}</option>
                                         <option value="doctorate_degree" {{ $oldEdu == 'doctorate_degree' ? 'selected' : '' }}>{{ __('messages.education_doctorate_degree') }}</option>
                                         <option value="professional_degree" {{ $oldEdu == 'professional_degree' ? 'selected' : '' }}>{{ __('messages.education_professional_degree') }}</option>
+                                        <option value="not_specified_2" {{ $oldEdu == 'not_specified_2' ? 'selected' : '' }}>{{ __('messages.education_not_specified_2') }}</option>
+                                        <option value="any_graduate_2" {{ $oldEdu == 'any_graduate_2' ? 'selected' : '' }}>{{ __('messages.education_any_graduate_2') }}</option>
+                                        <option value="apprenticeship_degree_2" {{ $oldEdu == 'apprenticeship_degree_2' ? 'selected' : '' }}>{{ __('messages.education_apprenticeship_degree_2') }}</option>
+                                        <option value="traineeship_degree_2" {{ $oldEdu == 'traineeship_degree_2' ? 'selected' : '' }}>{{ __('messages.education_traineeship_degree_2') }}</option>
+                                        <option value="secondary_degree_2" {{ $oldEdu == 'secondary_degree_2' ? 'selected' : '' }}>{{ __('messages.education_secondary_degree_2') }}</option>
+                                        <option value="undergraduate_diploma_2" {{ $oldEdu == 'undergraduate_diploma_2' ? 'selected' : '' }}>{{ __('messages.education_undergraduate_diploma_2') }}</option>
                                     </select>
                                 </div>
                             

@@ -2518,6 +2518,12 @@ function post_job_education_level_key_map(): array
         'masters_degree' => 'education_master_degree',
         'doctorate_degree' => 'education_doctorate_degree',
         'professional_degree' => 'education_professional_degree',
+        'not_specified_2' => 'education_not_specified_2',
+        'any_graduate_2' => 'education_any_graduate_2',
+        'apprenticeship_degree_2' => 'education_apprenticeship_degree_2',
+        'traineeship_degree_2' => 'education_traineeship_degree_2',
+        'secondary_degree_2' => 'education_secondary_degree_2',
+        'undergraduate_diploma_2' => 'education_undergraduate_diploma_2',
     ];
 }
 
