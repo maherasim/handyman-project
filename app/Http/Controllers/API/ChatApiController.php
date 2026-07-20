@@ -590,14 +590,14 @@ class ChatApiController extends Controller
                 \Log::error('Failed to create fallback chat notification (API): ' . $fallbackError->getMessage());
             }
         }
-        // Send only the chat-message-notification.blade.php email (no template email for chat_message)
-        try {
-            if ($recipient && $recipient->email) {
-                Mail::to($recipient->email)->locale(getRecipientLocale($recipient))->send(new ChatMessageNotificationMail($recipient, $sender, $message, $conversation, getRecipientLocale($recipient))); // *** new: locale-aware email ***
-            }
-        } catch (\Exception $e) {
-            \Log::error('Failed to send chat message email (API): ' . $e->getMessage());
-        }
+        // Email notifications for chat messages are disabled — push + DB notification is sufficient
+        // try {
+        //     if ($recipient && $recipient->email) {
+        //         Mail::to($recipient->email)->locale(getRecipientLocale($recipient))->send(new ChatMessageNotificationMail($recipient, $sender, $message, $conversation, getRecipientLocale($recipient)));
+        //     }
+        // } catch (\Exception $e) {
+        //     \Log::error('Failed to send chat message email (API): ' . $e->getMessage());
+        // }
     }
 }
 
