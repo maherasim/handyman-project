@@ -730,3 +730,24 @@ Route::get('/test-mail', function () {
         return 'Failed to send email: ' . $e->getMessage();
     }
 });
+
+Route::get('/delete-account', function () {
+    return view('delete_account');
+})->name('delete-account');
+
+Route::post('/delete-account', function (\Illuminate\Http\Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'reason' => 'required|string|max:500',
+    ]);
+
+    \Illuminate\Support\Facades\Mail::raw(
+        "Account Deletion Request\n\nEmail: " . $request->email . "\nReason: " . $request->reason,
+        function ($message) use ($request) {
+            $message->to(env('MAIL_FROM_ADDRESS', 'info@frobster.com'))
+                    ->subject('Account Deletion Request - ' . $request->email);
+        }
+    );
+
+    return back()->with('success', true);
+})->name('delete-account.submit');
